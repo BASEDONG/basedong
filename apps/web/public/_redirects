@@ -1,0 +1,4 @@
+# Cloudflare Pages — trailing slash routes
+/partner  /partner/  301
+/news  /news/  301
+/me/models  /me/models/  301

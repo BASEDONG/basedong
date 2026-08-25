@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240" fill="none">
+  <defs>
+    <linearGradient id="f4-plat" x1="40" y1="160" x2="280" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F0FDF4"/><stop offset="1" stop-color="#DCFCE7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- platform -->
+  <polygon points="160,200 40,160 160,120 280,160" fill="url(#f4-plat)"/>
+  <polygon points="40,160 40,176 160,216 160,200" fill="#86EFAC"/>
+  <polygon points="160,200 160,216 280,176 280,160" fill="#4ADE80"/>
+
+  <!-- monitor (isometric) -->
+  <g transform="translate(56, 56)">
+    <!-- screen bezel top -->
+    <polygon points="70,20 10,48 70,76 130,48" fill="#BBF7D0"/>
+    <polygon points="10,48 10,58 70,86 70,76" fill="#4ADE80"/>
+    <polygon points="70,76 70,86 130,58 130,48" fill="#16A34A"/>
+    <!-- display -->
+    <polygon points="70,30 24,52 70,74 116,52" fill="#F0FDF4"/>
+    <rect x="48" y="44" width="36" height="4" rx="2" fill="#86EFAC" transform="skewY(-26) translate(0,22) scale(1,0.55)"/>
+    <!-- content bars approximated -->
+    <path d="M48 48 L78 34" stroke="#4ADE80" stroke-width="3" stroke-linecap="round"/>
+    <path d="M52 56 L82 42" stroke="#86EFAC" stroke-width="3" stroke-linecap="round"/>
+    <path d="M56 64 L80 52" stroke="#BBF7D0" stroke-width="3" stroke-linecap="round"/>
+    <!-- stand -->
+    <polygon points="64,86 76,86 82,112 58,112" fill="#86EFAC"/>
+    <polygon points="50,112 90,112 96,120 44,120" fill="#4ADE80"/>
+  </g>
+
+  <!-- dashed data path -->
+  <path d="M130 150 C160 150 170 140 200 128 C220 118 240 112 255 108"
+        stroke="#16A34A" stroke-width="2" stroke-dasharray="4 4" fill="none" opacity="0.7"/>
+
+  <!-- markers -->
+  <rect x="148" y="136" width="22" height="16" rx="4" fill="#22C55E"/>
+  <text x="159" y="148" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="#fff">0</text>
+  <circle cx="198" cy="122" r="8" fill="#15803D"/>
+  <rect x="218" y="108" width="26" height="16" rx="4" fill="#22C55E"/>
+  <text x="231" y="120" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="#fff">3k</text>
+
+  <!-- token cylinder -->
+  <g transform="translate(236, 72)">
+    <ellipse cx="24" cy="48" rx="22" ry="10" fill="#166534"/>
+    <rect x="2" y="18" width="44" height="30" fill="#16A34A"/>
+    <ellipse cx="24" cy="18" rx="22" ry="10" fill="#4ADE80"/>
+    <ellipse cx="24" cy="18" rx="14" ry="6" fill="#F0FDF4"/>
+    <text x="24" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" font-weight="800" fill="#15803D">AI</text>
+  </g>
+
+  <!-- floating app cards -->
+  <g transform="translate(200, 36)">
+    <rect x="0" y="0" width="72" height="36" rx="6" fill="#14532D"/>
+    <rect x="10" y="10" width="12" height="12" rx="2" fill="#86EFAC"/>
+    <rect x="28" y="10" width="34" height="4" rx="2" fill="#BBF7D0" opacity="0.8"/>
+    <rect x="28" y="18" width="28" height="4" rx="2" fill="#BBF7D0" opacity="0.5"/>
+  </g>
+  <g transform="translate(250, 52)">
+    <rect x="0" y="0" width="56" height="28" rx="6" fill="#22C55E"/>
+    <rect x="10" y="8" width="36" height="3" rx="1.5" fill="#F0FDF4" opacity="0.85"/>
+    <rect x="10" y="15" width="28" height="3" rx="1.5" fill="#F0FDF4" opacity="0.55"/>
+  </g>
+</svg>

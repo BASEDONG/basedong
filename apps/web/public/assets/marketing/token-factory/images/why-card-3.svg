@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <!-- inbound streams -->
+  <path d="M20 80 C48 80 68 88 82 96" stroke="#A78BFA" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <path d="M20 118 C48 118 68 112 82 106" stroke="#4AABF0" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+
+  <!-- demand nodes -->
+  <circle cx="18" cy="80" r="7" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="1.5"/>
+  <rect x="11" y="111" width="14" height="14" rx="3" fill="#E0F2FE" stroke="#4AABF0" stroke-width="1.5"/>
+
+  <!-- central hub -->
+  <g transform="translate(76, 72)">
+    <polygon points="28,20 0,34 28,48 56,34" fill="#F5F3FF"/>
+    <polygon points="0,34 0,46 28,60 28,48" fill="#C4B5FD"/>
+    <polygon points="28,48 28,60 56,46 56,34" fill="#A78BFA"/>
+    <circle cx="28" cy="36" r="7" fill="#4AABF0"/>
+    <circle cx="28" cy="36" r="3" fill="#FFFFFF"/>
+  </g>
+
+  <!-- model tiles -->
+  <rect x="142" y="52" width="22" height="16" rx="3" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.25"/>
+  <rect x="142" y="74" width="22" height="16" rx="3" fill="#FFFFFF" stroke="#A78BFA" stroke-width="1.25"/>
+  <rect x="142" y="96" width="22" height="16" rx="3" fill="#FFFFFF" stroke="#8B5CF6" stroke-width="1.25"/>
+  <rect x="142" y="118" width="22" height="16" rx="3" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.25"/>
+  <circle cx="153" cy="60" r="2.5" fill="#4AABF0"/>
+  <circle cx="153" cy="82" r="2.5" fill="#8B5CF6"/>
+  <circle cx="153" cy="104" r="2.5" fill="#22D3EE"/>
+  <circle cx="153" cy="126" r="2.5" fill="#6366F1"/>
+
+  <!-- links to tiles -->
+  <g stroke="#C4B5FD" stroke-width="1.5" opacity="0.5">
+    <path d="M132 96 H142"/>
+    <path d="M132 96 C136 82 138 68 142 60"/>
+    <path d="M132 96 C136 108 138 120 142 126"/>
+  </g>
+</svg>

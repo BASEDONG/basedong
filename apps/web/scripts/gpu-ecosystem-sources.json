@@ -1,0 +1,47 @@
+[
+  {
+    "id": "nvidia",
+    "name": "NVIDIA",
+    "nameZh": "英伟达",
+    "homepage": "https://www.nvidia.com/",
+    "url": "https://www.nvidia.com/content/dam/en-zz/Solutions/homepage/v2/mfg/gtc26-logo-black.svg",
+    "file": "nvidia.svg",
+    "referer": "https://www.nvidia.com/"
+  },
+  {
+    "id": "intel",
+    "name": "Intel",
+    "nameZh": "英特尔",
+    "homepage": "https://www.intel.cn/",
+    "url": "https://www.intel.cn/content/dam/logos/intel-header-logo.svg",
+    "file": "intel.svg",
+    "referer": "https://www.intel.cn/"
+  },
+  {
+    "id": "ascend",
+    "name": "Ascend",
+    "nameZh": "昇腾",
+    "homepage": "https://www.hiascend.com/",
+    "url": "https://www.hiascend.com/_static3/logo1.BQ2XZIjU.svg",
+    "file": "ascend.svg",
+    "referer": "https://www.hiascend.com/"
+  },
+  {
+    "id": "metax",
+    "name": "MetaX",
+    "nameZh": "沐曦",
+    "homepage": "https://www.metax-tech.com/",
+    "url": "https://www.metax-tech.com/img/logo.svg",
+    "file": "metax.svg",
+    "referer": "https://www.metax-tech.com/"
+  },
+  {
+    "id": "enflame",
+    "name": "Enflame",
+    "nameZh": "燧原",
+    "homepage": "https://www.enflame-tech.com/",
+    "url": "https://www.enflame-tech.com/assets/addons/cms/frontend/images/logo.svg",
+    "file": "enflame.svg",
+    "referer": "https://www.enflame-tech.com/"
+  }
+]

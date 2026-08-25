@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 120" fill="none">
+  <defs>
+    <linearGradient id="deployGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0C030"/>
+      <stop offset="50%" stop-color="#FF9142"/>
+      <stop offset="100%" stop-color="#E88238"/>
+    </linearGradient>
+  </defs>
+  <rect x="20" y="45" width="70" height="50" rx="6" stroke="url(#deployGrad)" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <rect x="32" y="58" width="12" height="8" rx="2" fill="url(#deployGrad)" opacity="0.5"/>
+  <rect x="50" y="58" width="12" height="8" rx="2" fill="url(#deployGrad)" opacity="0.5"/>
+  <rect x="68" y="58" width="12" height="8" rx="2" fill="url(#deployGrad)" opacity="0.5"/>
+  <path d="M55 45 L55 30 Q55 18 70 18 L90 18 Q105 18 105 30 L105 45" stroke="url(#deployGrad)" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <ellipse cx="62" cy="12" rx="28" ry="10" stroke="url(#deployGrad)" stroke-width="2" fill="none" opacity="0.4"/>
+  <text x="120" y="78" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="700" fill="url(#deployGrad)">!��r</text>
+</svg>

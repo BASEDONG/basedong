@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <!-- hub links -->
+  <g stroke="#C4B5FD" stroke-width="2" stroke-linecap="round" opacity="0.5">
+    <path d="M64 88 H88"/>
+    <path d="M112 88 H136"/>
+    <path d="M100 64 V80"/>
+    <path d="M100 96 V112"/>
+  </g>
+
+  <!-- left chip -->
+  <g transform="translate(28, 68)">
+    <polygon points="28,36 0,20 28,4 56,20" fill="#EDE9FE"/>
+    <polygon points="0,20 0,34 28,50 28,36" fill="#A78BFA"/>
+    <polygon points="28,36 28,50 56,34 56,20" fill="#8B5CF6"/>
+    <circle cx="28" cy="22" r="5" fill="#F5F3FF"/>
+  </g>
+
+  <!-- center chip -->
+  <g transform="translate(72, 48)">
+    <polygon points="28,40 0,24 28,8 56,24" fill="#E0F2FE"/>
+    <polygon points="0,24 0,40 28,56 28,40" fill="#4AABF0"/>
+    <polygon points="28,40 28,56 56,40 56,24" fill="#3A9AE0"/>
+    <circle cx="28" cy="26" r="6" fill="#FFFFFF" fill-opacity="0.7"/>
+  </g>
+
+  <!-- right chip -->
+  <g transform="translate(116, 68)">
+    <polygon points="28,36 0,20 28,4 56,20" fill="#CFFAFE"/>
+    <polygon points="0,20 0,34 28,50 28,36" fill="#22D3EE"/>
+    <polygon points="28,36 28,50 56,34 56,20" fill="#0891B2"/>
+    <circle cx="28" cy="22" r="5" fill="#ECFEFF"/>
+  </g>
+
+  <!-- bottom chips -->
+  <g transform="translate(56, 112)">
+    <polygon points="20,24 0,14 20,4 40,14" fill="#E0E7FF"/>
+    <polygon points="0,14 0,26 20,36 20,24" fill="#6366F1"/>
+    <polygon points="20,24 20,36 40,26 40,14" fill="#4338CA"/>
+  </g>
+  <g transform="translate(104, 112)">
+    <polygon points="20,24 0,14 20,4 40,14" fill="#EDE9FE"/>
+    <polygon points="0,14 0,26 20,36 20,24" fill="#A78BFA"/>
+    <polygon points="20,24 20,36 40,26 40,14" fill="#8B5CF6"/>
+  </g>
+
+  <!-- hub -->
+  <circle cx="100" cy="88" r="9" fill="#fff" stroke="#8B5CF6" stroke-width="2.5"/>
+  <circle cx="100" cy="88" r="3.5" fill="#8B5CF6"/>
+</svg>

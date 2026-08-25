@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" fill="none">
+  <defs>
+    <linearGradient id="autoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5DCDE8"/>
+      <stop offset="50%" stop-color="#4AABF0"/>
+      <stop offset="100%" stop-color="#E848A0"/>
+    </linearGradient>
+  </defs>
+  <text x="20" y="82" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="url(#autoGrad)">Auto</text>
+  <rect x="200" y="18" width="100" height="36" rx="8" fill="#E848A0" opacity="0.85"/>
+  <text x="250" y="43" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">FREE</text>
+</svg>

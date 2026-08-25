@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="w2t" x1="40" y1="100" x2="160" y2="150" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1F5F9"/><stop offset="1" stop-color="#CBD5E1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- rising tokens -->
+  <g>
+    <rect x="72" y="28" width="18" height="12" rx="3" fill="#4AABF0" transform="rotate(-8 81 34)"/>
+    <rect x="94" y="22" width="18" height="12" rx="3" fill="#3A9AE0"/>
+    <rect x="116" y="28" width="18" height="12" rx="3" fill="#5DCDE8" transform="rotate(8 125 34)"/>
+    <rect x="84" y="48" width="16" height="10" rx="3" fill="#4AABF0" opacity="0.85"/>
+    <rect x="106" y="46" width="16" height="10" rx="3" fill="#3A9AE0" opacity="0.9"/>
+  </g>
+
+  <!-- stream lines -->
+  <path d="M100 78 C100 66 100 54 100 42" stroke="#4AABF0" stroke-width="1.75" stroke-linecap="round" opacity="0.4"/>
+  <path d="M100 78 C88 66 78 54 72 40" stroke="#4AABF0" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+  <path d="M100 78 C112 66 122 54 128 40" stroke="#5DCDE8" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+
+  <!-- engine layer -->
+  <g transform="translate(62, 78)">
+    <polygon points="38,16 0,34 38,52 76,34" fill="#E0F2FE"/>
+    <polygon points="0,34 0,44 38,62 38,52" fill="#4AABF0"/>
+    <polygon points="38,52 38,62 76,44 76,34" fill="#3A9AE0"/>
+    <circle cx="38" cy="36" r="6" fill="#FFFFFF" fill-opacity="0.65"/>
+  </g>
+
+  <!-- GPU -->
+  <g transform="translate(44, 118)">
+    <polygon points="56,10 0,36 56,62 112,36" fill="url(#w2t)"/>
+    <polygon points="0,36 0,48 56,74 56,62" fill="#94A3B8"/>
+    <polygon points="56,62 56,74 112,48 112,36" fill="#64748B"/>
+    <ellipse cx="72" cy="38" rx="14" ry="8" fill="#1E293B"/>
+    <ellipse cx="72" cy="38" rx="10" ry="5.5" fill="none" stroke="#4AABF0" stroke-width="2.5"/>
+  </g>
+</svg>

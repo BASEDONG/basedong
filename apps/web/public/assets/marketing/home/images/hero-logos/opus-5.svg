@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 120" fill="none">
+  <defs>
+    <linearGradient id="opusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4a574"/>
+      <stop offset="50%" stop-color="#c4956a"/>
+      <stop offset="100%" stop-color="#a67c52"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="48" stroke="url(#opusGrad)" stroke-width="2.5" fill="none" opacity="0.5"/>
+  <circle cx="60" cy="60" r="28" fill="url(#opusGrad)" opacity="0.2"/>
+  <text x="125" y="78" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="600" fill="url(#opusGrad)">Opus 5</text>
+</svg>

@@ -1,0 +1,896 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* 八色鸫 brand tokens — available site-wide for gradient utilities */
+  --sf-primary: #4aabf0;
+  --sf-primary-hover: #3a9ae0;
+  --sf-primary-gradient: linear-gradient(
+    135deg,
+    #5dcde8 0%,
+    #4aabf0 35%,
+    #e848a0 70%,
+    #ff9142 100%
+  );
+  --sf-primary-gradient-hover: linear-gradient(
+    135deg,
+    #4ec0de 0%,
+    #3a9ae0 35%,
+    #d43d90 70%,
+    #e88238 100%
+  );
+  --sf-primary-gradient-hero: linear-gradient(
+    90deg,
+    #b5d94c 0%,
+    #ff9142 14%,
+    #f2a2b3 28%,
+    #5dcde8 42%,
+    #4aabf0 57%,
+    #f0c030 71%,
+    #e848a0 85%,
+    #e84040 100%
+  );
+  --sf-tint: rgba(74, 171, 240, 0.1);
+  --sf-tint-solid: #eef6fe;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* 八色鸫 / basedong site tokens (scoped) */
+.sf-site {
+  --sf-primary: #4aabf0;
+  --sf-primary-hover: #3a9ae0;
+  --sf-primary-gradient: linear-gradient(
+    135deg,
+    #5dcde8 0%,
+    #4aabf0 35%,
+    #e848a0 70%,
+    #ff9142 100%
+  );
+  --sf-primary-gradient-hover: linear-gradient(
+    135deg,
+    #4ec0de 0%,
+    #3a9ae0 35%,
+    #d43d90 70%,
+    #e88238 100%
+  );
+  --sf-primary-gradient-hero: linear-gradient(
+    90deg,
+    #b5d94c 0%,
+    #ff9142 14%,
+    #f2a2b3 28%,
+    #5dcde8 42%,
+    #4aabf0 57%,
+    #f0c030 71%,
+    #e848a0 85%,
+    #e84040 100%
+  );
+  --sf-tint: rgba(74, 171, 240, 0.1);
+  --sf-tint-solid: #eef6fe;
+  --sf-ink: #1e293b;
+  --sf-ink-deep: #161722;
+  --sf-card-dark: #36384a;
+  --sf-card-lilac: #eef6fe;
+  --sf-footer: #f2f5fa;
+  --sf-muted: #57627f;
+  --sf-font: Roboto, "SF Pro SC", "SF Pro Display", "PingFang SC",
+    BlinkMacSystemFont, -apple-system, "Segoe UI", "Microsoft Yahei", sans-serif;
+  font-family: var(--sf-font);
+  color: var(--sf-ink);
+  background: #fff;
+}
+
+/* Match original documentElement scroll-behavior for chip / back-to-top smooth scroll */
+html:has(.sf-site) {
+  scroll-behavior: smooth;
+}
+
+.sf-site a {
+  text-decoration: none;
+}
+
+/* Brand gradient utilities — primary CTA & hero titles */
+.bd-gradient-bg {
+  background: var(--sf-primary-gradient);
+  color: #fff;
+  transition: filter 0.2s ease;
+}
+.bd-gradient-bg:hover {
+  background: var(--sf-primary-gradient-hover);
+}
+.bd-gradient-text {
+  background: var(--sf-primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bd-gradient-text-hero {
+  background: var(--sf-primary-gradient-hero);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes sf-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.sf-marquee-track {
+  animation: sf-marquee 40s linear infinite;
+}
+
+.sf-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.sf-marquee-track-reverse {
+  animation: sf-marquee 45s linear infinite reverse;
+}
+
+.sf-partners-marquee {
+  animation-name: sf-marquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: var(--partners-marquee-duration, 40s);
+}
+
+.sf-partners-marquee:hover,
+.sf-partners-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+.sf-partners-marquee-reverse {
+  animation-name: sf-marquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: reverse;
+  animation-duration: var(--partners-marquee-duration, 45s);
+}
+
+/* About honors marquee — float-left track, pause on hover */
+.sf-site .about-honors-track {
+  animation: sf-marquee 38s linear infinite;
+}
+
+.sf-site .about-honors-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes tf-spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes tf-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.tf-spin-slow {
+  animation: tf-spin-slow 20s linear infinite;
+}
+
+.tf-spin-reverse {
+  animation: tf-spin-reverse 15s linear infinite;
+}
+
+.tf-hero-grid {
+  background-image:
+    linear-gradient(90deg, rgba(74, 171, 240, 0.06) 1px, transparent 0),
+    linear-gradient(rgba(74, 171, 240, 0.06) 1px, transparent 0);
+  background-size: 56px 56px;
+}
+
+.hero-carousel-grid {
+  background-image:
+    linear-gradient(90deg, rgba(74, 171, 240, 0.07) 1px, transparent 0),
+    linear-gradient(rgba(74, 171, 240, 0.07) 1px, transparent 0);
+  background-size: 56px 56px;
+}
+
+@keyframes hero-carousel-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-12px, 16px) scale(1.05);
+  }
+}
+
+.hero-carousel-float {
+  animation: hero-carousel-float 9s ease-in-out infinite;
+}
+
+.hero-carousel-float-delayed {
+  animation: hero-carousel-float 11s ease-in-out 1.5s infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.sf-site .animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes gw-arch-arrow-pulse {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes gw-arch-arrow-pulse-rev {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-4px);
+  }
+}
+
+.sf-site .gw-arch-arrow-left {
+  animation: gw-arch-arrow-pulse 1.6s ease-in-out infinite;
+}
+
+.sf-site .gw-arch-arrow-right {
+  animation: gw-arch-arrow-pulse-rev 1.6s ease-in-out infinite;
+}
+
+/* Scenario panel: Framer-like exit / enter (blur + translateX + scale) */
+@keyframes gw-scenario-exit {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateX(calc(var(--gw-dir, 1) * -14px)) scale(0.99);
+  }
+}
+
+@keyframes gw-scenario-enter {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateX(calc(var(--gw-dir, 1) * 18px)) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes gw-scenario-icon-enter {
+  from {
+    transform: scale(0.88) rotate(-6deg);
+  }
+  to {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes gw-scenario-card-enter {
+  from {
+    opacity: 0;
+    filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.sf-site .gw-scenario-exit {
+  animation: gw-scenario-exit 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.sf-site .gw-scenario-enter {
+  animation: gw-scenario-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.sf-site .gw-scenario-icon-enter {
+  animation: gw-scenario-icon-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sf-site .gw-scenario-card-enter {
+  animation: gw-scenario-card-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* FAQ hover lift — matches live .ai-gateway-faq .faq-collapse item:hover */
+.sf-site .ai-gateway-faq .gw-faq-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(74, 171, 240, 0.06);
+  border-color: rgba(74, 171, 240, 0.18);
+}
+
+/* API docs (api-docs.siliconflow.cn) — Fumadocs tokens, route-scoped */
+.sf-docs {
+  --fd-primary: #4aabf0;
+  --fd-foreground: #0a0a0a;
+  --fd-muted-foreground: #737373;
+  --fd-background: #fff;
+  --fd-card: #fff;
+  --fd-border: rgba(158, 158, 158, 0.2);
+  --fd-secondary: #ededed;
+  --fd-accent: #e6e6e6;
+  --fd-accent-foreground: #171717;
+  --fd-muted: #f5f5f5;
+  --fd-popover: #fafafa;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: var(--fd-foreground);
+  background: var(--fd-background);
+}
+
+.sf-docs a {
+  text-decoration: none;
+}
+
+.sf-docs .prose :where(p, li, td, th) > a {
+  text-decoration: underline;
+  text-decoration-color: #4aabf0;
+  text-decoration-thickness: 1.5px;
+}
+
+.sf-docs .prose :where(h1, h2, h3, h4, h5, h6) a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Brand page (/brand) — scoped utilities from siliconflow.cn */
+.sf-brand .sf-brand-w-content {
+  width: 1434px;
+  max-width: 100%;
+}
+
+.sf-brand .sf-brand-bg-dot {
+  background: radial-gradient(circle at 1px 1px, #e8e8e8 2px, transparent 0);
+  background-size: 20px 20px;
+  background-position: -4px -4px;
+}
+
+@keyframes sf-brand-bounce-up-down {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.1rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sf-brand .sf-brand-bounce {
+  display: inline-block;
+  animation: sf-brand-bounce-up-down 2s ease-in-out infinite;
+}
+
+/* About page (/about) — mobile hero background swap */
+@media (max-width: 1024px) {
+  .sf-site .about-hero {
+    background-image: var(--about-hero-bg-mobile) !important;
+  }
+}
+
+/* 八色鸫控制台 (/me/*) — brand tokens aligned with .sf-site */
+.sf-cloud-console {
+  --sf-primary: #4aabf0;
+  --sf-primary-hover: #3a9ae0;
+  --sf-primary-gradient: linear-gradient(
+    135deg,
+    #5dcde8 0%,
+    #4aabf0 35%,
+    #e848a0 70%,
+    #ff9142 100%
+  );
+  --sf-primary-gradient-hover: linear-gradient(
+    135deg,
+    #4ec0de 0%,
+    #3a9ae0 35%,
+    #d43d90 70%,
+    #e88238 100%
+  );
+  --sf-primary-gradient-hero: linear-gradient(
+    90deg,
+    #b5d94c 0%,
+    #ff9142 14%,
+    #f2a2b3 28%,
+    #5dcde8 42%,
+    #4aabf0 57%,
+    #f0c030 71%,
+    #e848a0 85%,
+    #e84040 100%
+  );
+  --sf-tint: rgba(74, 171, 240, 0.1);
+  --sf-tint-solid: #eef6fe;
+  --sf-ink: #1e293b;
+  --sf-ink-deep: #161722;
+  --sf-footer: #f2f5fa;
+  --sf-font: Roboto, "SF Pro SC", "SF Pro Display", "PingFang SC",
+    BlinkMacSystemFont, -apple-system, "Segoe UI", "Microsoft Yahei", sans-serif;
+  --sf-cloud-primary: var(--sf-primary);
+  --sf-cloud-primary-10: var(--sf-tint);
+  --sf-cloud-primary-10-solid: var(--sf-tint-solid);
+  --sf-cloud-primary-chip: var(--sf-tint);
+  /* Force classic Tailwind RGB slate (avoid v4 oklch drift vs original) */
+  --color-slate-50: #f8fafc;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-zinc-500: #71717a;
+  font-family: var(--sf-font);
+  color: var(--sf-ink);
+  background: #fff;
+  --color-primary: var(--sf-primary);
+  --primary: var(--sf-primary);
+}
+.sf-cloud-console .text-primary {
+  color: var(--sf-primary);
+}
+.sf-cloud-console .bg-primary-20 {
+  background-color: var(--sf-tint-solid);
+}
+.sf-cloud-console .font-Inter {
+  font-family: var(--font-inter), Inter, ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.sf-cloud-console .hidden-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.sf-cloud-console .hidden-scrollbar {
+  scrollbar-width: none;
+}
+.sf-cloud-console .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.sf-cloud-console .no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Expense bill benefit summary cards — 八色鸫控制台 /me/expensebill */
+.sf-cloud-console .sf-benefit-tab {
+  width: 100%;
+}
+.sf-cloud-console .sf-benefit-tab [role="tablist"] {
+  width: 100%;
+}
+.sf-cloud-console .sf-benefit-tab [role="tab"] {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+.sf-cloud-console .sf-benefit-tab [role="tab"][aria-selected="true"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -1px;
+  left: 1px;
+  width: 100%;
+  height: 3px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background-color: var(--sf-primary);
+  z-index: 1;
+}
+.sf-cloud-console .sf-benefit-tab [role="tab"][aria-selected="true"] {
+  border-bottom-color: rgb(255, 255, 255) !important;
+}
+.sf-cloud-console .sf-benefit-tab [role="tab"]:first-child[aria-selected="true"] {
+  border-bottom-color: rgb(247, 245, 255) !important;
+}
+
+/* Match original utility used by cloud console pages */
+.sf-cloud-console .full {
+  height: 100%;
+  width: 100%;
+}
+
+/* Video playground progress — match xgplayer red played track vibe lightly */
+.sf-cloud-console .sf-video-progress::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+.sf-cloud-console .sf-video-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+.sf-cloud-console .sf-video-progress::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+.sf-cloud-console .sf-video-progress::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* Match original thin overlay-style scrollbars — hide width impact on grid */
+.sf-cloud-console main {
+  scrollbar-width: thin;
+}
+.sf-cloud-console main::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.sf-cloud-console main::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.sf-cloud-console main::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  background-clip: content-box;
+  border: 1px solid transparent;
+}
+
+/* Kill global white body background so wallpaper shows through */
+html:has(.sf-cloud-console),
+html:has(.sf-cloud-console) body {
+  background: #f2f5fa !important;
+  color: var(--sf-ink, #1e293b);
+}
+
+
+/* Playground chat motion - match Ant Design */
+@keyframes sf-chat-slide-up-in {
+  0% {
+    transform: scaleY(0.8);
+    transform-origin: 0% 0%;
+    opacity: 0;
+  }
+  100% {
+    transform: scaleY(1);
+    transform-origin: 0% 0%;
+    opacity: 1;
+  }
+}
+@keyframes sf-chat-slide-up-out {
+  0% {
+    transform: scaleY(1);
+    transform-origin: 0% 0%;
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.8);
+    transform-origin: 0% 0%;
+    opacity: 0;
+  }
+}
+.sf-cloud-console .sf-chat-dropdown-enter {
+  animation: sf-chat-slide-up-in 0.2s cubic-bezier(0.23, 1, 0.32, 1) both;
+  transform-origin: 0% 0%;
+}
+.sf-cloud-console .sf-chat-dropdown-leave {
+  animation: sf-chat-slide-up-out 0.2s cubic-bezier(0.755, 0.05, 0.855, 0.06) both;
+  transform-origin: 0% 0%;
+  pointer-events: none;
+}
+.sf-cloud-console .sf-chat-ease-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sf-cloud-console .sf-chat-ease-ant {
+  transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* Playground chat param sliders - match Ant Design handle/track */
+.sf-cloud-console .sf-chat-slider {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.sf-cloud-console .sf-chat-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+.sf-cloud-console .sf-chat-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(204, 166, 255);
+  cursor: pointer;
+}
+.sf-cloud-console .sf-chat-slider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border: none;
+}
+.sf-cloud-console .sf-chat-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(204, 166, 255);
+  cursor: pointer;
+}
+
+/* Inviter Ant-like table — 八色鸫控制台 /me/campaigns/inviter */
+.sf-cloud-console .inviter-ant-table {
+  color: #1e293b;
+  font-size: 14px;
+  line-height: 22px;
+}
+.sf-cloud-console .inviter-ant-table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+.sf-cloud-console .inviter-ant-table thead th:last-child {
+  border-top-right-radius: 8px;
+}
+.sf-cloud-console .inviter-ant-table thead th {
+  border-bottom: 1px solid #e2e8f0;
+}
+.sf-cloud-console .inviter-ant-table tbody td {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Inviter campaign rules markdown — 八色鸫控制台 /me/campaigns/inviter */
+.sf-cloud-console .inviter-rules-md h4 {
+  font-size: 19.6px;
+  font-weight: 600;
+  color: #000;
+  line-height: 31.36px;
+  margin: 19.6px 0 7.84px;
+}
+.sf-cloud-console .inviter-rules-md h5 {
+  font-size: 16.8px;
+  font-weight: 600;
+  color: #000;
+  line-height: 26.88px;
+  margin: 16.8px 0 6.72px;
+}
+.sf-cloud-console .inviter-rules-md p {
+  font-size: 14px;
+  font-weight: 400;
+  color: #000;
+  line-height: 22.4px;
+  margin: 5.6px 0;
+}
+.sf-cloud-console .inviter-rules-md ul {
+  font-size: 14px;
+  color: #000;
+  line-height: 22.4px;
+  margin: 14px 0;
+  padding: 0 0 0 22.4px;
+  list-style: disc;
+}
+.sf-cloud-console .inviter-rules-md li {
+  font-size: 14px;
+  color: #000;
+  line-height: 22.4px;
+  margin: 0 0 7px;
+}
+.sf-cloud-console .inviter-rules-md a {
+  color: color-mix(in srgb, var(--sf-primary) 70%, transparent);
+  text-decoration: none;
+}
+.sf-cloud-console .inviter-rules-md a:hover {
+  color: var(--sf-primary);
+}
+.sf-cloud-console .inviter-rules-md strong {
+  font-weight: 600;
+}
+
+/* Real-name campaign rules — 八色鸫控制台 /me/campaigns/real-name */
+.sf-cloud-console .real-name-rules-md {
+  max-width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1e293b;
+  line-height: 22.4px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.sf-cloud-console .real-name-rules-md h4 {
+  font-size: 19.6px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 31.36px;
+  margin: 19.6px 0 7.84px;
+}
+.sf-cloud-console .real-name-rules-md h5 {
+  font-size: 16.8px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 26.88px;
+  margin: 16.8px 0 6.72px;
+}
+.sf-cloud-console .real-name-rules-md p {
+  font-size: 14px;
+  font-weight: 400;
+  color: #1e293b;
+  line-height: 22.4px;
+  margin: 5.6px 0;
+}
+.sf-cloud-console .real-name-rules-md ul {
+  font-size: 14px;
+  color: #1e293b;
+  line-height: 22.4px;
+  margin: 14px 0;
+  padding: 0 0 0 22.4px;
+  list-style: disc;
+}
+.sf-cloud-console .real-name-rules-md li {
+  font-size: 14px;
+  color: #1e293b;
+  line-height: 22.4px;
+  margin: 0 0 7px;
+}
+.sf-cloud-console .real-name-rules-md a {
+  color: color-mix(in srgb, var(--sf-primary) 70%, transparent);
+  text-decoration: none;
+}
+.sf-cloud-console .real-name-rules-md a:hover {
+  color: var(--sf-primary);
+}
+.sf-cloud-console .real-name-rules-md strong {
+  font-weight: 700;
+}

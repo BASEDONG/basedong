@@ -1,0 +1,11 @@
+<svg width="78" height="38" viewBox="0 0 78 38" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="kr+">
+  <!-- 2�4 grid, 8 distinct colors -->
+  <rect x="0" y="0" width="18" height="18" rx="2.5" fill="#B5D94C" transform="rotate(-2 9 9)"/>
+  <rect x="20" y="0" width="18" height="18" rx="2.5" fill="#FF9142" transform="rotate(1.5 29 9)"/>
+  <rect x="40" y="0" width="18" height="18" rx="2.5" fill="#F2A2B3" transform="rotate(-1 49 9)"/>
+  <rect x="60" y="0" width="18" height="18" rx="2.5" fill="#5DCDE8" transform="rotate(2 69 9)"/>
+  <rect x="0" y="20" width="18" height="18" rx="2.5" fill="#E84040" transform="rotate(1 9 29)"/>
+  <rect x="20" y="20" width="18" height="18" rx="2.5" fill="#4AABF0" transform="rotate(-1.5 29 29)"/>
+  <rect x="40" y="20" width="18" height="18" rx="2.5" fill="#F0C030" transform="rotate(2 49 29)"/>
+  <rect x="60" y="20" width="18" height="18" rx="2.5" fill="#E848A0" transform="rotate(-2 69 29)"/>
+</svg>

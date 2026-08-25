@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240" fill="none">
+  <defs>
+    <linearGradient id="f1-a" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#C4A7FF"/><stop offset="1" stop-color="#8B6AD6"/>
+    </linearGradient>
+    <linearGradient id="f1-c" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#5DCDE8"/><stop offset="1" stop-color="#3A9AE0"/>
+    </linearGradient>
+  </defs>
+
+  <g stroke="#94A3B8" stroke-width="2" stroke-linecap="round" opacity="0.45">
+    <path d="M96 128 H140"/>
+    <path d="M180 128 H224"/>
+    <path d="M160 96 V112"/>
+    <path d="M160 144 V160"/>
+  </g>
+
+  <!-- chip A left -->
+  <g transform="translate(48, 88)">
+    <polygon points="48,56 0,32 48,8 96,32" fill="#EDE3FF"/>
+    <polygon points="0,32 0,48 48,72 48,56" fill="#A78BFA"/>
+    <polygon points="48,56 48,72 96,48 96,32" fill="#8B6AD6"/>
+    <polygon points="48,40 28,30 48,20 68,30" fill="url(#f1-a)"/>
+    <circle cx="48" cy="34" r="6" fill="#F5F3FF"/>
+  </g>
+
+  <!-- chip B center -->
+  <g transform="translate(112, 56)">
+    <polygon points="48,64 0,40 48,16 96,40" fill="#E0F2FE"/>
+    <polygon points="0,40 0,60 48,84 48,64" fill="#4AABF0"/>
+    <polygon points="48,64 48,84 96,60 96,40" fill="#3A9AE0"/>
+    <polygon points="48,52 20,38 48,24 76,38" fill="url(#f1-c)"/>
+    <circle cx="48" cy="38" r="7" fill="#FFFFFF" fill-opacity="0.7"/>
+  </g>
+
+  <!-- chip C right -->
+  <g transform="translate(176, 88)">
+    <polygon points="48,56 0,32 48,8 96,32" fill="#CFFAFE"/>
+    <polygon points="0,32 0,48 48,72 48,56" fill="#22D3EE"/>
+    <polygon points="48,56 48,72 96,48 96,32" fill="#0891B2"/>
+    <circle cx="48" cy="34" r="6" fill="#ECFEFF"/>
+  </g>
+
+  <g>
+    <rect x="142" y="36" width="36" height="22" rx="5" fill="#4AABF0"/>
+    <text x="160" y="51" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" font-weight="700" fill="#fff">GPU</text>
+    <rect x="72" y="168" width="32" height="20" rx="5" fill="#A78BFA"/>
+    <rect x="216" y="168" width="32" height="20" rx="5" fill="#22D3EE"/>
+  </g>
+
+  <circle cx="160" cy="128" r="10" fill="#fff" stroke="#4AABF0" stroke-width="2.5"/>
+  <circle cx="160" cy="128" r="4" fill="#4AABF0"/>
+</svg>

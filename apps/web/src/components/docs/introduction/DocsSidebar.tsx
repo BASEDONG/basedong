@@ -1,0 +1,327 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+
+import {
+  ChevronDownIcon,
+  LanguagesIcon,
+  PanelLeftIcon,
+  SearchIcon,
+} from "@/components/docs/shared/icons";
+import { cn } from "@/lib/utils";
+import { APP_ROUTES, RESERVED_PAGE_ENABLED } from "@/lib/routes";
+
+import { logoHref, logoSrc, navItems } from "./content";
+import type { NavFolder, NavItem, NavLink, NavSection } from "./content-types";
+
+function MethodBadge({ method }: { method: "GET" | "POST" }) {
+  return (
+    <span
+      className={cn(
+        "ms-auto shrink-0 text-nowrap font-mono text-xs font-medium",
+        method === "POST" ? "text-blue-600" : "text-green-600",
+      )}
+    >
+      {method}
+    </span>
+  );
+}
+
+function NavRail({ active }: { active?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-y-3 start-2.5 z-[2] w-px md:inset-y-2",
+        active ? "bg-[#4AABF0]" : "bg-transparent",
+      )}
+    />
+  );
+}
+
+function NavLinkRow({
+  item,
+  indented = true,
+}: {
+  item: NavLink;
+  indented?: boolean;
+}) {
+  const external = item.href.startsWith("http");
+  const className = cn(
+    "relative flex flex-row items-center gap-2 rounded-lg p-2 text-start text-sm [overflow-wrap:anywhere] transition-colors md:py-1.5 [&_svg]:size-4 [&_svg]:shrink-0",
+    indented ? "ps-6" : "px-2",
+    item.active
+      ? "bg-[color-mix(in_oklab,#4AABF0_10%,transparent)] text-[#4AABF0]"
+      : "text-[#737373] hover:bg-[#e6e6e6]/50 hover:text-[#171717]/80",
+  );
+
+  const body = (
+    <>
+      {indented ? <NavRail active={item.active} /> : null}
+      <span className="min-w-0 flex-1">{item.label}</span>
+      {item.method ? <MethodBadge method={item.method} /> : null}
+    </>
+  );
+
+  if (external) {
+    return (
+      <a href={item.href} className={className} target="_blank" rel="noreferrer">
+        {body}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      href={item.href}
+      className={className}
+      data-active={item.active || undefined}
+      aria-current={item.active ? "page" : undefined}
+    >
+      {body}
+    </Link>
+  );
+}
+
+function NestedLinks({
+  links,
+  indented = true,
+  groupRail = true,
+}: {
+  links: NavLink[];
+  indented?: boolean;
+  groupRail?: boolean;
+}) {
+  if (!links.length) return null;
+  return (
+    <div className="relative flex flex-col">
+      {indented && groupRail ? (
+        <div className="absolute inset-y-1 start-2.5 w-px bg-[rgba(158,158,158,0.2)]" />
+      ) : null}
+      {links.map((child) => (
+        <NavLinkRow
+          key={child.href + child.label}
+          item={child}
+          indented={indented}
+        />
+      ))}
+    </div>
+  );
+}
+
+function SectionBlock({
+  section,
+  first = false,
+  shallow = false,
+  groupRail = true,
+}: {
+  section: NavSection;
+  first?: boolean;
+  shallow?: boolean;
+  groupRail?: boolean;
+}) {
+  return (
+    <div>
+      <p
+        className={cn(
+          "mb-1.5 inline-flex items-center gap-2 px-2 text-sm font-medium text-[#0a0a0a] empty:mb-0",
+          shallow ? "" : "ps-6",
+          first ? "mt-0" : "mt-6",
+        )}
+      >
+        {section.label}
+      </p>
+      <NestedLinks
+        links={section.children}
+        indented={!shallow}
+        groupRail={groupRail}
+      />
+    </div>
+  );
+}
+
+function FolderBlock({ folder }: { folder: NavFolder }) {
+  const [open, setOpen] = useState(folder.defaultOpen);
+  const linkChildren = folder.children.filter(
+    (c): c is NavLink => c.type === "link",
+  );
+  const sectionChildren = folder.children.filter(
+    (c): c is NavSection => c.type === "section",
+  );
+
+  return (
+    <div>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="relative flex w-full flex-row items-center gap-2 rounded-lg p-2 text-start text-sm text-[#0a0a0a] [overflow-wrap:anywhere] transition-colors hover:bg-[#e6e6e6]/50 hover:text-[#171717]/80 md:py-1.5 [&_svg]:size-4 [&_svg]:shrink-0"
+      >
+        <span className="min-w-0 flex-1">{folder.label}</span>
+        <ChevronDownIcon
+          className={cn(
+            "ms-auto size-4 shrink-0 transition-transform",
+            open ? "rotate-0" : "-rotate-90",
+          )}
+        />
+      </button>
+      {open ? (
+        <div className="relative flex flex-col">
+          {linkChildren.length > 0 || sectionChildren.length > 0 ? (
+            <div className="absolute inset-y-1 start-2.5 w-px bg-[rgba(158,158,158,0.2)]" />
+          ) : null}
+          <NestedLinks links={linkChildren} groupRail={false} />
+          {sectionChildren.map((child, index) => (
+            <SectionBlock
+              key={child.label}
+              section={child}
+              first={index === 0 && linkChildren.length === 0}
+              groupRail={false}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function renderItem(item: NavItem) {
+  if (item.type === "folder") return <FolderBlock key={item.label} folder={item} />;
+  if (item.type === "section") {
+    return (
+      <SectionBlock
+        key={item.label}
+        section={item}
+        shallow={item.label === "更多"}
+      />
+    );
+  }
+  return (
+    <NavLinkRow
+      key={item.href + item.label}
+      item={item}
+      indented={item.label !== "更新公告"}
+    />
+  );
+}
+
+export function DocsSidebar({
+  className,
+  onNavigate,
+}: {
+  className?: string;
+  onNavigate?: () => void;
+}) {
+  const [langOpen, setLangOpen] = useState(false);
+  const items = useMemo(() => {
+    if (RESERVED_PAGE_ENABLED) return navItems;
+    return navItems.map((item) => {
+      if (item.type !== "section" || item.label !== "更多") return item;
+      return {
+        ...item,
+        children: item.children.filter((child) => child.href !== APP_ROUTES.reserved),
+      };
+    });
+  }, []);
+
+  return (
+    <aside
+      id="nd-sidebar"
+      className={cn(
+        "flex h-full w-full flex-col border-[#9e9e9e]/20 bg-white text-sm text-[#0a0a0a] md:border-e",
+        className,
+      )}
+    >
+      <div className="flex flex-col gap-3 p-4 pb-2">
+        <div className="flex max-md:hidden">
+          <a
+            href={logoHref}
+            className="inline-flex items-center gap-2.5 text-[15px] font-medium"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Image
+              src={logoSrc}
+              alt="八色鸫 basedong"
+              width={200}
+              height={32}
+              className="h-auto w-[200px]"
+              priority
+            />
+          </a>
+          <button
+            type="button"
+            aria-label="Collapse Sidebar"
+            className="mb-auto ms-auto inline-flex items-center justify-center rounded-md p-1.5 text-[#737373] transition-colors hover:bg-[#e6e6e6] hover:text-[#171717] max-md:hidden [&_svg]:size-[18px]"
+          >
+            <PanelLeftIcon />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="inline-flex h-9 w-full items-center gap-2 rounded-lg border border-[#9e9e9e]/20 bg-[#ededed]/50 p-1.5 ps-2 text-sm text-[#737373] transition-colors hover:bg-[#e6e6e6] hover:text-[#171717]"
+        >
+          <SearchIcon className="size-4 shrink-0" />
+          <span>搜索</span>
+          <span className="ms-auto inline-flex gap-0.5">
+            <kbd className="rounded-md border border-[#9e9e9e]/20 bg-white px-1.5 text-sm leading-[22px]">
+              Ctrl
+            </kbd>
+            <kbd className="rounded-md border border-[#9e9e9e]/20 bg-white px-1.5 text-sm leading-[22px]">
+              K
+            </kbd>
+          </span>
+        </button>
+      </div>
+
+      <nav
+        className="min-h-0 flex-1 overflow-y-auto px-4 [scrollbar-width:thin]"
+        onClick={(e) => {
+          if ((e.target as HTMLElement).closest("a") && onNavigate) onNavigate();
+        }}
+      >
+        <div className="flex flex-col pb-2">
+          {items.map((item) => renderItem(item))}
+        </div>
+      </nav>
+
+      <div className="relative flex flex-col border-t border-[#9e9e9e]/20 px-4 py-3">
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            aria-label="切换语言"
+            aria-haspopup="dialog"
+            aria-expanded={langOpen}
+            onClick={() => setLangOpen((v) => !v)}
+            className="me-1.5 inline-flex items-center justify-center gap-1.5 rounded-md p-1.5 text-sm text-[#0a0a0a] transition-colors hover:bg-[#e6e6e6] hover:text-[#171717]"
+          >
+            <LanguagesIcon className="size-4" />
+          </button>
+        </div>
+        {langOpen ? (
+          <div
+            role="dialog"
+            className="absolute bottom-14 end-3 z-50 w-[220px] overflow-hidden rounded-lg border border-[#9e9e9e]/20 bg-[#fafafa] shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
+          >
+            <button
+              type="button"
+              className="flex w-full px-3 py-2 text-left text-sm text-[#0a0a0a] hover:bg-[#e6e6e6]"
+              onClick={() => setLangOpen(false)}
+            >
+              中文
+            </button>
+            <button
+              type="button"
+              className="flex w-full px-3 py-2 text-left text-sm text-[#737373] hover:bg-[#e6e6e6]"
+              onClick={() => setLangOpen(false)}
+            >
+              English
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </aside>
+  );
+}
