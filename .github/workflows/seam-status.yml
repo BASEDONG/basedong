@@ -1,7 +1,6 @@
 name: Seam status probe
 
-# Black-box Backend HTTP seam: GET /api/status must return success=true
-# after building this fork via docker-compose.dev.yml (BASEDONG/basedong#2).
+# Black-box Backend HTTP seam after building this fork via docker-compose.dev.yml.
 
 on:
   push:
@@ -19,7 +18,7 @@ concurrency:
 
 jobs:
   probe:
-    name: compose.dev build + /api/status
+    name: compose.dev build + status + auth
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -33,27 +32,27 @@ jobs:
       - name: Wait for GET /api/status success
         run: |
           set -euo pipefail
-          # Guard against CRLF if the script was edited on Windows
-          sed -i 's/\r$//' scripts/probe-status.sh
-          chmod +x scripts/probe-status.sh
           for i in $(seq 1 60); do
             echo "attempt $i"
             if body="$(curl -fsS --max-time 5 http://localhost:3000/api/status 2>/tmp/curl.err)"; then
-              echo "$body" | head -c 200
-              echo
               if echo "$body" | grep -q '"success"[[:space:]]*:[[:space:]]*true'; then
-                echo "ok: /api/status success=true"
+                echo "ok: /api/status"
                 exit 0
               fi
-              echo "body missing success=true"
             else
               echo "curl failed: $(cat /tmp/curl.err || true)"
             fi
             sleep 5
           done
-          docker compose -f docker-compose.dev.yml ps || true
           docker compose -f docker-compose.dev.yml logs --no-color --tail=200 new-api || true
           exit 1
+
+      - name: Probe auth + API Key seam
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-auth.sh
+          chmod +x scripts/probe-auth.sh
+          BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-auth.sh
 
       - name: Tear down
         if: always()
