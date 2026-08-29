@@ -56,6 +56,19 @@ Control-plane probe (Backend HTTP seam):
 
 Expect HTTP 200 and JSON `"success": true` from `GET /api/status`.
 
+Auth + API Key (register/login/self/token):
+
+```bash
+BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-auth.sh
+```
+
+Retail loop (mock Channel + Relay + 额度 deduct + negative paths). Use the seam overlay so the mock OpenAI upstream shares the Docker network and quota updates are synchronous:
+
+```bash
+docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml up -d --build
+BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-retail.sh
+```
+
 First Admin login uses upstream’s setup wizard on that same origin (stock Admin UI, no brand skin). Do not replace Admin with basedong Web.
 
 ## Relationship to basedong Web

@@ -1,6 +1,7 @@
 name: Seam status probe
 
-# Black-box Backend HTTP seam after building this fork via docker-compose.dev.yml.
+# Black-box Backend HTTP seam after building this fork via docker-compose.dev.yml
+# (+ seam overlay: mock OpenAI upstream for retail Relay proof).
 
 on:
   push:
@@ -18,7 +19,7 @@ concurrency:
 
 jobs:
   probe:
-    name: compose.dev build + status + auth
+    name: compose.dev build + status + auth + retail
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -26,8 +27,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - name: Build and start stack from this fork
-        run: docker compose -f docker-compose.dev.yml up -d --build
+      - name: Build and start stack (fork + mock upstream)
+        run: docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml up -d --build
 
       - name: Wait for GET /api/status success
         run: |
@@ -44,7 +45,25 @@ jobs:
             fi
             sleep 5
           done
-          docker compose -f docker-compose.dev.yml logs --no-color --tail=200 new-api || true
+          docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml logs --no-color --tail=200 || true
+          exit 1
+
+      - name: Wait for mock OpenAI
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            if docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T mock-openai wget -q -O- http://127.0.0.1:18080/ >/dev/null 2>&1; then
+              echo "ok: mock-openai"
+              exit 0
+            fi
+            # alpine python image may lack wget — try python
+            if docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T mock-openai python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18080/')" 2>/dev/null; then
+              echo "ok: mock-openai"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml logs --no-color --tail=50 mock-openai || true
           exit 1
 
       - name: Probe auth + API Key seam
@@ -54,6 +73,13 @@ jobs:
           chmod +x scripts/probe-auth.sh
           BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-auth.sh
 
+      - name: Probe retail loop (Channel + Relay + 额度)
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-retail.sh
+          chmod +x scripts/probe-retail.sh
+          BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-retail.sh
+
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.dev.yml down -v
+        run: docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml down -v
