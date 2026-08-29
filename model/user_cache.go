@@ -67,6 +67,12 @@ func invalidateUserCache(userId int) error {
 	return common.RedisDelKey(getUserCacheKey(userId))
 }
 
+// InvalidateUserCache clears the Redis user snapshot so the next read hydrates from DB.
+// Use after admin wallet overrides that bypass atomic quota delta helpers.
+func InvalidateUserCache(userId int) error {
+	return invalidateUserCache(userId)
+}
+
 func populateUserCache(user User) error {
 	if !common.RedisEnabled {
 		return nil

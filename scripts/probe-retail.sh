@@ -173,11 +173,28 @@ if [ "$bad_code" = "200" ] && grep -q '"choices"' /tmp/relay-bad.json; then
 fi
 
 echo "negative: insufficient 额度"
+# Prefer subtract (updates Redis quota cache). Admin "override" alone can leave a stale cache.
+drain="$quota_after"
+if [ -z "$drain" ] || [ "$drain" -le 0 ]; then
+  drain=100000
+fi
 curl -fsS -X POST "$BASE/api/user/manage" \
   -H "Authorization: Bearer $root_token" \
   -H 'Content-Type: application/json' \
-  -d "{\"id\":$user_id,\"action\":\"add_quota\",\"mode\":\"override\",\"value\":0}" \
+  -d "{\"id\":$user_id,\"action\":\"add_quota\",\"mode\":\"subtract\",\"value\":$drain}" \
   | grep -q '"success"[[:space:]]*:[[:space:]]*true'
+# Confirm wallet is empty from API view
+emptied="$(curl -fsS "$BASE/api/user/self" -H "Authorization: Bearer $user_token")"
+q_empty="$(echo "$emptied" | json_num quota)"
+echo "quota_after_drain=$q_empty"
+if [ -n "$q_empty" ] && [ "$q_empty" -gt 0 ]; then
+  echo "drain left quota=$q_empty; forcing override+cache miss via second subtract of remainder" >&2
+  curl -fsS -X POST "$BASE/api/user/manage" \
+    -H "Authorization: Bearer $root_token" \
+    -H 'Content-Type: application/json' \
+    -d "{\"id\":$user_id,\"action\":\"add_quota\",\"mode\":\"subtract\",\"value\":$q_empty}" \
+    | grep -q '"success"[[:space:]]*:[[:space:]]*true' || true
+fi
 zero_code="$(curl -sS -o /tmp/relay-zero.json -w '%{http_code}' -X POST "$BASE/v1/chat/completions" \
   -H "Authorization: Bearer $api_key" \
   -H 'Content-Type: application/json' \
