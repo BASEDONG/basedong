@@ -1,4 +1,4 @@
-﻿import { BRAND } from "@/lib/assets";
+import { BRAND } from "@/lib/assets";
 
 export const ASSET = {
   loginBg: "/assets/auth/login/images/login.png",
@@ -15,8 +15,8 @@ export const LINKS = {
 } as const;
 
 export const COPY = {
-  title: "欢迎登录 SiliconFlow",
-  brandName: "硅基流动",
+  title: "欢迎登录 八色鸫",
+  brandName: "八色鸫",
   tagline: "做所有人的 AI。",
   feature1: "1 个 API，100+ 主流模型轻松调用",
   feature2Lead: "低延迟",
@@ -31,6 +31,8 @@ export const COPY = {
   invitePlaceholder: "邀请码（仅支持手机注册，选填）",
   emailPlaceholder: "账号邮箱",
   emailCodePlaceholder: "验证码",
+  usernamePlaceholder: "用户名",
+  passwordPlaceholder: "密码",
   getCode: "获取验证码",
   agreePrefix: "我同意",
   termsLabel: "平台使用协议",
@@ -38,6 +40,11 @@ export const COPY = {
   privacyLabel: "隐私政策",
   registerLogin: "注册 / 登录",
   login: "登录",
+  register: "注册",
+  submitting: "请稍候…",
+  needAgree: "请先同意平台使用协议和隐私政策",
+  authFailed: "登录失败，请检查用户名和密码",
+  phoneBackendHint: "短信登录尚未对接 Backend，请使用用户名密码：",
   keepLogin: "30天内保持登录",
   wechatLogin: "微信登录",
   emailLogin: "邮箱登录",

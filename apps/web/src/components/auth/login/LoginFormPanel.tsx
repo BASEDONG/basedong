@@ -1,13 +1,16 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import {
   ChevronDownIcon,
   MailIcon,
   WeChatIcon,
 } from "@/components/auth/shared/icons";
+import { login, register, BackendError } from "@/lib/backend/client";
+import { APP_ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { ASSET, COPY, LINKS } from "./content";
 
@@ -51,10 +54,16 @@ function PurpleCheckbox({
 }
 
 export function LoginFormPanel({ mode }: LoginFormPanelProps) {
+  const router = useRouter();
   const [agree, setAgree] = useState(false);
   const [keepLogin, setKeepLogin] = useState(true);
   const [countdown, setCountdown] = useState(0);
   const [countryOpen, setCountryOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function onGetCode() {
     if (countdown > 0) return;
@@ -70,8 +79,38 @@ export function LoginFormPanel({ mode }: LoginFormPanelProps) {
     }, 1000);
   }
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (mode === "phone") {
+      setError(COPY.phoneBackendHint);
+      return;
+    }
+    if (!agree) {
+      setError(COPY.needAgree);
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      if (authMode === "register") {
+        await register(username.trim(), password);
+        await login(username.trim(), password);
+      } else {
+        await login(username.trim(), password);
+      }
+      void keepLogin;
+      router.push(APP_ROUTES.consoleModels);
+    } catch (err) {
+      const msg =
+        err instanceof BackendError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : COPY.authFailed;
+      setError(msg);
+    } finally {
+      setBusy(false);
+    }
   }
 
   const isPhone = mode === "phone";
@@ -94,7 +133,12 @@ export function LoginFormPanel({ mode }: LoginFormPanelProps) {
       <form className="text-sm" onSubmit={onSubmit}>
         {isPhone ? (
           <>
-            {/* Phone: Ant-style input-group — addon + bordered input */}
+            <p className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+              {COPY.phoneBackendHint}{" "}
+              <Link href={LINKS.emailLogin} className="text-[#4AABF0] underline">
+                {COPY.emailLogin}
+              </Link>
+            </p>
             <div className="mb-6 flex h-10 w-full">
               <div className="relative flex h-10 w-[68px] shrink-0 items-center justify-center rounded-l-[8px] border border-r-0 border-slate-300 bg-slate-50 px-[11px]">
                 <button
@@ -106,88 +150,94 @@ export function LoginFormPanel({ mode }: LoginFormPanelProps) {
                   <span>{COPY.countryCode}</span>
                   <ChevronDownIcon className="size-3 text-slate-400" />
                 </button>
-                {countryOpen ? (
-                  <ul className="absolute left-0 top-full z-20 mt-1 min-w-[80px] rounded-md border border-slate-200 bg-white py-1 shadow-md">
-                    <li>
-                      <button
-                        type="button"
-                        className="block w-full px-3 py-1.5 text-left text-sm hover:bg-slate-50"
-                        onClick={() => setCountryOpen(false)}
-                      >
-                        +86
-                      </button>
-                    </li>
-                  </ul>
-                ) : null}
               </div>
               <input
                 type="tel"
-                required
+                disabled
                 placeholder={COPY.phonePlaceholder}
-                className="h-10 min-w-0 flex-1 rounded-r-[8px] border border-slate-300 bg-white px-[11px] text-base leading-6 text-slate-800 outline-none placeholder:text-zinc-500 focus:z-10 focus:border-[#4AABF0]"
+                className="h-10 min-w-0 flex-1 rounded-r-[8px] border border-slate-300 bg-slate-50 px-[11px] text-base leading-6 text-slate-400 outline-none"
               />
             </div>
-
-            {/* SMS code: input + slate-50 addon */}
             <div className="mb-6 flex h-10 w-full">
               <input
                 type="text"
-                required
+                disabled
                 maxLength={6}
                 placeholder={COPY.smsPlaceholder}
-                className="h-10 min-w-0 flex-1 rounded-l-[8px] border border-r-0 border-slate-300 bg-white px-[11px] text-base leading-6 text-slate-800 outline-none placeholder:text-zinc-500 focus:z-10 focus:border-[#4AABF0]"
+                className="h-10 min-w-0 flex-1 rounded-l-[8px] border border-r-0 border-slate-300 bg-slate-50 px-[11px] text-base leading-6 text-slate-400 outline-none"
               />
               <div className="flex h-10 w-[95px] shrink-0 items-center justify-center rounded-r-[8px] border border-slate-300 bg-slate-50 px-[11px]">
                 <button
                   type="button"
                   onClick={onGetCode}
-                  disabled={countdown > 0}
-                  className="h-8 whitespace-nowrap p-0 text-sm leading-[22px] text-[#4AABF0] transition disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled
+                  className="h-8 whitespace-nowrap p-0 text-sm leading-[22px] text-slate-400"
                 >
-                  {countdown > 0 ? `${countdown}秒后重发` : COPY.getCode}
+                  {COPY.getCode}
                 </button>
               </div>
-            </div>
-
-            <div className="mb-2">
-              <input
-                type="text"
-                placeholder={COPY.invitePlaceholder}
-                className="h-10 w-full rounded-[8px] border border-slate-300 bg-white px-[11px] text-base leading-6 text-slate-800 outline-none placeholder:text-zinc-500 focus:border-[#4AABF0]"
-              />
             </div>
           </>
         ) : (
           <>
-            <div className="mb-6">
-              <input
-                type="email"
-                required
-                placeholder={COPY.emailPlaceholder}
-                className="h-10 w-full rounded-[8px] border border-slate-300 bg-white px-[11px] text-base leading-6 text-slate-800 outline-none placeholder:text-zinc-500 focus:border-[#4AABF0]"
-              />
+            <div className="mb-4 flex gap-4 text-sm">
+              <button
+                type="button"
+                className={cn(
+                  "border-b-2 pb-1",
+                  authMode === "login"
+                    ? "border-[#4AABF0] text-slate-900"
+                    : "border-transparent text-slate-500",
+                )}
+                onClick={() => setAuthMode("login")}
+              >
+                {COPY.login}
+              </button>
+              <button
+                type="button"
+                className={cn(
+                  "border-b-2 pb-1",
+                  authMode === "register"
+                    ? "border-[#4AABF0] text-slate-900"
+                    : "border-transparent text-slate-500",
+                )}
+                onClick={() => setAuthMode("register")}
+              >
+                {COPY.register}
+              </button>
             </div>
-            <div className="mb-2 flex h-10 w-full">
+            <div className="mb-6">
               <input
                 type="text"
                 required
-                maxLength={6}
-                placeholder={COPY.emailCodePlaceholder}
-                className="h-10 min-w-0 flex-1 rounded-l-[8px] border border-r-0 border-slate-300 bg-white px-[11px] text-base leading-6 text-slate-800 outline-none placeholder:text-zinc-500 focus:z-10 focus:border-[#4AABF0]"
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={COPY.usernamePlaceholder}
+                className="h-10 w-full rounded-[8px] border border-slate-300 bg-white px-[11px] text-base leading-6 text-slate-800 outline-none placeholder:text-zinc-500 focus:border-[#4AABF0]"
               />
-              <div className="flex h-10 w-[95px] shrink-0 items-center justify-center rounded-r-[8px] border border-slate-300 bg-slate-50 px-[11px]">
-                <button
-                  type="button"
-                  onClick={onGetCode}
-                  disabled={countdown > 0}
-                  className="h-8 whitespace-nowrap p-0 text-sm leading-[22px] text-[#4AABF0] transition disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {countdown > 0 ? `${countdown}秒后重发` : COPY.getCode}
-                </button>
-              </div>
+            </div>
+            <div className="mb-2">
+              <input
+                type="password"
+                required
+                autoComplete={
+                  authMode === "register" ? "new-password" : "current-password"
+                }
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={COPY.passwordPlaceholder}
+                className="h-10 w-full rounded-[8px] border border-slate-300 bg-white px-[11px] text-base leading-6 text-slate-800 outline-none placeholder:text-zinc-500 focus:border-[#4AABF0]"
+              />
             </div>
           </>
         )}
+
+        {error ? (
+          <p className="mb-2 text-xs text-red-600" role="alert">
+            {error}
+          </p>
+        ) : null}
 
         <div className="mb-2 flex h-8 items-baseline text-sm leading-[22px] text-slate-800">
           <PurpleCheckbox id="sf-agree" checked={agree} onChange={setAgree} />
@@ -200,8 +250,7 @@ export function LoginFormPanel({ mode }: LoginFormPanelProps) {
               href={LINKS.terms}
               target="_blank"
               rel="noreferrer"
-              className="text-[#4AABF0] transition-colors duration-300 hover:opacity-80"
-              onClick={(e) => e.stopPropagation()}
+              className="text-[#4AABF0]"
             >
               {COPY.termsLabel}
             </a>
@@ -210,8 +259,7 @@ export function LoginFormPanel({ mode }: LoginFormPanelProps) {
               href={LINKS.privacy}
               target="_blank"
               rel="noreferrer"
-              className="text-[#4AABF0] transition-colors duration-300 hover:opacity-80"
-              onClick={(e) => e.stopPropagation()}
+              className="text-[#4AABF0]"
             >
               {COPY.privacyLabel}
             </a>
@@ -220,42 +268,48 @@ export function LoginFormPanel({ mode }: LoginFormPanelProps) {
 
         <button
           type="submit"
-          className="bd-gradient-bg mb-2.5 inline-flex h-10 w-full items-center justify-center rounded-[8px] px-[15px] text-base leading-6 text-white shadow-[0_2px_0_0_rgba(74,171,240,0.12)] transition"
+          disabled={busy || isPhone}
+          className="mb-3 flex h-10 w-full items-center justify-center rounded-[8px] bg-[#4AABF0] text-base font-medium text-white transition hover:bg-[#3a9ae0] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPhone ? COPY.registerLogin : COPY.login}
+          {busy
+            ? COPY.submitting
+            : isPhone
+              ? COPY.registerLogin
+              : authMode === "register"
+                ? COPY.register
+                : COPY.login}
         </button>
 
-        <div className="mb-8 flex h-8 items-center text-sm leading-[22px] text-slate-800">
-          <PurpleCheckbox
-            id="sf-keep"
-            checked={keepLogin}
-            onChange={setKeepLogin}
-          />
-          <label htmlFor="sf-keep" className="cursor-pointer select-none pl-2">
-            {COPY.keepLogin}
-          </label>
-        </div>
+        {!isPhone ? (
+          <div className="mb-6 flex h-8 items-baseline text-sm leading-[22px] text-slate-800">
+            <PurpleCheckbox
+              id="sf-keep"
+              checked={keepLogin}
+              onChange={setKeepLogin}
+            />
+            <label htmlFor="sf-keep" className="cursor-pointer select-none pl-2">
+              {COPY.keepLogin}
+            </label>
+          </div>
+        ) : null}
 
-        <div className="flex w-full items-center justify-center gap-4">
-          <button
-            type="button"
-            className="flex h-10 flex-1 items-center justify-center gap-2 rounded-[8px] border border-slate-300 bg-white px-[15px] text-base leading-6 text-slate-800 shadow-[0_2px_0_0_rgba(0,0,0,0.02)] transition hover:border-slate-400"
-          >
-            <WeChatIcon />
+        <div className="flex items-center justify-center gap-6 text-sm text-slate-500">
+          <span className="inline-flex items-center gap-1 opacity-50">
+            <WeChatIcon className="size-5" />
             {COPY.wechatLogin}
-          </button>
+          </span>
           {isPhone ? (
             <Link
               href={LINKS.emailLogin}
-              className="flex h-10 flex-1 items-center justify-center gap-2 rounded-[8px] border border-slate-300 bg-white px-[15px] text-base leading-6 text-slate-800 shadow-[0_2px_0_0_rgba(0,0,0,0.02)] transition hover:border-slate-400"
+              className="inline-flex items-center gap-1 text-[#4AABF0]"
             >
-              <MailIcon className="size-4" />
+              <MailIcon className="size-5" />
               {COPY.emailLogin}
             </Link>
           ) : (
             <Link
               href={LINKS.phoneLogin}
-              className="flex h-10 flex-1 items-center justify-center gap-2 rounded-[8px] border border-slate-300 bg-white px-[15px] text-base leading-6 text-slate-800 shadow-[0_2px_0_0_rgba(0,0,0,0.02)] transition hover:border-slate-400"
+              className="inline-flex items-center gap-1 text-[#4AABF0]"
             >
               {COPY.smsLogin}
             </Link>

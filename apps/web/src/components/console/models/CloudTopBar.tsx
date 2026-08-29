@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { BrandAvatar } from "@/components/marketing/shared/BrandAvatar";
+import { logout } from "@/lib/backend/client";
 import { APP_ROUTES } from "@/lib/routes";
-import { ASSET } from "./content";
 import { BellIcon, MenuFoldIcon, MenuUnfoldIcon } from "../shared/icons";
 
 interface CloudTopBarProps {
@@ -17,10 +17,9 @@ interface CloudTopBarProps {
 }
 
 const AVATAR_MENU = [
-  { label: "API 密钥", href: "#" },
-  { label: "余额充值", href: "#" },
-  { label: "费用明细", href: "#" },
-  { label: "退出登录", href: "#" },
+  { label: "API 密钥", href: APP_ROUTES.consoleAccountAk },
+  { label: "充值", href: APP_ROUTES.consoleExpenseBill },
+  { label: "账单", href: APP_ROUTES.consoleBills },
 ] as const;
 
 const NOTIFICATION = {
@@ -29,13 +28,15 @@ const NOTIFICATION = {
   body: "为了更好地保护您的个人信息与隐私安全，提供更优质、安全的服务，我们根据最新法律法规要求，制定并上线了全新的《隐私政策》。本次上线的《隐私政策》详细说明了以下核心内容：我们如何收集、使用和保护您的个人信息；我们与第三方共享信息的具体情况；您如何行使查阅、更正、删除个人信息以及注销账号等权利。我们强烈建议您仔细阅读更新版 《隐私政策》 的全部内容。如您继续使用我们的服务，即表示您已充分阅读、理解并同意受该政策的约束。我们将一如既往地坚守安全底线，为您提供安全可靠的服务体验。感谢您对八色鸫的信任与支持！",
 };
 
+const CONSOLE_AVATAR_SEED = "basedong-console-user";
+
 export function CloudTopBar({
   onToggleCollapse,
   title = "模型广场",
   notificationCount = 1,
   collapsed = false,
 }: CloudTopBarProps) {
-  const [avatarFailed, setAvatarFailed] = useState(false);
+  const router = useRouter();
   const [bellOpen, setBellOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
@@ -62,6 +63,12 @@ export function CloudTopBar({
     };
   }, [bellOpen, avatarOpen]);
 
+  async function onLogout() {
+    setAvatarOpen(false);
+    await logout();
+    router.replace(APP_ROUTES.loginEmail);
+  }
+
   return (
     <header
       ref={rootRef}
@@ -86,20 +93,6 @@ export function CloudTopBar({
         </div>
 
         <div className="flex h-full items-center gap-3 pr-3">
-          <Link
-            href={APP_ROUTES.consoleCampaignInviter}
-            className="hidden cursor-pointer sm:block"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={ASSET.campaign}
-              alt="year gift"
-              width={400}
-              height={37}
-              className="mt-[-4px]"
-            />
-          </Link>
-
           <div className="relative">
             <button
               type="button"
@@ -147,18 +140,7 @@ export function CloudTopBar({
               }}
               className="relative flex size-8 cursor-pointer items-center justify-center overflow-hidden rounded-full"
             >
-              {avatarFailed ? (
-                <span className="size-full bg-slate-300" />
-              ) : (
-                <Image
-                  src={ASSET.avatar}
-                  alt="avatar"
-                  width={32}
-                  height={32}
-                  className="size-full object-cover"
-                  onError={() => setAvatarFailed(true)}
-                />
-              )}
+              <BrandAvatar name={CONSOLE_AVATAR_SEED} size={32} />
             </button>
 
             {avatarOpen ? (
@@ -173,6 +155,13 @@ export function CloudTopBar({
                     {item.label}
                   </a>
                 ))}
+                <button
+                  type="button"
+                  className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 hover:text-[var(--sf-cloud-primary)]"
+                  onClick={() => void onLogout()}
+                >
+                  退出登录
+                </button>
               </div>
             ) : null}
           </div>
