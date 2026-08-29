@@ -10,7 +10,8 @@ set -euo pipefail
 BASE="${BASEDONG_API_BASE:-http://localhost:3000}"
 BASE="${BASE%/}"
 MOCK_UPSTREAM="${MOCK_UPSTREAM:-http://mock-openai:18080}"
-USER="u$(date +%s | tail -c 8)"
+# Username max 20; distinct prefix from probe-auth.sh to avoid same-second collisions in CI
+USER="r$(date +%s | tail -c 7)$((RANDOM % 1000))"
 PASS="ProbePass123!"
 ROOT_USER="rootprobe"
 ROOT_PASS="RootPass123!"
@@ -41,9 +42,13 @@ else
 fi
 
 echo "register $USER"
-curl -fsS -X POST "$BASE/api/user/register" \
+reg_out="$(curl -sS -X POST "$BASE/api/user/register" \
   -H 'Content-Type: application/json' \
-  -d "{\"username\":\"$USER\",\"password\":\"$PASS\"}" | grep -q '"success"[[:space:]]*:[[:space:]]*true'
+  -d "{\"username\":\"$USER\",\"password\":\"$PASS\"}")"
+echo "$reg_out" | grep -q '"success"[[:space:]]*:[[:space:]]*true' || {
+  echo "register failed: $reg_out" >&2
+  exit 1
+}
 
 echo "login user"
 user_login="$(curl -fsS -X POST "$BASE/api/user/login" \
