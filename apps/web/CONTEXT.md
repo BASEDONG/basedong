@@ -38,3 +38,15 @@ _Avoid_: CLONED_ROUTES (deprecated alias)
 **resolveLocalHref**:
 Function that rewrites known external SiliconFlow URLs to local `APP_ROUTES` paths.
 _Avoid_: toLocalHref, link mapper
+
+**Console**:
+The customer control plane under `/me/*` (models, billing, playground, API Keys). Not the operator Admin UI.
+_Avoid_: Admin, dashboard
+
+**词元**:
+Customer-facing name for billed model usage units. See Backend glossary; never use “Token” in UI copy when you mean 词元.
+_Avoid_: Token, 令牌
+
+**API Key**:
+Customer credential shown in Console account settings. Created/managed via Backend; not named Token in basedong UI.
+_Avoid_: Token, 令牌
