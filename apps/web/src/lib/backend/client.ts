@@ -97,3 +97,86 @@ export async function logout(): Promise<void> {
 export async function getSelf(): Promise<BackendUser> {
   return backendFetch<BackendUser>("/api/user/self", { method: "GET" });
 }
+
+export type BackendApiKey = {
+  id: number;
+  name: string;
+  key: string;
+  created_time: number;
+  expired_time?: number;
+  status?: number;
+  remain_quota?: number;
+  unlimited_quota?: boolean;
+};
+
+type PageData<T> = {
+  items?: T[];
+  total?: number;
+  page?: number;
+  page_size?: number;
+};
+
+export async function listApiKeys(
+  page = 1,
+  size = 100,
+): Promise<BackendApiKey[]> {
+  const data = await backendFetch<PageData<BackendApiKey>>(
+    `/api/token/?p=${page}&size=${size}`,
+    { method: "GET" },
+  );
+  return data?.items ?? [];
+}
+
+export async function createApiKey(name: string): Promise<void> {
+  await backendFetch<unknown>("/api/token/", {
+    method: "POST",
+    body: JSON.stringify({
+      name,
+      remain_quota: 0,
+      expired_time: -1,
+      unlimited_quota: true,
+      model_limits_enabled: false,
+      model_limits: "",
+      allow_ips: "",
+      group: "",
+    }),
+  });
+}
+
+export async function fetchApiKeySecret(id: number): Promise<string> {
+  const data = await backendFetch<{ key: string }>(`/api/token/${id}/key`, {
+    method: "POST",
+  });
+  if (!data?.key) {
+    throw new BackendError("Missing API Key secret in response");
+  }
+  return data.key;
+}
+
+export async function updateApiKeyName(
+  id: number,
+  name: string,
+): Promise<void> {
+  const current = await backendFetch<BackendApiKey>(`/api/token/${id}`, {
+    method: "GET",
+  });
+  await backendFetch<unknown>("/api/token/", {
+    method: "PUT",
+    body: JSON.stringify({
+      id,
+      name,
+      remain_quota: current.remain_quota ?? 0,
+      expired_time: current.expired_time ?? -1,
+      unlimited_quota: current.unlimited_quota ?? true,
+      model_limits_enabled: false,
+      model_limits: "",
+      allow_ips: "",
+      group: "",
+      status: current.status ?? 1,
+    }),
+  });
+}
+
+export async function deleteApiKey(id: number): Promise<void> {
+  await backendFetch<unknown>(`/api/token/${id}`, { method: "DELETE" });
+}

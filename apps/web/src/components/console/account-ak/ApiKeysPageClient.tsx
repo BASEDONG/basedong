@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ConsoleShell } from "../shared/ConsoleShell";
 import { ApiKeysTable } from "./ApiKeysTable";
 import { ApiKeysWarningAlert } from "./ApiKeysWarningAlert";
@@ -9,31 +9,45 @@ import { MessageToast } from "./MessageToast";
 import {
   createButtonLabel,
   deleteModalCopy,
-  initialKeys,
   pageTitle,
   toasts,
   type ApiKeyRow,
 } from "./content";
+import {
+  BackendError,
+  createApiKey,
+  deleteApiKey,
+  fetchApiKeySecret,
+  listApiKeys,
+  updateApiKeyName,
+} from "@/lib/backend/client";
 
-function formatNow() {
-  const d = new Date();
+function formatTs(sec: number) {
+  if (!sec) return "—";
+  const d = new Date(sec * 1000);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-function mockKey() {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let body = "";
-  for (let i = 0; i < 40; i++) {
-    body += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return `sk-${body}`;
+function toRow(item: {
+  id: number;
+  name: string;
+  key: string;
+  created_time: number;
+}): ApiKeyRow {
+  return {
+    id: String(item.id),
+    key: item.key,
+    description: item.name,
+    createdAt: formatTs(item.created_time),
+  };
 }
 
 export function ApiKeysPageClient() {
   const [collapsed, setCollapsed] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [keys, setKeys] = useState<ApiKeyRow[]>(initialKeys);
+  const [keys, setKeys] = useState<ApiKeyRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{
     message: string;
     type?: "success" | "error";
@@ -45,6 +59,24 @@ export function ApiKeysPageClient() {
     },
     [],
   );
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const items = await listApiKeys();
+      setKeys(items.map(toRow));
+    } catch (err) {
+      const msg =
+        err instanceof BackendError ? err.message : "加载 API Key 失败";
+      showToast(msg, "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   return (
     <ConsoleShell
@@ -61,17 +93,35 @@ export function ApiKeysPageClient() {
             open={modalOpen}
             onClose={() => setModalOpen(false)}
             onCreate={(description) => {
-              setKeys((list) => [
-                {
-                  id: `mock-${Date.now()}`,
-                  key: mockKey(),
-                  description,
-                  createdAt: formatNow(),
-                },
-                ...list,
-              ]);
-              setModalOpen(false);
-              showToast(toasts.createSuccess);
+              void (async () => {
+                const name = description.trim() || `key-${Date.now()}`;
+                try {
+                  await createApiKey(name);
+                  const items = await listApiKeys();
+                  const created =
+                    items.find((i) => i.name === name) ?? items[0];
+                  if (created) {
+                    const secret = await fetchApiKeySecret(created.id);
+                    setKeys(
+                      items.map((i) =>
+                        i.id === created.id
+                          ? toRow({ ...i, key: secret })
+                          : toRow(i),
+                      ),
+                    );
+                  } else {
+                    await reload();
+                  }
+                  setModalOpen(false);
+                  showToast(toasts.createSuccess);
+                } catch (err) {
+                  const msg =
+                    err instanceof BackendError
+                      ? err.message
+                      : "创建 API Key 失败";
+                  showToast(msg, "error");
+                }
+              })();
             }}
           />
           <MessageToast
@@ -94,23 +144,67 @@ export function ApiKeysPageClient() {
       </div>
 
       <ApiKeysWarningAlert />
-      <ApiKeysTable
-        keys={keys}
-        onCopied={() => showToast(toasts.copySuccess)}
-        onDeleteMismatch={() =>
-          showToast(deleteModalCopy.mismatchError, "error")
-        }
-        onUpdateDescription={(id, description) => {
-          setKeys((list) =>
-            list.map((k) => (k.id === id ? { ...k, description } : k)),
-          );
-          showToast(toasts.updateSuccess);
-        }}
-        onDelete={(id) => {
-          setKeys((list) => list.filter((k) => k.id !== id));
-          showToast(toasts.deleteSuccess);
-        }}
-      />
+      {loading ? (
+        <p className="text-sm text-slate-500">加载中…</p>
+      ) : (
+        <ApiKeysTable
+          keys={keys}
+          onCopied={() => showToast(toasts.copySuccess)}
+          onDeleteMismatch={() =>
+            showToast(deleteModalCopy.mismatchError, "error")
+          }
+          onUpdateDescription={(id, description) => {
+            void (async () => {
+              try {
+                await updateApiKeyName(Number(id), description);
+                setKeys((list) =>
+                  list.map((k) =>
+                    k.id === id ? { ...k, description } : k,
+                  ),
+                );
+                showToast(toasts.updateSuccess);
+              } catch (err) {
+                const msg =
+                  err instanceof BackendError
+                    ? err.message
+                    : "更新描述失败";
+                showToast(msg, "error");
+              }
+            })();
+          }}
+          onDelete={(id) => {
+            void (async () => {
+              try {
+                await deleteApiKey(Number(id));
+                setKeys((list) => list.filter((k) => k.id !== id));
+                showToast(toasts.deleteSuccess);
+              } catch (err) {
+                const msg =
+                  err instanceof BackendError
+                    ? err.message
+                    : "删除失败";
+                showToast(msg, "error");
+              }
+            })();
+          }}
+          onReveal={async (id) => {
+            const row = keys.find((k) => k.id === id);
+            if (!row || !row.key.includes("*")) return row?.key;
+            try {
+              const secret = await fetchApiKeySecret(Number(id));
+              setKeys((list) =>
+                list.map((k) => (k.id === id ? { ...k, key: secret } : k)),
+              );
+              return secret;
+            } catch (err) {
+              const msg =
+                err instanceof BackendError ? err.message : "读取密钥失败";
+              showToast(msg, "error");
+              return null;
+            }
+          }}
+        />
+      )}
     </ConsoleShell>
   );
 }

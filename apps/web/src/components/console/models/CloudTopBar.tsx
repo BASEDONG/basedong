@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandAvatar } from "@/components/marketing/shared/BrandAvatar";
-import { logout } from "@/lib/backend/client";
+import { logout, getSelf } from "@/lib/backend/client";
 import { APP_ROUTES } from "@/lib/routes";
 import { BellIcon, MenuFoldIcon, MenuUnfoldIcon } from "../shared/icons";
 
@@ -39,7 +39,21 @@ export function CloudTopBar({
   const router = useRouter();
   const [bellOpen, setBellOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
+  const [quotaLabel, setQuotaLabel] = useState<string | null>(null);
   const rootRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const self = await getSelf();
+        if (typeof self.quota === "number") {
+          setQuotaLabel(`额度 ${self.quota}`);
+        }
+      } catch {
+        // ignore — RequireAuth already gates the page
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     if (!bellOpen && !avatarOpen) return;
@@ -88,8 +102,11 @@ export function CloudTopBar({
       </button>
 
       <div className="flex h-full flex-1 items-center justify-between">
-        <div className="whitespace-nowrap text-lg font-bold text-slate-700">
-          {title}
+        <div className="flex items-center gap-4 whitespace-nowrap">
+          <div className="text-lg font-bold text-slate-700">{title}</div>
+          {quotaLabel ? (
+            <div className="text-sm font-normal text-slate-500">{quotaLabel}</div>
+          ) : null}
         </div>
 
         <div className="flex h-full items-center gap-3 pr-3">

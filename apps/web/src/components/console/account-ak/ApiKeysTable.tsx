@@ -23,6 +23,8 @@ interface ApiKeysTableProps {
   onUpdateDescription: (id: string, description: string) => void;
   onCopied: () => void;
   onDeleteMismatch: () => void;
+  /** Resolve full API Key secret when list only has a masked value. */
+  onReveal?: (id: string) => Promise<string | null | undefined>;
 }
 
 /** Live mask: keep first 4 + last 4, asterisks in the middle. */
@@ -37,6 +39,7 @@ export function ApiKeysTable({
   onUpdateDescription,
   onCopied,
   onDeleteMismatch,
+  onReveal,
 }: ApiKeysTableProps) {
   const [revealedAll, setRevealedAll] = useState(false);
   const [revealedIds, setRevealedIds] = useState<Set<string>>(() => new Set());
@@ -48,25 +51,36 @@ export function ApiKeysTable({
     [revealedAll, revealedIds],
   );
 
-  const toggleRow = useCallback((id: string) => {
-    setRevealedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
+  const toggleRow = useCallback(
+    (id: string) => {
+      void (async () => {
+        if (onReveal) await onReveal(id);
+        setRevealedIds((prev) => {
+          const next = new Set(prev);
+          if (next.has(id)) next.delete(id);
+          else next.add(id);
+          return next;
+        });
+      })();
+    },
+    [onReveal],
+  );
 
   const copyKey = useCallback(
     async (row: ApiKeyRow) => {
       try {
-        await navigator.clipboard.writeText(row.key);
+        let value = row.key;
+        if (onReveal && value.includes("*")) {
+          const secret = await onReveal(row.id);
+          if (secret) value = secret;
+        }
+        await navigator.clipboard.writeText(value);
         onCopied();
       } catch {
         // ignore
       }
     },
-    [onCopied],
+    [onCopied, onReveal],
   );
 
   return (
