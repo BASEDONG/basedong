@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { benefitSummary, copy, type BenefitTab } from "./content";
+import { copy, type BenefitTab } from "./content";
 import {
   BalanceCoinIcon,
   CouponTicketIcon,
@@ -11,6 +11,8 @@ import {
 interface BenefitSummaryTabsProps {
   active: BenefitTab;
   onChange: (tab: BenefitTab) => void;
+  /** Live 额度 from Backend getSelf; null while loading. */
+  quota: number | null;
 }
 
 function ActiveTopBar() {
@@ -25,7 +27,10 @@ function ActiveTopBar() {
 export function BenefitSummaryTabs({
   active,
   onChange,
+  quota,
 }: BenefitSummaryTabsProps) {
+  const quotaText = quota === null ? "—" : String(quota);
+
   return (
     <div role="tablist" className="sf-benefit-tab mb-4 flex w-full items-center">
       <button
@@ -46,21 +51,13 @@ export function BenefitSummaryTabs({
             <div className="flex items-center">
               <div className="flex flex-wrap items-center gap-2 text-lg font-semibold">
                 <BalanceCoinIcon className="size-6 shrink-0" />
-                <span>{copy.balanceLabel}</span>
+                <span>{copy.quotaLabel}</span>
               </div>
             </div>
             <div className="flex h-10 items-baseline gap-2">
               <div className="text-[32px] font-semibold text-[var(--sf-cloud-primary)]">
-                <span className="mr-1 text-2xl">¥</span>
-                <span>{benefitSummary.balance}</span>
+                <span>{quotaText}</span>
               </div>
-              <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-                {`（剩余可透支额度 `}
-                <span className="font-semibold">
-                  {`¥ ${benefitSummary.overdraft}`}
-                </span>
-                ）
-              </span>
             </div>
           </div>
         </div>
@@ -79,20 +76,13 @@ export function BenefitSummaryTabs({
         )}
       >
         {active === "coupon" ? <ActiveTopBar /> : null}
-        <div className="relative flex min-w-[200px] flex-1 items-center justify-between border-none p-6 py-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-1 text-lg font-semibold text-slate-800">
+        <div className="flex w-full items-center overflow-hidden border-none p-6 py-4 text-slate-800">
+          <div className="flex w-full flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2 text-lg font-semibold">
               <CouponTicketIcon className="size-6 shrink-0" />
               <span>{copy.couponLabel}</span>
             </div>
-            <div className="flex h-10 items-end">
-              <div className="flex h-8 min-w-10 items-end text-[32px] font-semibold leading-none text-[var(--sf-cloud-primary)]/60">
-                {benefitSummary.coupons}
-              </div>
-              <span className="ml-2 text-sm text-gray-600">
-                {copy.couponSuffix}
-              </span>
-            </div>
+            <div className="text-sm text-slate-500">{copy.couponSuffix}</div>
           </div>
         </div>
       </button>
@@ -110,20 +100,13 @@ export function BenefitSummaryTabs({
         )}
       >
         {active === "package" ? <ActiveTopBar /> : null}
-        <div className="relative flex min-w-[200px] flex-1 items-center justify-between border-none p-6 py-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-1 text-lg font-semibold text-slate-800">
+        <div className="flex w-full items-center overflow-hidden border-none p-6 py-4 text-slate-800">
+          <div className="flex w-full flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2 text-lg font-semibold">
               <PackageBoxIcon className="size-6 shrink-0" />
               <span>{copy.packageLabel}</span>
             </div>
-            <div className="flex h-10 items-end">
-              <div className="flex h-8 min-w-10 items-end text-[32px] font-semibold leading-none text-[var(--sf-cloud-primary)]/60">
-                {benefitSummary.packages}
-              </div>
-              <span className="ml-2 text-sm text-gray-600">
-                {copy.packageSuffix}
-              </span>
-            </div>
+            <div className="text-sm text-slate-500">{copy.packageSuffix}</div>
           </div>
         </div>
       </button>

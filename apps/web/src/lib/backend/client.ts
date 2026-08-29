@@ -180,3 +180,19 @@ export async function updateApiKeyName(
 export async function deleteApiKey(id: number): Promise<void> {
   await backendFetch<unknown>(`/api/token/${id}`, { method: "DELETE" });
 }
+
+/** Redeem an Admin-issued 兑换码; returns 额度 credited (not new balance). */
+export async function redeemCode(key: string): Promise<number> {
+  const trimmed = key.trim();
+  if (!trimmed) {
+    throw new BackendError("兑换码不能为空");
+  }
+  const data = await backendFetch<number>("/api/user/topup", {
+    method: "POST",
+    body: JSON.stringify({ key: trimmed }),
+  });
+  if (typeof data !== "number") {
+    throw new BackendError("兑换响应缺少额度增量");
+  }
+  return data;
+}

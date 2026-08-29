@@ -1,4 +1,4 @@
-﻿export const pageTitle = "余额充值";
+export const pageTitle = "充值";
 
 export const ASSET = {
   alipay: "/assets/console/expensebill/images/zfb.svg",
@@ -82,6 +82,14 @@ export const copy = {
   segmentAll: "全部",
   segmentAvailable: "可用",
   redeemCenter: "兑换中心",
+  redeemInputLabel: "兑换码",
+  redeemPlaceholder: "请输入管理员发放的兑换码",
+  redeemSubmit: "兑换",
+  redeemSubmitting: "兑换中…",
+  redeemCancel: "取消",
+  redeemSuccess: (n: number) => `兑换成功，额度 +${n}`,
+  redeemFailed: "兑换失败，请检查兑换码是否有效",
+  quotaLabel: "额度",
   autoTitle: "开通支付宝自动充值",
   autoAlerts: [
     "该功能由支付宝提供，签约后授权平台在用户余额低于设定阈值时自动充值，可随时取消",

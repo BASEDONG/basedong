@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { getSelf } from "@/lib/backend/client";
 import { ConsoleShell } from "../shared/ConsoleShell";
 import { AutoRechargeForm } from "./AutoRechargeForm";
 import { BalanceWarningModal, type WarningMode } from "./BalanceWarningModal";
@@ -55,6 +56,20 @@ export function ExpenseBillPageClient() {
   const [warningOpen, setWarningOpen] = useState(false);
   const [warningMode, setWarningMode] = useState<WarningMode>("auto");
   const [warningThreshold, setWarningThreshold] = useState(1);
+  const [quota, setQuota] = useState<number | null>(null);
+
+  const refreshQuota = useCallback(async () => {
+    try {
+      const self = await getSelf();
+      setQuota(typeof self.quota === "number" ? self.quota : 0);
+    } catch {
+      setQuota(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshQuota();
+  }, [refreshQuota]);
 
   useEffect(() => {
     setBenefit(tabFromSearch(searchParams.get("tab")));
@@ -97,7 +112,11 @@ export function ExpenseBillPageClient() {
       }
     >
       <div className="flex h-full w-full min-w-[1000px] flex-col gap-2">
-        <BenefitSummaryTabs active={benefit} onChange={onBenefitChange} />
+        <BenefitSummaryTabs
+          active={benefit}
+          onChange={onBenefitChange}
+          quota={quota}
+        />
 
         <div className="hidden-scrollbar h-full flex-1 overflow-auto">
           <div className="flex h-full flex-col gap-6">
@@ -147,6 +166,9 @@ export function ExpenseBillPageClient() {
               <CouponPackagePanel
                 filter={segment}
                 onFilterChange={setSegment}
+                onRedeemed={() => {
+                  void refreshQuota();
+                }}
               />
             )}
 
