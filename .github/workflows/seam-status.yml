@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   probe:
-    name: compose.dev build + status + auth + retail
+    name: compose.dev build + status + auth + retail + redeem
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -79,6 +79,13 @@ jobs:
           sed -i 's/\r$//' scripts/probe-retail.sh
           chmod +x scripts/probe-retail.sh
           BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-retail.sh
+
+      - name: Probe redemption codes credit 额度
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-redeem.sh
+          chmod +x scripts/probe-redeem.sh
+          BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-redeem.sh
 
       - name: Tear down
         if: always()

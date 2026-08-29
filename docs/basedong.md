@@ -69,6 +69,12 @@ docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml up -d --buil
 BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-retail.sh
 ```
 
+Redemption codes (compliance → Admin create → user redeem → 额度↑):
+
+```bash
+BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-redeem.sh
+```
+
 First Admin login uses upstream’s setup wizard on that same origin (stock Admin UI, no brand skin). Do not replace Admin with basedong Web.
 
 ## Relationship to basedong Web
