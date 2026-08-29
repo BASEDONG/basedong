@@ -1,0 +1,50 @@
+name: Seam status probe
+
+# Black-box Backend HTTP seam: GET /api/status must return success=true
+# after building this fork via docker-compose.dev.yml (BASEDONG/basedong#2).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seam-status-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    name: compose.dev build + /api/status
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Build and start stack from this fork
+        run: docker compose -f docker-compose.dev.yml up -d --build
+
+      - name: Wait for GET /api/status success
+        run: |
+          set -euo pipefail
+          chmod +x scripts/probe-status.sh
+          for i in $(seq 1 90); do
+            echo "attempt $i"
+            if ./scripts/probe-status.sh http://localhost:3000; then
+              exit 0
+            fi
+            sleep 5
+          done
+          docker compose -f docker-compose.dev.yml ps || true
+          docker compose -f docker-compose.dev.yml logs --no-color --tail=200 new-api || true
+          exit 1
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.dev.yml down -v

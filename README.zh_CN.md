@@ -4,6 +4,8 @@
 
 # New API
 
+> **basedong 后端 fork**（`BASEDONG/basedong-api`）：AGPL、上游同步与 `/api/status` 缝合探测见 [docs/basedong.md](./docs/basedong.md)。管理台保持上游原版（不改皮）。
+
 🍥 **新一代大模型网关与AI资产管理系统**
 
 <p align="center">

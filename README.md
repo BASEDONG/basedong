@@ -4,6 +4,8 @@
 
 # New API
 
+> **basedong Backend fork** (`BASEDONG/basedong-api`): see [docs/basedong.md](./docs/basedong.md) for AGPL/upstream cadence and the `/api/status` seam probe. Admin UI stays stock (no brand skin).
+
 🍥 **Next-Generation LLM Gateway and AI Asset Management System**
 
 <p align="center">
