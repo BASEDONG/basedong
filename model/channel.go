@@ -452,8 +452,17 @@ func BatchInsertChannels(channels []Channel) error {
 			tx.Rollback()
 			return err
 		}
-		for _, channel_ := range chunk {
-			if err := channel_.AddAbilities(tx); err != nil {
+		for i := range chunk {
+			if chunk[i].Id == 0 {
+				tx.Rollback()
+				return fmt.Errorf("channel insert did not return id (name=%s)", chunk[i].Name)
+			}
+			// Prefer DB row so Ability.Enabled follows persisted status/defaults.
+			if err := tx.First(&chunk[i], "id = ?", chunk[i].Id).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+			if err := chunk[i].AddAbilities(tx); err != nil {
 				tx.Rollback()
 				return err
 			}

@@ -84,16 +84,48 @@ test -n "$quota_before"
 test "$quota_before" -gt 0
 
 echo "add mock OpenAI Channel → $MOCK_UPSTREAM"
-# Idempotent-ish: ignore failure if a prior probe left a channel (CI uses fresh volume)
-ch_out="$(curl -fsS -X POST "$BASE/api/channel/" \
+ch_payload="{\"mode\":\"single\",\"channel\":{\"type\":1,\"name\":\"mock-openai\",\"key\":\"sk-mock\",\"base_url\":\"$MOCK_UPSTREAM\",\"models\":\"$MODEL\",\"group\":\"default\",\"status\":1,\"priority\":1,\"weight\":100,\"auto_ban\":1}}"
+ch_out="$(curl -sS -X POST "$BASE/api/channel/" \
   -H "Authorization: Bearer $root_token" \
   -H 'Content-Type: application/json' \
-  -d "{\"mode\":\"single\",\"channel\":{\"type\":1,\"name\":\"mock-openai\",\"key\":\"sk-mock\",\"base_url\":\"$MOCK_UPSTREAM\",\"models\":\"$MODEL\",\"group\":\"default\",\"status\":1,\"priority\":0,\"weight\":0}}" || true)"
-if ! echo "$ch_out" | grep -q '"success"[[:space:]]*:[[:space:]]*true'; then
-  echo "channel create response: $ch_out" >&2
+  -d "$ch_payload")"
+echo "channel create: $ch_out"
+echo "$ch_out" | grep -q '"success"[[:space:]]*:[[:space:]]*true' || {
+  echo "channel create failed" >&2
+  exit 1
+}
+
+echo "list channels / models_enabled"
+ch_list="$(curl -fsS "$BASE/api/channel/?p=1&page_size=20" -H "Authorization: Bearer $root_token")"
+echo "channels: $(echo "$ch_list" | head -c 800)"
+models_en="$(curl -fsS "$BASE/api/channel/models_enabled" -H "Authorization: Bearer $root_token" || true)"
+echo "models_enabled: $(echo "$models_en" | head -c 400)"
+if ! echo "$ch_list" | grep -q "$MODEL"; then
+  echo "channel list missing model $MODEL — dumping DB and aborting" >&2
+  docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T postgres \
+    psql -U root -d new-api -c 'SELECT id, name, models, status, "group" FROM channels;' >&2 || true
+  docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T postgres \
+    psql -U root -d new-api -c 'SELECT * FROM abilities;' >&2 || true
   exit 1
 fi
+# Rebuild abilities from persisted row (covers older insert paths)
+ch_id="$(echo "$ch_list" | sed -n 's/.*"id"[[:space:]]*:[[:space:]]*\([0-9][0-9]*\).*/\1/p' | head -n1)"
+if [ -n "$ch_id" ]; then
+  upd="$(curl -sS -X PUT "$BASE/api/channel/" \
+    -H "Authorization: Bearer $root_token" \
+    -H 'Content-Type: application/json' \
+    -d "{\"id\":$ch_id,\"type\":1,\"name\":\"mock-openai\",\"key\":\"sk-mock\",\"base_url\":\"$MOCK_UPSTREAM\",\"models\":\"$MODEL\",\"group\":\"default\",\"priority\":1,\"weight\":100,\"auto_ban\":1}")"
+  echo "channel update: $upd"
+fi
 
+dump_channel_state() {
+  echo "--- channel/ability dump ---" >&2
+  docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T postgres \
+    psql -U root -d new-api -c 'SELECT id, name, models, status, "group" FROM channels;' >&2 || true
+  docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T postgres \
+    psql -U root -d new-api -c 'SELECT * FROM abilities;' >&2 || true
+  docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml logs --no-color --tail=80 new-api >&2 || true
+}
 echo "create API Key"
 curl -fsS -X POST "$BASE/api/token/" \
   -H "Authorization: Bearer $user_token" \
@@ -115,9 +147,10 @@ relay_code="$(curl -sS -o /tmp/relay-ok.json -w '%{http_code}' -X POST "$BASE/v1
   -d "{\"model\":\"$MODEL\",\"messages\":[{\"role\":\"user\",\"content\":\"hi\"}],\"max_tokens\":16}")"
 echo "relay_http=$relay_code"
 head -c 400 /tmp/relay-ok.json; echo
-test "$relay_code" = "200"
-grep -q '"choices"' /tmp/relay-ok.json
-
+if [ "$relay_code" != "200" ] || ! grep -q '"choices"' /tmp/relay-ok.json; then
+  dump_channel_state
+  exit 1
+fi
 after="$(curl -fsS "$BASE/api/user/self" -H "Authorization: Bearer $user_token")"
 quota_after="$(echo "$after" | json_num quota)"
 used_after="$(echo "$after" | json_num used_quota)"

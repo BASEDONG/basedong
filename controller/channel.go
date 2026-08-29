@@ -626,6 +626,12 @@ func AddChannel(c *gin.Context) {
 		return
 	}
 
+	// Go zero-value Status is 0 (=disabled). AddAbilities uses the in-memory
+	// Status, so an omitted status would insert enabled=false abilities even if
+	// the DB column default is 1. Default to enabled on add.
+	if addChannelRequest.Channel.Status == 0 {
+		addChannelRequest.Channel.Status = common.ChannelStatusEnabled
+	}
 	addChannelRequest.Channel.CreatedTime = common.GetTimestamp()
 	keys := make([]string, 0)
 	switch addChannelRequest.Mode {
@@ -696,11 +702,19 @@ func AddChannel(c *gin.Context) {
 		}
 		channels = append(channels, *localChannel)
 	}
+	if len(channels) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "no channels to add",
+		})
+		return
+	}
 	err = model.BatchInsertChannels(channels)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
+	model.InitChannelCache()
 	recordManageAudit(c, "channel.create", map[string]interface{}{
 		"name":  addChannelRequest.Channel.Name,
 		"type":  addChannelRequest.Channel.Type,
