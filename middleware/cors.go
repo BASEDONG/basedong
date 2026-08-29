@@ -8,9 +8,11 @@ import (
 
 func CORS() gin.HandlerFunc {
 	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
+	// Reflect request Origin so credentialed browser calls work (AllowAllOrigins +
+	// AllowCredentials is invalid per the CORS spec and breaks SPA 前后端分离).
+	config.AllowOriginFunc = func(origin string) bool { return true }
 	config.AllowCredentials = true
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"}
 	config.AllowHeaders = []string{"*"}
 	return cors.New(config)
 }

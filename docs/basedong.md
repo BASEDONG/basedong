@@ -66,3 +66,7 @@ First Admin login uses upstream’s setup wizard on that same origin (stock Admi
 | Relay `/v1/*`, control-plane `/api/*`, Admin UI | this repo |
 
 Domain language for basedong product copy lives in basedong’s `docs/backend/CONTEXT.md` (词元, API Key, 额度, …). Upstream source may still say “Token” for API credentials — map that to **API Key** in customer UI.
+
+### SPA session (issue #3)
+
+Web calls control-plane with `NEXT_PUBLIC_API_BASE` and stores the short-lived **access** JWT in `sessionStorage` (`Authorization: Bearer`). Refresh cookies are `SameSite=Strict` on `/api/user/auth` — for silent refresh across reloads, serve Web and Backend on the **same site** (reverse proxy). Cross-origin SPAs should expect re-login when the access JWT expires (~15 minutes). `/api` applies CORS that reflects the request Origin so browser calls work.
