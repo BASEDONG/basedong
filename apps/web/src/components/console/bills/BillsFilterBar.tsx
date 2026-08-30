@@ -1,16 +1,11 @@
 "use client";
 
 import {
-  billingItemOptions,
   copy,
-  dimensionCascaderOptions,
   periodOptions,
-  productOptions,
   type PeriodType,
 } from "./content";
-import { BillsCascader } from "./BillsCascader";
 import { BillsRangePicker } from "./BillsRangePicker";
-import { BillsMultiSelect } from "./BillsSelect";
 import { ChevronDownIcon } from "./icons";
 import { cn } from "@/lib/utils";
 import { useEffect, useId, useRef, useState } from "react";
@@ -25,12 +20,13 @@ interface BillsFilterBarProps {
   endDate: string;
   onStartDateChange: (v: string) => void;
   onEndDateChange: (v: string) => void;
-  products: string[];
-  onProductsChange: (v: string[]) => void;
-  dimensions: string[];
-  onDimensionsChange: (v: string[]) => void;
-  billingItems: string[];
-  onBillingItemsChange: (v: string[]) => void;
+  /** Kept for call-site compatibility; unused (Backend has no product filter). */
+  products?: string[];
+  onProductsChange?: (v: string[]) => void;
+  dimensions?: string[];
+  onDimensionsChange?: (v: string[]) => void;
+  billingItems?: string[];
+  onBillingItemsChange?: (v: string[]) => void;
 }
 
 function PeriodSelect({
@@ -55,42 +51,38 @@ function PeriodSelect({
   }, [open]);
 
   return (
-    <div ref={rootRef} className="relative z-0 w-20 shrink-0">
+    <div ref={rootRef} className="relative">
       <button
         type="button"
-        role="combobox"
+        aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "relative flex h-10 w-full cursor-pointer items-center justify-between rounded-l-[8px] rounded-r-none border border-[#CBD5E1] bg-white px-[11px] text-base leading-[25px] text-[#1E293B] hover:z-[1] hover:border-[rgb(74,171,240)]",
-          open && "z-[1] border-[rgb(74,171,240)]",
+          "inline-flex h-10 min-w-[88px] items-center justify-between gap-1 rounded-l-[6px] border border-r-0 border-slate-300 bg-white px-3 text-sm text-slate-700",
+          open && "border-[rgb(74,171,240)]",
         )}
       >
-        <span className="truncate">{label}</span>
-        <ChevronDownIcon className="ml-1 size-3 shrink-0 text-[#94A3B8]" />
+        {label}
+        <ChevronDownIcon className="size-3 text-slate-400" />
       </button>
       {open ? (
         <ul
           id={listId}
           role="listbox"
-          className="absolute left-0 z-[100] mt-1 w-[120px] overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white py-1 shadow-[0_6px_16px_0_rgba(0,0,0,0.08)]"
+          className="absolute z-20 mt-1 min-w-full rounded-md border border-slate-200 bg-white py-1 shadow-md"
         >
-          {periodOptions.map((opt) => (
-            <li key={opt.value}>
+          {periodOptions.map((o) => (
+            <li key={o.value} role="option" aria-selected={o.value === value}>
               <button
                 type="button"
-                className={cn(
-                  "flex w-full cursor-pointer px-3 py-[5px] text-left text-sm hover:bg-black/[0.04]",
-                  opt.value === value &&
-                    "bg-[rgba(74,171,240,0.1)] text-[rgb(74,171,240)]",
-                )}
+                className="flex w-full px-3 py-1.5 text-left text-sm hover:bg-slate-50"
                 onClick={() => {
-                  onChange(opt.value);
+                  onChange(o.value);
                   setOpen(false);
                 }}
               >
-                {opt.label}
+                {o.label}
               </button>
             </li>
           ))}
@@ -107,15 +99,7 @@ export function BillsFilterBar({
   endDate,
   onStartDateChange,
   onEndDateChange,
-  products,
-  onProductsChange,
-  dimensions,
-  onDimensionsChange,
-  billingItems,
-  onBillingItemsChange,
 }: BillsFilterBarProps) {
-  const itemOptions = products.length > 0 ? billingItemOptions : [];
-
   return (
     <div className="mb-0 flex flex-wrap gap-4" style={{ fontFamily: antFont }}>
       <div className="mb-4 flex h-10 min-w-fit items-stretch">
@@ -127,37 +111,9 @@ export function BillsFilterBar({
           onEndDateChange={onEndDateChange}
         />
       </div>
-
-      <div className="mb-4">
-        <BillsMultiSelect
-          values={products}
-          options={productOptions}
-          placeholder={copy.productPlaceholder}
-          allLabel={copy.selectAll}
-          onChange={onProductsChange}
-        />
-      </div>
-
-      <div className="mb-4">
-        <BillsCascader
-          values={dimensions}
-          options={dimensionCascaderOptions}
-          placeholder={copy.dimensionPlaceholder}
-          onChange={onDimensionsChange}
-        />
-      </div>
-
-      <div className="mb-4">
-        <BillsMultiSelect
-          values={billingItems}
-          options={itemOptions}
-          placeholder={copy.itemPlaceholder}
-          allLabel={copy.selectAll}
-          onChange={onBillingItemsChange}
-          widthClass="w-[280.8px]"
-          emptyText={copy.noData}
-        />
-      </div>
+      <p className="mb-4 flex h-10 items-center text-xs text-slate-400">
+        {copy.filterHint}
+      </p>
     </div>
   );
 }

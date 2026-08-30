@@ -1,6 +1,18 @@
 /** Set false to hide the reserved-instances marketing page and its nav links. */
 export const RESERVED_PAGE_ENABLED = false;
 
+/** Set false to hide the partner (生态合作) marketing page and its nav links. */
+export const PARTNER_PAGE_ENABLED = false;
+
+/** Set false to hide the About menu (关于) and its linked marketing pages. */
+export const ABOUT_MENU_ENABLED = false;
+
+/** Set false to hide docs center links in marketing nav and console sidebar. */
+export const DOCS_CENTER_ENABLED = false;
+
+/** 发票 is not supported by basedong Backend — keep Console entry hidden. */
+export const INVOICE_ENABLED = false;
+
 /** Canonical in-app routes (URL paths stay stable across restructures). */
 export const APP_ROUTES = {
   home: "/",
@@ -35,8 +47,18 @@ export const APP_ROUTES = {
   formSupport: "/share/base/form/shrcnDiK9EIkGN3sK0PepqN1Ppb",
 } as const;
 
+const ABOUT_MENU_ROUTES = new Set<string>([
+  APP_ROUTES.about,
+  APP_ROUTES.brand,
+  APP_ROUTES.news,
+  APP_ROUTES.developerTalk,
+]);
+
 export function isMarketingRouteEnabled(href: string): boolean {
   if (!RESERVED_PAGE_ENABLED && href === APP_ROUTES.reserved) return false;
+  if (!PARTNER_PAGE_ENABLED && href === APP_ROUTES.partner) return false;
+  if (!ABOUT_MENU_ENABLED && ABOUT_MENU_ROUTES.has(href)) return false;
+  if (!DOCS_CENTER_ENABLED && href === APP_ROUTES.docsIntroduction) return false;
   return true;
 }
 
@@ -81,7 +103,9 @@ function normalizeUrl(href: string): string {
 }
 
 function mapCloudPath(pathname: string): string | null {
-  if (!pathname || pathname === "/") return APP_ROUTES.consoleModels;
+  if (!pathname || pathname === "/" || pathname === "/models") {
+    return APP_ROUTES.consoleModels;
+  }
   if (pathname.startsWith("/me/") || pathname.startsWith("/account/")) {
     return pathname.replace(/^\/account/, "/me/account");
   }

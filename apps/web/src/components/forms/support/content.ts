@@ -17,7 +17,6 @@ export const CATEGORY_OPTIONS = [
   "充值相关",
   "奖励金额【赠金/代金券】",
   "费用账单相关",
-  "开具发票",
   "退款相关",
   "使用投诉",
 ] as const;

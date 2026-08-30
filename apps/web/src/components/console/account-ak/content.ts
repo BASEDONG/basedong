@@ -1,7 +1,13 @@
 export const pageTitle = "API 密钥";
 
 export const warningMessage =
-  "API Key 是您访问 八色鸫 接口的凭证，请妥善保管。";
+  "API Key 是您访问 basedong Relay 的凭证，请妥善保管。按词元用量扣减额度。";
+
+/** Shown under the table — developer-facing Relay base (not SiliconFlow). */
+export function relayIntegrationHint(relayBase: string): string {
+  const base = relayBase || "https://<your-basedong-api-host>";
+  return `Relay 基址：${base}　·　示例 POST ${base}/v1/chat/completions　·　Authorization: Bearer <API Key>`;
+}
 
 export const createButtonLabel = "新建 API Key";
 

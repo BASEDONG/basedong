@@ -2,7 +2,7 @@
 
 import { BRAND } from "@/lib/assets";
 
-export const docsOrigin = "https://api-docs.siliconflow.cn";
+export const docsOrigin = "https://docs.basedong.local";
 export const logoSrc = BRAND.logo;
 export const logoHref = "/";
 
@@ -10,11 +10,11 @@ export const pageMeta = {
   breadcrumb: "使用指南",
   title: "平台简介",
   description:
-    "SiliconFlow 平台简介，了解硅基流动大模型云服务的核心能力与产品矩阵。",
+    "basedong 平台简介：通过 basedong-api Relay 按词元计费调用大模型，使用 API Key 鉴权。",
 };
 
 export const overview =
-  "SiliconFlow 平台依托先进自研推理引擎、高弹性算力调度平台和高扩展性 API 服务，致力于为广大开发者提供更快、更全面、更丝滑的大模型 API 调用和部署服务，帮助开发者和企业聚焦产品创新，轻松融入 AI 能力，享受高速、安全、稳定、智能、易用的 AI 云服务";
+  "basedong 面向开发者提供 OpenAI 兼容的模型 Relay。将客户端 Base URL 指向 basedong-api 源站（例如 http://localhost:3000 或生产 Relay 域名），使用 Console 签发的 API Key 调用 /v1/chat/completions 等接口；用量按词元扣减额度。客户 Console 在 basedong Web，运维 Admin 使用 basedong-api 原版后台。";
 
 export const products: ProductBlock[] = [
   {
@@ -344,12 +344,6 @@ export const navItems: NavItem[] = [
             "type": "link",
             "label": "财务相关",
             "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/misc_finance",
-            "active": false
-          },
-          {
-            "type": "link",
-            "label": "发票相关",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/invoice",
             "active": false
           },
           {

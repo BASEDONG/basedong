@@ -431,3 +431,100 @@ export async function playgroundChat(args: {
   return { content };
 }
 
+/** Consume = 2 in basedong-api model.LogTypeConsume */
+export const USAGE_LOG_TYPE_CONSUME = 2;
+
+export type UsageLog = {
+  id: number;
+  created_at: number;
+  type: number;
+  content?: string;
+  token_name?: string;
+  model_name?: string;
+  quota?: number;
+  prompt_tokens?: number;
+  completion_tokens?: number;
+  use_time?: number;
+  is_stream?: boolean;
+  request_id?: string;
+  group?: string;
+};
+
+export type UsageLogPage = {
+  items: UsageLog[];
+  total: number;
+  page: number;
+  page_size: number;
+};
+
+export async function listUsageLogs(params: {
+  page?: number;
+  pageSize?: number;
+  type?: number;
+  startTimestamp?: number;
+  endTimestamp?: number;
+  modelName?: string;
+  tokenName?: string;
+} = {}): Promise<UsageLogPage> {
+  const q = new URLSearchParams();
+  q.set("p", String(params.page ?? 1));
+  q.set("page_size", String(params.pageSize ?? 50));
+  if (params.type != null) q.set("type", String(params.type));
+  if (params.startTimestamp != null) {
+    q.set("start_timestamp", String(params.startTimestamp));
+  }
+  if (params.endTimestamp != null) {
+    q.set("end_timestamp", String(params.endTimestamp));
+  }
+  if (params.modelName) q.set("model_name", params.modelName);
+  if (params.tokenName) q.set("token_name", params.tokenName);
+
+  const data = await backendFetch<{
+    items?: UsageLog[];
+    total?: number;
+    page?: number;
+    page_size?: number;
+  }>(`/api/log/self?${q.toString()}`, { method: "GET" });
+
+  return {
+    items: data?.items ?? [],
+    total: data?.total ?? 0,
+    page: data?.page ?? params.page ?? 1,
+    page_size: data?.page_size ?? params.pageSize ?? 50,
+  };
+}
+
+export type UsageStat = {
+  quota: number;
+  rpm: number;
+  tpm: number;
+};
+
+export async function getUsageSelfStat(params: {
+  type?: number;
+  startTimestamp?: number;
+  endTimestamp?: number;
+  modelName?: string;
+} = {}): Promise<UsageStat> {
+  const q = new URLSearchParams();
+  if (params.type != null) q.set("type", String(params.type));
+  if (params.startTimestamp != null) {
+    q.set("start_timestamp", String(params.startTimestamp));
+  }
+  if (params.endTimestamp != null) {
+    q.set("end_timestamp", String(params.endTimestamp));
+  }
+  if (params.modelName) q.set("model_name", params.modelName);
+  const qs = q.toString();
+  const data = await backendFetch<UsageStat>(
+    `/api/log/self/stat${qs ? `?${qs}` : ""}`,
+    { method: "GET" },
+  );
+  return {
+    quota: data?.quota ?? 0,
+    rpm: data?.rpm ?? 0,
+    tpm: data?.tpm ?? 0,
+  };
+}
+
+

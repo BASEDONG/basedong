@@ -1,7 +1,15 @@
-/** Backend (basedong-api) control-plane base URL for the static Web SPA. */
+/** Backend (basedong-api) control-plane / Relay origin for the static Web SPA. */
 export function getApiBase(): string {
   const raw = process.env.NEXT_PUBLIC_API_BASE?.trim() ?? "";
   return raw.replace(/\/$/, "");
+}
+
+/**
+ * OpenAI-compatible Relay base URL (same origin as control-plane in basedong-api).
+ * Clients call `{relayBase}/v1/chat/completions` with an API Key.
+ */
+export function getRelayBase(): string {
+  return getApiBase();
 }
 
 export function assertApiBase(): string {

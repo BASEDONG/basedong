@@ -10,6 +10,7 @@ import {
   createButtonLabel,
   deleteModalCopy,
   pageTitle,
+  relayIntegrationHint,
   toasts,
   type ApiKeyRow,
 } from "./content";
@@ -21,6 +22,7 @@ import {
   listApiKeys,
   updateApiKeyName,
 } from "@/lib/backend/client";
+import { getRelayBase } from "@/lib/backend/config";
 
 function formatTs(sec: number) {
   if (!sec) return "—";
@@ -144,6 +146,9 @@ export function ApiKeysPageClient() {
       </div>
 
       <ApiKeysWarningAlert />
+      <p className="mb-4 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs leading-5 text-slate-600">
+        {relayIntegrationHint(getRelayBase())}
+      </p>
       {loading ? (
         <p className="text-sm text-slate-500">加载中…</p>
       ) : (

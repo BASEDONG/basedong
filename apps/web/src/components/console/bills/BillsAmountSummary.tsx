@@ -1,11 +1,12 @@
-import {
-  copy,
-  formatYuan,
-  type AmountSummary,
-} from "./content";
+"use client";
+
+import type { UsageStat } from "@/lib/backend/client";
+import { copy } from "./content";
 
 interface BillsAmountSummaryProps {
-  amounts?: AmountSummary;
+  stat: UsageStat;
+  loading?: boolean;
+  onRefresh?: () => void;
 }
 
 function Metric({
@@ -14,7 +15,7 @@ function Metric({
   accent,
 }: {
   label: string;
-  value: number;
+  value: string | number;
   accent?: boolean;
 }) {
   return (
@@ -29,32 +30,37 @@ function Metric({
             : "font-Inter text-[24px] font-semibold leading-8 tracking-[-0.144px] text-[#1E293B]"
         }
       >
-        {formatYuan(value)}
+        {value}
       </div>
     </div>
   );
 }
 
-function Op({ children }: { children: string }) {
-  return (
-    <div className="flex items-center text-[24px] font-semibold leading-8 text-[#94A3B8]">
-      {children}
-    </div>
-  );
-}
-
 export function BillsAmountSummary({
-  amounts = { bill: 0, charge: 0, discount: 0, coupon: 0 },
+  stat,
+  loading,
+  onRefresh,
 }: BillsAmountSummaryProps) {
   return (
-    <div className="mb-4 flex gap-6 rounded-[8px] bg-white px-6 py-4">
-      <Metric label={copy.billAmount} value={amounts.bill} accent />
-      <Op>=</Op>
-      <Metric label={copy.chargeAmount} value={amounts.charge} />
-      <Op>-</Op>
-      <Metric label={copy.discountAmount} value={amounts.discount} />
-      <Op>-</Op>
-      <Metric label={copy.couponAmount} value={amounts.coupon} />
+    <div className="mb-4 flex items-end justify-between gap-6 rounded-[8px] bg-white px-6 py-4">
+      <div className="flex flex-wrap gap-10">
+        <Metric
+          label={copy.quotaUsed}
+          value={loading ? "…" : stat.quota}
+          accent
+        />
+        <Metric label={copy.rpm} value={loading ? "…" : stat.rpm} />
+        <Metric label={copy.tpm} value={loading ? "…" : stat.tpm} />
+      </div>
+      {onRefresh ? (
+        <button
+          type="button"
+          onClick={onRefresh}
+          className="shrink-0 text-sm text-[rgb(74,171,240)] hover:underline"
+        >
+          {copy.refresh}
+        </button>
+      ) : null}
     </div>
   );
 }
