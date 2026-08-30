@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
-  MODEL_OPTIONS,
   PARAM_DEFS,
   defaultParamValues,
   type ParamValues,
@@ -14,18 +13,24 @@ import { AnimatedDropdown } from "./AnimatedDropdown";
 
 interface ChatConfigPanelProps {
   model: string;
+  modelOptions: string[];
   onModelChange: (model: string) => void;
 }
 
 const selectClass =
   "flex h-8 w-full cursor-pointer items-center justify-between truncate rounded-[6px] border border-slate-300 bg-white/60 px-[11px] text-left text-sm leading-[22px] text-slate-800 transition-all duration-200 sf-chat-ease-ant hover:border-[rgb(74,171,240)]";
 
-export function ChatConfigPanel({ model, onModelChange }: ChatConfigPanelProps) {
+export function ChatConfigPanel({
+  model,
+  modelOptions,
+  onModelChange,
+}: ChatConfigPanelProps) {
   const [params, setParams] = useState<ParamValues>(defaultParamValues);
   const [thinking, setThinking] = useState<"关闭" | "开启">("关闭");
   const [modelOpen, setModelOpen] = useState(false);
   const [thinkingOpen, setThinkingOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const options = modelOptions.length > 0 ? modelOptions : [];
 
   useEffect(() => {
     if (!modelOpen && !thinkingOpen) return;
@@ -60,7 +65,9 @@ export function ChatConfigPanel({ model, onModelChange }: ChatConfigPanelProps) 
                   "border-[rgb(74,171,240)] shadow-[0_0_0_2px_rgba(74,171,240,0.1)]",
               )}
             >
-              <span className="truncate">{model}</span>
+              <span className="truncate">
+                {model || (options.length === 0 ? "暂无可用模型" : "选择模型")}
+              </span>
               <ChevronDownIcon
                 className={cn(
                   "ml-2 size-3 shrink-0 text-slate-400 transition-transform duration-200 sf-chat-ease-ant",
@@ -72,7 +79,12 @@ export function ChatConfigPanel({ model, onModelChange }: ChatConfigPanelProps) 
               open={modelOpen}
               className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-[6px] border border-slate-200 bg-white py-1 shadow-md"
             >
-              {MODEL_OPTIONS.map((opt) => (
+              {options.length === 0 ? (
+                <li className="px-3 py-1.5 text-sm text-slate-400">
+                  请先在 Admin 配置 Channel
+                </li>
+              ) : null}
+              {options.map((opt) => (
                 <li key={opt}>
                   <button
                     type="button"

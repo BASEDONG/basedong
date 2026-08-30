@@ -301,3 +301,133 @@ export async function listTopUps(
   );
   return data?.items ?? [];
 }
+
+/** Models enabled for the current 用户's groups (Backend catalog). */
+export async function getUserModels(): Promise<string[]> {
+  const data = await backendFetch<string[] | unknown>("/api/user/models", {
+    method: "GET",
+  });
+  if (Array.isArray(data) && data.every((x) => typeof x === "string")) {
+    return data as string[];
+  }
+  return [];
+}
+
+export type PricingItem = {
+  model_name: string;
+  description?: string;
+  icon?: string;
+  tags?: string;
+  vendor_id?: number;
+  owner_by?: string;
+  enable_groups?: string[];
+  supported_endpoint_types?: string[];
+};
+
+export type PricingVendor = {
+  id?: number;
+  name?: string;
+  icon?: string;
+};
+
+export type PricingCatalog = {
+  items: PricingItem[];
+  vendors: PricingVendor[];
+};
+
+/** Public/auth pricing catalog used by model plaza. */
+export async function getPricingCatalog(): Promise<PricingCatalog> {
+  const base = assertApiBase();
+  const headers = new Headers();
+  const token = getAccessToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  const res = await fetch(`${base}/api/pricing`, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
+  const json = (await res.json()) as {
+    success?: boolean;
+    message?: string;
+    data?: PricingItem[];
+    vendors?: PricingVendor[];
+  };
+  if (!res.ok || !json.success) {
+    throw new BackendError(json.message || `HTTP ${res.status}`);
+  }
+  return {
+    items: Array.isArray(json.data) ? json.data : [],
+    vendors: Array.isArray(json.vendors) ? json.vendors : [],
+  };
+}
+
+export type ChatMessage = {
+  role: "system" | "user" | "assistant";
+  content: string;
+};
+
+export type PlaygroundChatResult = {
+  content: string;
+};
+
+/**
+ * Session-auth playground Relay (same billing as /v1). Uses JWT from login —
+ * not an API Key. Non-streaming for SPA simplicity.
+ */
+export async function playgroundChat(args: {
+  model: string;
+  messages: ChatMessage[];
+  group?: string;
+  temperature?: number;
+  max_tokens?: number;
+}): Promise<PlaygroundChatResult> {
+  const base = assertApiBase();
+  const headers = new Headers({ "Content-Type": "application/json" });
+  const token = getAccessToken();
+  if (!token) {
+    throw new BackendError("未登录，请先登录后再使用在线体验");
+  }
+  headers.set("Authorization", `Bearer ${token}`);
+
+  const res = await fetch(`${base}/pg/chat/completions`, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: JSON.stringify({
+      model: args.model,
+      messages: args.messages,
+      stream: false,
+      group: args.group ?? "default",
+      temperature: args.temperature,
+      max_tokens: args.max_tokens ?? 1024,
+    }),
+  });
+
+  const json = (await res.json()) as {
+    choices?: { message?: { content?: string } }[];
+    error?: { message?: string; code?: string; type?: string };
+    message?: string;
+  };
+
+  if (!res.ok || json.error) {
+    const msg =
+      json.error?.message ||
+      json.message ||
+      `HTTP ${res.status}`;
+    const code = json.error?.code || "";
+    if (
+      code === "insufficient_user_quota" ||
+      /quota|额度/i.test(msg)
+    ) {
+      throw new BackendError(`额度不足：${msg}`);
+    }
+    throw new BackendError(msg);
+  }
+
+  const content = json.choices?.[0]?.message?.content;
+  if (typeof content !== "string") {
+    throw new BackendError("模型未返回有效内容");
+  }
+  return { content };
+}
+

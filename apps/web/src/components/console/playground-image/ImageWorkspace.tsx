@@ -12,10 +12,14 @@ interface ImageWorkspaceProps {
 export function ImageWorkspace({ model }: ImageWorkspaceProps) {
   const [prompt, setPrompt] = useState("");
   const [preview, setPreview] = useState(ASSET.hero);
+  const [error, setError] = useState<string | null>(null);
   const canSend = prompt.trim().length > 0;
 
   const send = () => {
     if (!canSend) return;
+    setError(
+      "图像生成尚未接入 basedong Relay。请使用对话 Playground，或通过 API Key 调用已支持的 /v1 接口。",
+    );
     setPreview(ASSET.hero);
   };
 
@@ -48,6 +52,12 @@ export function ImageWorkspace({ model }: ImageWorkspaceProps) {
           />
         </div>
       </div>
+
+      {error ? (
+        <p className="text-sm text-amber-700" role="alert">
+          {error}
+        </p>
+      ) : null}
 
       <div className="flex w-full gap-3">
         {SUGGESTION_PROMPTS.map((text) => (

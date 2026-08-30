@@ -12,12 +12,16 @@ interface VideoWorkspaceProps {
 
 export function VideoWorkspace({ model }: VideoWorkspaceProps) {
   const [prompt, setPrompt] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const canSend = prompt.trim().length > 0;
   const videoSrc = videoSrcForModel(model);
   const posterSrc = posterSrcForModel(model);
 
   const send = () => {
     if (!canSend) return;
+    setError(
+      "视频生成尚未接入 basedong Relay。请使用对话 Playground，或通过 API Key 调用已支持的 /v1 接口。",
+    );
   };
 
   return (
@@ -47,6 +51,12 @@ export function VideoWorkspace({ model }: VideoWorkspaceProps) {
             </div>
           </div>
         </div>
+
+        {error ? (
+          <p className="text-sm text-amber-700" role="alert">
+            {error}
+          </p>
+        ) : null}
 
         <div className="flex w-full">
           <div className="flex-1 overflow-hidden">

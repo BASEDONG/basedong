@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getPricingCatalog, getUserModels } from "@/lib/backend/client";
 import { ConsoleShell } from "../shared/ConsoleShell";
+import {
+  enabledModelsToCards,
+  pricingToModelCards,
+} from "./catalog";
 import { filterSections, modelsData } from "./content";
 import type { FilterOption, FilterSection, ModelCardData } from "./content-types";
 import { ModelDetailDrawer } from "./ModelDetailDrawer";
@@ -11,24 +16,24 @@ import { ModelsToolbar } from "./ModelsToolbar";
 import { ScrollTopIcon } from "../shared/icons";
 
 const SERIES_ALIASES: Record<string, string[]> = {
-  DeepSeek: ["deepseek"],
-  Qwen: ["qwen", "tongyi"],
+  Anthropic: ["anthropic", "claude"],
+  OpenAI: ["openai", "gpt", "codex"],
+  xAI: ["xai", "grok"],
+  Google: ["google", "gemini"],
+  字节跳动: ["字节", "doubao", "bytedance"],
   智谱: ["智谱", "zai", "glm", "zhipu"],
-  Kimi: ["kimi", "moonshot"],
-  蚂蚁百灵: ["蚂蚁", "ling", "bailing"],
-  阶跃星辰: ["阶跃", "step"],
+  Moonshot: ["moonshot", "kimi"],
   MiniMax: ["minimax"],
-  Wan: ["wan"],
 };
 
 const TAG_ALIASES: Record<string, string[]> = {
   视觉: ["视觉", "多模态"],
-  MoE: ["moe", "MOE"],
   推理: ["推理"],
-  Tools: ["tools"],
-  FIM: ["fim"],
-  Math: ["math", "数学"],
-  Coder: ["coder", "代码"],
+  代码: ["代码", "coder"],
+  旗舰: ["旗舰"],
+  轻量: ["轻量"],
+  聊天: ["聊天"],
+  图像: ["图像", "生图"],
 };
 
 function parseContextTokens(tag: string): number | null {
@@ -180,6 +185,11 @@ export function ModelsPageClient() {
   const [selectedModel, setSelectedModel] = useState<ModelCardData | null>(
     null,
   );
+  const [catalog, setCatalog] = useState<ModelCardData[]>(modelsData);
+  const [catalogSource, setCatalogSource] = useState<"backend" | "static">(
+    "static",
+  );
+  const [catalogNote, setCatalogNote] = useState<string | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 768px)");
@@ -190,14 +200,57 @@ export function ModelsPageClient() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const [pricing, enabled] = await Promise.all([
+          getPricingCatalog().catch(() => null),
+          getUserModels().catch(() => [] as string[]),
+        ]);
+        if (cancelled) return;
+
+        let cards: ModelCardData[] = [];
+        if (pricing && pricing.items.length > 0) {
+          cards = pricingToModelCards(
+            pricing,
+            enabled.length ? enabled : undefined,
+          );
+        }
+        if (cards.length === 0 && enabled.length > 0) {
+          cards = enabledModelsToCards(enabled);
+        }
+        if (cards.length > 0) {
+          setCatalog(cards);
+          setCatalogSource("backend");
+          setCatalogNote(null);
+          return;
+        }
+        setCatalog(modelsData);
+        setCatalogSource("static");
+        setCatalogNote(
+          "Backend 暂无可用模型目录，当前显示静态占位列表。配置 Channel 后将优先展示 Backend 目录。",
+        );
+      } catch {
+        if (cancelled) return;
+        setCatalog(modelsData);
+        setCatalogSource("static");
+        setCatalogNote("无法连接 Backend 模型目录，当前显示静态占位列表。");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     setShowScrollTop(false);
     mainRef.current?.scrollTo({ top: 0 });
     gridScrollRef.current?.scrollTo({ top: 0 });
   }, [filterOpen]);
 
   const filtered = useMemo(
-    () => filterModels(modelsData, searchQuery, selectedChips),
-    [searchQuery, selectedChips],
+    () => filterModels(catalog, searchQuery, selectedChips),
+    [catalog, searchQuery, selectedChips],
   );
 
   function handleToggleChip(id: string) {
@@ -250,6 +303,17 @@ export function ModelsPageClient() {
         </>
       }
     >
+          {catalogNote ? (
+            <p
+              className="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+              role="status"
+            >
+              {catalogNote}
+              {catalogSource === "static"
+                ? " （后续以 Backend /api/pricing 与 /api/user/models 为准）"
+                : null}
+            </p>
+          ) : null}
           {filterOpen ? (
             <div className="flex h-full min-h-0 w-full overflow-hidden">
               <ModelsFilterPanel
