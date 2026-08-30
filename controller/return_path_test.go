@@ -22,4 +22,10 @@ func TestPaymentReturnPathUsesDefaultDashboardRoutes(t *testing.T) {
 		"https://dashboard.example.com/usage-logs",
 		paymentReturnPath("/usage-logs"),
 	)
+	// basedong Web Console return after EPay (ServerAddress = Web origin)
+	assert.Equal(
+		t,
+		"https://dashboard.example.com/me/expensebill",
+		paymentReturnPath("/me/expensebill"),
+	)
 }

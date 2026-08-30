@@ -75,6 +75,14 @@ Redemption codes (compliance → Admin create → user redeem → 额度↑):
 BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-redeem.sh
 ```
 
+EPay 充值 (compliance → configure EPay options → `POST /api/user/pay` → signed notify → 额度↑). Without a live merchant the probe MD5-signs `/api/user/epay/notify` with the configured `EpayKey` (same credit path as a real gateway):
+
+```bash
+BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-epay.sh
+```
+
+Ops: set `ServerAddress` to the basedong Web origin (EPay return → `/me/expensebill`) and `CustomCallbackAddress` to this API origin (notify URL). Enable payment compliance and fill `PayAddress` / `EpayId` / `EpayKey` / `PayMethods` in Admin options.
+
 First Admin login uses upstream’s setup wizard on that same origin (stock Admin UI, no brand skin). Do not replace Admin with basedong Web.
 
 ## Relationship to basedong Web

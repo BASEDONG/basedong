@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   probe:
-    name: compose.dev build + status + auth + retail + redeem
+    name: compose.dev build + status + auth + retail + redeem + epay
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -86,6 +86,13 @@ jobs:
           sed -i 's/\r$//' scripts/probe-redeem.sh
           chmod +x scripts/probe-redeem.sh
           BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-redeem.sh
+
+      - name: Probe EPay top-up credits 额度
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-epay.sh
+          chmod +x scripts/probe-epay.sh
+          BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-epay.sh
 
       - name: Tear down
         if: always()
