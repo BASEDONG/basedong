@@ -147,4 +147,23 @@ if ! grep -qiE 'quota|额度|insufficient' /tmp/pg-zero.json; then
   fi
 fi
 
-echo "ok: playground seam (/api/user/models + /pg/chat/completions → 额度)"
+echo "usage logs for user should include consume entry for $MODEL"
+# Re-grant a little quota and one more chat so a log row exists after drain path
+curl -fsS -X POST "$BASE/api/user/manage" \
+  -H "Authorization: Bearer $root_token" \
+  -H 'Content-Type: application/json' \
+  -d "{\"id\":$user_id,\"action\":\"add_quota\",\"mode\":\"add\",\"value\":50000}" \
+  | grep -q '"success"[[:space:]]*:[[:space:]]*true'
+curl -sS -o /tmp/pg-log.json -w '%{http_code}' -X POST "$BASE/pg/chat/completions" \
+  -H "Authorization: Bearer $user_token" \
+  -H 'Content-Type: application/json' \
+  -d "{\"model\":\"$MODEL\",\"group\":\"default\",\"messages\":[{\"role\":\"user\",\"content\":\"log\"}],\"max_tokens\":8,\"stream\":false}" \
+  >/tmp/pg-log.code || true
+logs="$(curl -fsS "$BASE/api/log/self?type=2&p=1&page_size=20" -H "Authorization: Bearer $user_token")"
+echo "logs: $(echo "$logs" | head -c 500)"
+echo "$logs" | grep -q "$MODEL" || {
+  echo "expected consume log for $MODEL in /api/log/self" >&2
+  exit 1
+}
+
+echo "ok: playground seam (/api/user/models + /pg/chat/completions → 额度 + usage logs)"
