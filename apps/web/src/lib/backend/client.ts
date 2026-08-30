@@ -196,3 +196,108 @@ export async function redeemCode(key: string): Promise<number> {
   }
   return data;
 }
+
+export type TopupPayMethod = {
+  name: string;
+  type: string;
+  color?: string;
+  min_topup?: string;
+};
+
+export type TopupInfo = {
+  enable_online_topup?: boolean;
+  pay_methods?: TopupPayMethod[];
+  min_topup?: number;
+  amount_options?: number[];
+  payment_compliance_confirmed?: boolean;
+};
+
+export async function getTopupInfo(): Promise<TopupInfo> {
+  return backendFetch<TopupInfo>("/api/user/topup/info", { method: "GET" });
+}
+
+export type EpayPayResult = {
+  url: string;
+  params: Record<string, string>;
+};
+
+/**
+ * Start EPay checkout. Upstream returns `{ message: "success", data, url }`
+ * (not `{ success: true }`), so this path cannot use backendFetch.
+ */
+export async function requestEpayPay(
+  amount: number,
+  paymentMethod: string,
+): Promise<EpayPayResult> {
+  const base = assertApiBase();
+  const headers = new Headers({ "Content-Type": "application/json" });
+  const token = getAccessToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  const res = await fetch(`${base}/api/user/pay`, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: JSON.stringify({ amount, payment_method: paymentMethod }),
+  });
+  const json = (await res.json()) as {
+    message?: string;
+    data?: Record<string, string> | string;
+    url?: string;
+  };
+  if (json.message !== "success" || !json.url || !json.data || typeof json.data === "string") {
+    const detail =
+      typeof json.data === "string"
+        ? json.data
+        : json.message && json.message !== "success"
+          ? json.message
+          : `HTTP ${res.status}`;
+    throw new BackendError(detail || "拉起支付失败");
+  }
+  return { url: json.url, params: json.data };
+}
+
+/** POST a hidden form to the EPay gateway (stock new-api wallet pattern). */
+export function submitPaymentForm(
+  url: string,
+  params: Record<string, string>,
+): void {
+  const form = document.createElement("form");
+  form.action = url;
+  form.method = "POST";
+  const ua = navigator.userAgent;
+  const isSafari = ua.includes("Safari") && !ua.includes("Chrome");
+  if (!isSafari) form.target = "_blank";
+  for (const [key, value] of Object.entries(params)) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = String(value);
+    form.appendChild(input);
+  }
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+
+export type TopUpRecord = {
+  id: number;
+  trade_no: string;
+  amount: number;
+  money: number;
+  status: string;
+  create_time: number;
+  complete_time?: number;
+  payment_method?: string;
+};
+
+export async function listTopUps(
+  page = 1,
+  pageSize = 20,
+): Promise<TopUpRecord[]> {
+  const data = await backendFetch<PageData<TopUpRecord>>(
+    `/api/user/topup/self?p=${page}&page_size=${pageSize}`,
+    { method: "GET" },
+  );
+  return data?.items ?? [];
+}

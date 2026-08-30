@@ -9,6 +9,12 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import {
+  BackendError,
+  getTopupInfo,
+  requestEpayPay,
+  submitPaymentForm,
+} from "@/lib/backend/client";
 import { ASSET, amountPresets, copy, formatYuan } from "./content";
 import { DownIcon } from "./icons";
 
@@ -57,6 +63,10 @@ function ChoiceBtn({
   );
 }
 
+function toEpayMethod(method: PayMethod): string {
+  return method === "wechat" ? "wxpay" : "alipay";
+}
+
 export function OnlineRechargeForm({
   amount,
   customAmount,
@@ -72,11 +82,36 @@ export function OnlineRechargeForm({
     left: number;
     width: number;
   } | null>(null);
+  const [onlineEnabled, setOnlineEnabled] = useState<boolean | null>(null);
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const effectiveAmount = amount === "other" ? customAmount : amount;
-  const canPay = captchaDone && agreed && effectiveAmount > 0;
+  const canPay =
+    captchaDone &&
+    agreed &&
+    effectiveAmount > 0 &&
+    onlineEnabled === true &&
+    !paying;
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const info = await getTopupInfo();
+        if (!cancelled) {
+          setOnlineEnabled(Boolean(info.enable_online_topup));
+        }
+      } catch {
+        if (!cancelled) setOnlineEnabled(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useLayoutEffect(() => {
     if (!otherOpen || !triggerRef.current) {
@@ -114,8 +149,31 @@ export function OnlineRechargeForm({
     return () => document.removeEventListener("mousedown", onDoc);
   }, [otherOpen]);
 
+  const onConfirmPay = async () => {
+    if (!canPay) return;
+    setError(null);
+    setPaying(true);
+    try {
+      const { url, params } = await requestEpayPay(
+        Math.floor(effectiveAmount),
+        toEpayMethod(payMethod),
+      );
+      submitPaymentForm(url, params);
+    } catch (e) {
+      setError(
+        e instanceof BackendError ? e.message : copy.payError,
+      );
+    } finally {
+      setPaying(false);
+    }
+  };
+
   return (
     <div className="flex max-w-[660px] flex-col gap-4">
+      {onlineEnabled === false ? (
+        <p className="ml-[86px] text-sm text-amber-700">{copy.payDisabled}</p>
+      ) : null}
+
       <div className="flex place-items-baseline">
         <FieldLabel>{copy.payAmount}</FieldLabel>
         <div className="flex flex-1 flex-col gap-4">
@@ -288,10 +346,17 @@ export function OnlineRechargeForm({
         </button>
       </div>
 
+      {error ? (
+        <p className="ml-[86px] text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      ) : null}
+
       <div>
         <button
           type="button"
           disabled={!canPay}
+          onClick={() => void onConfirmPay()}
           className={cn(
             "ml-[86px] inline-flex h-11 w-[280px] items-center justify-center rounded-lg border px-[15px] text-base transition-[background] duration-200 ease-[cubic-bezier(0.645,0.045,0.355,1)]",
             canPay
@@ -299,7 +364,7 @@ export function OnlineRechargeForm({
               : "cursor-not-allowed border-slate-300 bg-slate-50 text-slate-400",
           )}
         >
-          {copy.confirmPay}
+          {paying ? copy.paying : copy.confirmPay}
         </button>
       </div>
 
