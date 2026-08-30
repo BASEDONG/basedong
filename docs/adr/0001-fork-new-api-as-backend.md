@@ -7,7 +7,7 @@ basedong’s customer Console stays in `apps/web`; the Backend is a separate rep
 - **Greenfield Backend** — full control, no AGPL; months to recreate Relay/billing/admin.
 - **Wrap / call a stock new-api deploy** — less code ownership; weak change control on gateway code.
 - **Fork new-api; customer UI = basedong Web; Admin = upstream UI as-is (chosen)** — fastest path to a real gateway; AGPL/attribution obligations accepted for now; no Admin 改皮 so upstream merges stay cheaper.
-- **Absorb fork into this monorepo** — rejected for now; Web (static) and gateway lifecycles differ — revisit after `basedong-api` stabilizes.
+- **Absorb fork into this monorepo** — deferred at the time; later chosen in [0003-absorb-basedong-api-into-monorepo.md](./0003-absorb-basedong-api-into-monorepo.md) (`apps/api/`).
 
 ## Consequences
 

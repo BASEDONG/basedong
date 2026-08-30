@@ -1,4 +1,63 @@
+# basedong monorepo — Web (static/dev) + Backend (apps/api fork of new-api)
+#
+# Backend (preferred acceptance — builds apps/api from source):
+#   docker compose up -d --build api
+#   # Admin + API: http://localhost:3000
+#
+# Web static:
+#   docker compose up -d --build web
+#   # http://localhost:8080  (NEXT_PUBLIC_API_BASE=http://localhost:3000)
+#
+# Web Next.js dev:
+#   docker compose up -d web-dev
+#   # http://localhost:3001
+
 services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+    image: basedong-api:dev
+    container_name: basedong-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-3000}:3000"
+    volumes:
+      - api_data:/data
+    environment:
+      - SQL_DSN=postgresql://root:123456@postgres:5432/new-api
+      - REDIS_CONN_STRING=redis://redis
+      - TZ=Asia/Shanghai
+      - BATCH_UPDATE_ENABLED=true
+      # Local HTTP: Secure=false so cross-origin SPA refresh works in dev.
+      - SESSION_COOKIE_SECURE=false
+    depends_on:
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    container_name: basedong-api-redis
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: basedong-api-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: new-api
+    volumes:
+      - api_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d new-api"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   web:
     build:
       context: .
@@ -7,7 +66,7 @@ services:
     container_name: basedong-web
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:80"
+      - "${PORT:-8080}:80"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost/ || exit 1"]
       interval: 30s
@@ -27,6 +86,7 @@ services:
     environment:
       - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_API_BASE=http://host.docker.internal:3000
     env_file:
       - path: ./apps/web/.env.local
         required: false
@@ -36,9 +96,15 @@ services:
       - ./apps/web:/app
       - /app/node_modules
       - /app/.next
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 15s
+
+volumes:
+  api_data:
+  api_pg_data:

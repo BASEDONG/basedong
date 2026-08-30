@@ -1,53 +1,61 @@
-# basedong-api (basedong Backend)
+# basedong Backend (`apps/api`)
 
-This repository is the basedong **Backend**: an AGPL fork of [QuantumNous/new-api](https://github.com/QuantumNous/new-api). Customer Console stays in the [basedong](https://github.com/BASEDONG/basedong) Web app; operators use the **stock Admin UI** here (no brand skin).
+This directory is the basedong **Backend**: an AGPL fork of [QuantumNous/new-api](https://github.com/QuantumNous/new-api), absorbed into the [basedong](https://github.com/BASEDONG/basedong) monorepo under `apps/api/`. Customer Console stays in `apps/web`; operators use the **stock Admin UI** served by this process (no brand skin).
 
-## Remotes
+## Remotes (monorepo root)
 
 ```text
-origin    https://github.com/BASEDONG/basedong-api.git
-upstream  https://github.com/QuantumNous/new-api.git
+origin            https://github.com/BASEDONG/basedong.git
+upstream-new-api  https://github.com/QuantumNous/new-api.git
+# Code root for this Backend: apps/api/
 ```
 
-Confirm with `git remote -v`. If `upstream` is missing:
+Confirm with `git remote -v` from the monorepo root. If `upstream-new-api` is missing:
 
 ```bash
-git remote add upstream https://github.com/QuantumNous/new-api.git
+git remote add upstream-new-api https://github.com/QuantumNous/new-api.git
 ```
 
 ## License (AGPL)
 
-- Licensed under **AGPL-3.0** (see `LICENSE`, `NOTICE`).
+- Licensed under **AGPL-3.0** (see `LICENSE`, `NOTICE` in this directory).
 - Offering this software as a **network service** (SaaS) requires providing complete corresponding source to users of that service under AGPL.
 - Upstream `NOTICE` attribution terms apply when shipping modified upstream UI. basedong keeps Admin **unskinned**; still retain LICENSE/NOTICE and do not strip attribution from Admin.
 - Commercial licensing may be evaluated later; until then treat AGPL as binding.
 
 ## Upstream merge cadence
 
-**Preferred:** merge `upstream/main` into `main` at least **weekly**, and **within 7 days** of any upstream security fix that affects Relay, auth, or payment webhooks.
+**Preferred:** merge `upstream-new-api/main` into `apps/api/` at least **weekly**, and **within 7 days** of any upstream security fix that affects Relay, auth, or payment webhooks.
+
+From the monorepo root:
 
 ```bash
-git fetch upstream
-git checkout main
-git merge upstream/main
+git fetch upstream-new-api
+git subtree pull --prefix=apps/api upstream-new-api main
 # resolve conflicts with minimal fork drift — prefer upstream for relay/payment/auth cores
-git push origin main
+git push origin HEAD
 ```
 
 Avoid deep forks of payment, Relay, and auth session code so merges stay cheap.
 
 ## Run locally
 
-**Preferred for basedong (builds this fork’s source):**
+**Preferred for basedong (builds this fork’s source).** From the monorepo root:
+
+```bash
+docker compose up -d --build api
+# Admin + API: http://localhost:3000  (container basedong-api)
+```
+
+Or from this directory (legacy compose names `new-api`):
 
 ```bash
 docker compose -f docker-compose.dev.yml up -d --build
-# Admin + API: http://localhost:3000  (container new-api-dev)
 ```
 
-`docker compose up -d` (default `docker-compose.yml`) pulls `calciumion/new-api:latest` and does **not** verify this fork’s tree — use it only as a quick upstream smoke, not as basedong-api acceptance.
+`docker compose -f docker-compose.yml up` inside `apps/api` pulls `calciumion/new-api:latest` and does **not** verify this fork’s tree — use it only as a quick upstream smoke, not as basedong acceptance.
 
-Control-plane probe (Backend HTTP seam):
+Control-plane probe (Backend HTTP seam), from this directory:
 
 ```bash
 ./scripts/probe-status.sh http://localhost:3000
@@ -95,11 +103,13 @@ First Admin login uses upstream’s setup wizard on that same origin (stock Admi
 
 | Surface | Owner |
 |---------|--------|
-| Customer Console / Auth UI | basedong `apps/web` |
-| Relay `/v1/*`, control-plane `/api/*`, Admin UI | this repo |
+| Customer Console / Auth UI | monorepo `apps/web` |
+| Relay `/v1/*`, control-plane `/api/*`, Admin UI | monorepo `apps/api` |
 
-Domain language for basedong product copy lives in basedong’s `docs/backend/CONTEXT.md` (词元, API Key, 额度, …). Upstream source may still say “Token” for API credentials — map that to **API Key** in customer UI.
+Domain language for basedong product copy lives in `docs/backend/CONTEXT.md` (词元, API Key, 额度, …). Upstream source may still say “Token” for API credentials — map that to **API Key** in customer UI.
 
-### SPA session (issue #3)
+Point the Web SPA at this Backend with `NEXT_PUBLIC_API_BASE=http://localhost:3000` (see root `docker-compose.yml` `web-dev`).
+
+### SPA session
 
 Web calls control-plane with `NEXT_PUBLIC_API_BASE` and stores the short-lived **access** JWT in `sessionStorage` (`Authorization: Bearer`). Refresh cookies are `SameSite=Strict` on `/api/user/auth` — for silent refresh across reloads, serve Web and Backend on the **same site** (reverse proxy). Cross-origin SPAs should expect re-login when the access JWT expires (~15 minutes). `/api` applies CORS that reflects the request Origin so browser calls work.

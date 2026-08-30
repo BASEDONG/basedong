@@ -1,6 +1,6 @@
 # Backend
 
-Forked from [new-api](https://github.com/QuantumNous/new-api) as repo [`basedong-api`](https://github.com/BASEDONG/basedong-api): OpenAI-compatible **Relay**, control-plane **API**, and operator **Admin** UI. Customer console stays in Web; this context is the gateway and account/billing engine. Operator notes (AGPL, upstream sync, `/api/status` probe): [`docs/basedong.md`](https://github.com/BASEDONG/basedong-api/blob/main/docs/basedong.md) in that repo.
+OpenAI-compatible **Relay**, control-plane **API**, and operator **Admin** UI — AGPL fork of [new-api](https://github.com/QuantumNous/new-api) living at [`apps/api/`](../../apps/api/) in this monorepo (absorbed from the former `basedong-api` repo; see [ADR 0003](../adr/0003-absorb-basedong-api-into-monorepo.md)). Customer console stays in Web (`apps/web`). Operator notes (AGPL, upstream sync, `/api/status` probe): [`apps/api/docs/basedong.md`](../../apps/api/docs/basedong.md).
 
 ## Language
 

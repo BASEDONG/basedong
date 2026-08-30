@@ -24,6 +24,8 @@ yarn-error.log*
 # IDE
 .idea/
 .vscode/
+.zed/
+.history/
 *.swp
 *.swo
 
@@ -39,3 +41,38 @@ Thumbs.db
 
 # Scratch / local tooling
 .tmp-logo/
+
+# Backend (apps/api) — Go / new-api fork
+apps/api/upload/
+apps/api/logs/
+apps/api/web/dist/
+apps/api/web/node_modules/
+apps/api/electron/node_modules/
+apps/api/electron/dist/
+apps/api/data/
+apps/api/*.exe
+apps/api/*.db
+apps/api/*.db-journal
+apps/api/one-api
+apps/api/new-api
+apps/api/__debug_bin*
+apps/api/tiktoken_cache/
+apps/api/.eslintcache
+apps/api/.gocache/
+apps/api/.gomodcache/
+apps/api/.gocache-temp/
+apps/api/.gopath/
+apps/api/.cache/
+apps/api/.test/
+apps/api/.local-tests/
+apps/api/go.work
+apps/api/go.work.sum
+apps/api/skills-lock.json
+*.exe
+*.db
+*.db-journal
+logs/
+.gomodcache/
+.gocache/
+.data/
+/data/

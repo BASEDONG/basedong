@@ -1,0 +1,116 @@
+name: Seam status probe
+
+# Black-box Backend HTTP seam after building apps/api via docker-compose.dev.yml
+# (+ seam overlay: mock OpenAI upstream for retail Relay proof).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/seam-status.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/seam-status.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seam-status-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: apps/api
+
+jobs:
+  probe:
+    name: compose.dev build + status + auth + retail + redeem + epay + playground
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Build and start stack (fork + mock upstream)
+        run: docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml up -d --build
+
+      - name: Wait for GET /api/status success
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 60); do
+            echo "attempt $i"
+            if body="$(curl -fsS --max-time 5 http://localhost:3000/api/status 2>/tmp/curl.err)"; then
+              if echo "$body" | grep -q '"success"[[:space:]]*:[[:space:]]*true'; then
+                echo "ok: /api/status"
+                exit 0
+              fi
+            else
+              echo "curl failed: $(cat /tmp/curl.err || true)"
+            fi
+            sleep 5
+          done
+          docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml logs --no-color --tail=200 || true
+          exit 1
+
+      - name: Wait for mock OpenAI
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            if docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T mock-openai wget -q -O- http://127.0.0.1:18080/ >/dev/null 2>&1; then
+              echo "ok: mock-openai"
+              exit 0
+            fi
+            # alpine python image may lack wget — try python
+            if docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml exec -T mock-openai python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18080/')" 2>/dev/null; then
+              echo "ok: mock-openai"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml logs --no-color --tail=50 mock-openai || true
+          exit 1
+
+      - name: Probe auth + API Key seam
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-auth.sh
+          chmod +x scripts/probe-auth.sh
+          BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-auth.sh
+
+      - name: Probe retail loop (Channel + Relay + 额度)
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-retail.sh
+          chmod +x scripts/probe-retail.sh
+          BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-retail.sh
+
+      - name: Probe redemption codes credit 额度
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-redeem.sh
+          chmod +x scripts/probe-redeem.sh
+          BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-redeem.sh
+
+      - name: Probe EPay top-up credits 额度
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-epay.sh
+          chmod +x scripts/probe-epay.sh
+          BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-epay.sh
+
+      - name: Probe playground chat via /pg (session → Relay → 额度)
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-playground.sh
+          chmod +x scripts/probe-playground.sh
+          BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-playground.sh
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.dev.yml -f docker-compose.seam.yml down -v
