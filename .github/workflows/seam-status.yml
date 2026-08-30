@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   probe:
-    name: compose.dev build + status + auth + retail + redeem + epay
+    name: compose.dev build + status + auth + retail + redeem + epay + playground
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -93,6 +93,13 @@ jobs:
           sed -i 's/\r$//' scripts/probe-epay.sh
           chmod +x scripts/probe-epay.sh
           BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-epay.sh
+
+      - name: Probe playground chat via /pg (session → Relay → 额度)
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' scripts/probe-playground.sh
+          chmod +x scripts/probe-playground.sh
+          BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-playground.sh
 
       - name: Tear down
         if: always()
