@@ -1,7 +1,9 @@
-# Zen Sidecar spine overlay (#10)
+# Zen Sidecar spine overlay (#10 / #11)
 #
 # Usage (from repo root):
-#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml up -d --build api zen-sidecar
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml -p basedong-zen-spine up -d api zen-sidecar
+#   bash apps/zen-sidecar/scripts/probe-spine.sh
+#   bash apps/zen-sidecar/scripts/probe-auto-nonstream.sh
 #
 # New API reaches the Sidecar at: http://zen-sidecar:8080
 # Do NOT publish zen-sidecar ports to the host — private network only.
@@ -10,6 +12,18 @@
 #   (override by editing apps/zen-sidecar/config.poc.json before first volume init)
 
 services:
+  # Unique container names so the spine project does not collide with a local `docker compose up api`.
+  api:
+    container_name: basedong-zen-spine-api
+    image: basedong-api:dev
+    pull_policy: never
+
+  redis:
+    container_name: basedong-zen-spine-redis
+
+  postgres:
+    container_name: basedong-zen-spine-pg
+
   zen-sidecar:
     image: ghcr.io/jasonxu114514/opencode2api:latest
     container_name: basedong-zen-sidecar
@@ -33,7 +47,6 @@ services:
       timeout: 5s
       retries: 18
       start_period: 45s
-    # Share default compose network with `api` (no explicit networks key required).
 
 volumes:
   zen_sidecar_state:
