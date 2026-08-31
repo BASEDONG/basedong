@@ -10,6 +10,7 @@ From repo root:
 docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml up -d api zen-sidecar
 bash apps/zen-sidecar/scripts/probe-spine.sh
 bash apps/zen-sidecar/scripts/probe-auto-nonstream.sh
+bash apps/zen-sidecar/scripts/probe-auto-stream.sh
 ```
 
 - **Service DNS (stable):** `zen-sidecar` → New API Channel `BaseURL` = `http://zen-sidecar:8080`
