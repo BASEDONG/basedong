@@ -1,0 +1,48 @@
+# Retry PoC overlay (#13) — deterministic mock Zen + thin auto-retry Sidecar
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
+#     -f docker-compose.zen-retry.yml -p basedong-zen-spine up -d
+#   bash apps/zen-sidecar/scripts/probe-auto-retry.sh
+#
+# Replaces stock opencode2api with auto-retry.mjs for this project only.
+
+services:
+  mock-zen:
+    image: python:3.12-alpine
+    container_name: basedong-zen-mock
+    restart: unless-stopped
+    volumes:
+      - ./apps/zen-sidecar/poc/mock_zen.py:/mock_zen.py:ro
+    command: ["python", "/mock_zen.py"]
+    environment:
+      - PORT=8090
+
+  zen-sidecar:
+    image: python:3.12-alpine
+    container_name: basedong-zen-sidecar
+    restart: unless-stopped
+    volumes:
+      - ./apps/zen-sidecar/poc/auto-retry.py:/auto-retry.py:ro
+    command: ["python", "/auto-retry.py"]
+    environment:
+      - PORT=8080
+      - SIDECAR_KEY=basedong-sidecar-dev-credential
+      - UPSTREAM=http://mock-zen:8090
+      - FREE_POOL=fail-free,ok-free
+      - PICK_ORDER=fail-free,ok-free
+      - MAX_ATTEMPTS=5
+    depends_on:
+      - mock-zen
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz')",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
