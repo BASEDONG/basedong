@@ -1,0 +1,39 @@
+# Zen Sidecar spine overlay (#10)
+#
+# Usage (from repo root):
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml up -d --build api zen-sidecar
+#
+# New API reaches the Sidecar at: http://zen-sidecar:8080
+# Do NOT publish zen-sidecar ports to the host — private network only.
+#
+# Sidecar Credential (Channel.Key): basedong-sidecar-dev-credential
+#   (override by editing apps/zen-sidecar/config.poc.json before first volume init)
+
+services:
+  zen-sidecar:
+    image: ghcr.io/jasonxu114514/opencode2api:latest
+    container_name: basedong-zen-sidecar
+    restart: unless-stopped
+    # Intentionally no `ports:` — not a customer endpoint.
+    environment:
+      - CONFIG_SEED_PATH=/run/config/opencode2api.json
+      - LISTEN_ADDRESS=0.0.0.0:8080
+      - WEBUI_LISTEN_ADDRESS=127.0.0.1:8081
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./apps/zen-sidecar/config.poc.json:/run/config/opencode2api.json:ro
+      - zen_sidecar_state:/var/lib/opencode2api
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://127.0.0.1:8080/healthz >/dev/null 2>&1 || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 45s
+    # Share default compose network with `api` (no explicit networks key required).
+
+volumes:
+  zen_sidecar_state:

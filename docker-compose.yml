@@ -11,6 +11,11 @@
 # Web Next.js dev:
 #   docker compose up -d web-dev
 #   # http://localhost:3001
+#
+# Zen Sidecar (private, Anonymous Zen PoC — see apps/zen-sidecar/README.md):
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml up -d api zen-sidecar
+#   bash apps/zen-sidecar/scripts/probe-spine.sh
+#   # New API Channel BaseURL: http://zen-sidecar:8080 (no host ports)
 
 services:
   api:

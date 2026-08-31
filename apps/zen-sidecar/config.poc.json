@@ -1,0 +1,41 @@
+{
+  "listen": "0.0.0.0:8080",
+  "server_keys": ["basedong-sidecar-dev-credential"],
+  "zen_keys": [],
+  "go_keys": [],
+  "anonymous": true,
+  "prefer": "zen",
+  "proxyfile": "",
+  "proxies": ["direct"],
+  "upstream": {
+    "zen": "https://opencode.ai/zen",
+    "go": "https://opencode.ai/zen/go"
+  },
+  "retry": {
+    "max_attempts": 10,
+    "timeout_seconds": 300
+  },
+  "models": {
+    "refresh_seconds": 300,
+    "protocols": {}
+  },
+  "performance": {
+    "max_idle_conns": 256,
+    "max_idle_conns_per_host": 64,
+    "max_conns_per_host": 0,
+    "idle_conn_timeout_seconds": 120,
+    "connect_timeout_seconds": 5,
+    "failure_cooldown_seconds": 15
+  },
+  "logging": {
+    "level": "info",
+    "ring_size": 2000
+  },
+  "webui": {
+    "enabled": false,
+    "listen": "127.0.0.1:8081",
+    "username": "admin",
+    "password": "unused-when-disabled",
+    "session_ttl_minutes": 720
+  }
+}
