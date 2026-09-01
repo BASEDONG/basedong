@@ -1,4 +1,4 @@
-# Zen Sidecar â€” staging rollout checklist
+# Zen Sidecar — staging rollout checklist
 
 Use after [PR #20](https://github.com/BASEDONG/basedong/pull/20) (or equivalent) is on the target environment.
 
@@ -21,10 +21,20 @@ Use after [PR #20](https://github.com/BASEDONG/basedong/pull/20) (or equivalent)
 | Model mapping | `{}` (empty) |
 | RetryTimes | `0` |
 
-- [ ] ModelPrice / billing configured for `auto`
+**Automated seed (local / staging Admin root credentials known):**
+
+```bash
+SIDECAR_CREDENTIAL="$SIDECAR_KEY" \
+  BASEDONG_API_BASE=http://localhost:3000 \
+  bash apps/zen-sidecar/scripts/seed-zen-channel.sh
+```
+
+Or configure manually in Admin UI:
+
+- [ ] ModelPrice / billing configured for `auto` (seed sets `auto:0`)
 - [ ] Channel enabled and routed for the intended token group
 
-## 3. Automated verification (mock â€” CI or laptop)
+## 3. Automated verification (mock — CI or laptop)
 
 ```bash
 bash apps/zen-sidecar/scripts/probe-blackbox.sh
@@ -39,7 +49,7 @@ cd apps/api && go test ./relay/helper/... -run Sidecar -count=1
 Follow [live-smoke.md](./live-smoke.md):
 
 - [ ] Sidecar direct `auto` chat completion succeeds
-- [ ] Customer API Key â†’ Relay â†’ Sidecar â†’ Zen succeeds
+- [ ] Customer API Key → Relay → Sidecar → Zen succeeds
 - [ ] Admin consume log shows **Actual Model** for `auto` requests
 
 ## 5. Product / docs
@@ -58,4 +68,4 @@ Follow [live-smoke.md](./live-smoke.md):
 
 1. Disable or deprioritize the Zen Sidecar Channel in Admin.
 2. Stop `zen-sidecar` container (customers fail fast on `auto` rather than hitting Zen directly).
-3. Keep last good Free Pool cache on disk/volume if Sidecar state is persisted (v1: in-memory only â€” restart triggers resync).
+3. Keep last good Free Pool cache on disk/volume if Sidecar state is persisted (v1: in-memory only — restart triggers resync).
