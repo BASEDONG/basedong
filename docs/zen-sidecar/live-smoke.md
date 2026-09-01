@@ -1,4 +1,4 @@
-# Zen Sidecar â€” live Anonymous Zen smoke
+# Zen Sidecar — live Anonymous Zen smoke
 
 Manual check against **real** OpenCode Zen Anonymous free tier. Not suitable for CI (network, rate limits, catalog churn).
 
@@ -52,10 +52,16 @@ docker run --rm --network "$NETWORK" curlimages/curl:8.12.1 \
 
 ## New API Channel path (E2E)
 
-1. Admin â†’ Channels: Base URL `http://zen-sidecar:8080`, Models `auto`, Key = Sidecar Credential, Model mapping `{}`.
-2. Add **ModelPrice** / ratio for `auto` if billing requires it.
-3. Create or use a test API Key with access to `auto`.
-4. Call Relay:
+1. Seed Channel + ModelPrice (or configure manually in Admin):
+
+```bash
+SIDECAR_CREDENTIAL="$SIDECAR_KEY" \
+  BASEDONG_API_BASE=http://localhost:3000 \
+  bash apps/zen-sidecar/scripts/seed-zen-channel.sh
+```
+
+2. Create or use a test API Key with access to `auto`.
+3. Call Relay:
 
 ```bash
 curl -sS "http://localhost:3000/v1/chat/completions" \
@@ -64,7 +70,7 @@ curl -sS "http://localhost:3000/v1/chat/completions" \
   -d '{"model":"auto","messages":[{"role":"user","content":"ping"}],"max_tokens":16}'
 ```
 
-5. Admin â†’ Logs: consume row shows `model_name=auto` and **Actual Model** (via `other.upstream_model_name`) when Relay patch (#19) is deployed.
+4. Admin → Logs: consume row shows `model_name=auto` and **Actual Model** (via `other.upstream_model_name`) when Relay patch (#19) is deployed.
 
 ## Streaming (optional)
 
