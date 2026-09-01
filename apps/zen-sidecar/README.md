@@ -48,4 +48,19 @@ bash apps/zen-sidecar/scripts/probe-responses-southbound.sh
 - Success: chat → `/v1/responses` → chat-shaped reply (`X-Basedong-Southbound: responses`)
 - Failure: stream / unconvertible output → `protocol_conversion_error` (no silent paid fallback)
 
+## Catalog Sync / Probe (#15)
+
+Free Pool is not a hardcoded seven-model ops list. Sidecar syncs upstream `/v1/models`, keeps `*-free` ∨ allowlist (e.g. `big-pickle`), Probes each candidate, and on sync failure retains the last successful cache:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
+  -f docker-compose.zen-retry.yml -f docker-compose.zen-catalog.yml \
+  -p basedong-zen-spine up -d --pull never --no-build
+bash apps/zen-sidecar/scripts/probe-catalog-sync.sh
+```
+
+- Force sync: `POST /admin/sync` (Sidecar Credential)
+- Mock controls: `/mock-admin/catalog`, `/mock-admin/probe-fail`, `/mock-admin/catalog-fail`
+- PoC sources: `apps/zen-sidecar/poc/{mock_zen.py,catalog_pool.py}`
+
 See ADR 0004 and parent issue #9.

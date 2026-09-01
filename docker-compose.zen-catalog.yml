@@ -1,0 +1,19 @@
+# Catalog Sync / Probe PoC overlay (#15)
+#
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
+#     -f docker-compose.zen-retry.yml -f docker-compose.zen-catalog.yml \
+#     -p basedong-zen-spine up -d --pull never --no-build
+#   bash apps/zen-sidecar/scripts/probe-catalog-sync.sh
+
+services:
+  zen-sidecar:
+    volumes:
+      - ./apps/zen-sidecar/poc/catalog_pool.py:/catalog_pool.py:ro
+    command: ["python", "/catalog_pool.py"]
+    environment:
+      - PORT=8080
+      - SIDECAR_KEY=basedong-sidecar-dev-credential
+      - UPSTREAM=http://mock-zen:8090
+      - ALLOWLIST=big-pickle
+      - SYNC_INTERVAL_SEC=0
+      - MAX_ATTEMPTS=5

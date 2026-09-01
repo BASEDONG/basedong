@@ -1,11 +1,26 @@
 #!/usr/bin/env python3
-"""Deterministic Zen-shaped mock for Sidecar PoC (#13 retry, #14 responses)."""
+"""Deterministic Zen-shaped mock for Sidecar PoC (#13–#15)."""
 from __future__ import annotations
 
 import json
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PORT = int(__import__("os").environ.get("PORT", "8090"))
+
+_lock = threading.Lock()
+_state = {
+    "catalog": [
+        {"id": "fail-free", "object": "model", "owned_by": "mock"},
+        {"id": "ok-free", "object": "model", "owned_by": "mock"},
+        {"id": "muse-spark-free", "object": "model", "owned_by": "mock"},
+        {"id": "paid-not-free", "object": "model", "owned_by": "mock"},
+        {"id": "big-pickle", "object": "model", "owned_by": "mock"},
+        {"id": "dead-free", "object": "model", "owned_by": "mock"},
+    ],
+    "catalog_fail": False,  # next GET /v1/models returns 500
+    "probe_fail": {"dead-free"},  # model ids that fail live probe / chat
+}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -31,32 +46,60 @@ class Handler(BaseHTTPRequestHandler):
         path = self.path.split("?", 1)[0]
         if path in ("/healthz", "/health", "/v1/health"):
             return self._send(200, {"status": "ok"})
+        if path == "/mock-admin/state":
+            with _lock:
+                snap = {
+                    "catalog": list(_state["catalog"]),
+                    "catalog_fail": _state["catalog_fail"],
+                    "probe_fail": sorted(_state["probe_fail"]),
+                }
+            return self._send(200, snap)
         if path.endswith("/models") or path == "/v1/models":
-            models = [
-                {"id": "fail-free", "object": "model", "owned_by": "mock"},
-                {"id": "ok-free", "object": "model", "owned_by": "mock"},
-                {"id": "muse-spark-free", "object": "model", "owned_by": "mock"},
-                {"id": "paid-not-free", "object": "model", "owned_by": "mock"},
-            ]
+            with _lock:
+                if _state["catalog_fail"]:
+                    return self._send(
+                        500,
+                        {"error": {"message": "catalog sync unavailable (mock)", "type": "server_error"}},
+                    )
+                models = list(_state["catalog"])
             return self._send(200, {"object": "list", "data": models})
         self._send(404, {"error": {"message": "not found", "type": "invalid_request_error"}})
 
     def do_POST(self):
         path = self.path.split("?", 1)[0]
         body = self._read_json()
-        model = body.get("model") or ""
 
+        if path == "/mock-admin/catalog":
+            ids = body.get("models")
+            if not isinstance(ids, list) or not ids:
+                return self._send(400, {"error": {"message": "models must be a non-empty list of ids"}})
+            with _lock:
+                _state["catalog"] = [{"id": str(i), "object": "model", "owned_by": "mock"} for i in ids]
+                _state["catalog_fail"] = False
+            return self._send(200, {"ok": True, "catalog": [m["id"] for m in _state["catalog"]]})
+
+        if path == "/mock-admin/catalog-fail":
+            with _lock:
+                _state["catalog_fail"] = bool(body.get("fail", True))
+            return self._send(200, {"ok": True, "catalog_fail": _state["catalog_fail"]})
+
+        if path == "/mock-admin/probe-fail":
+            ids = body.get("ids")
+            if not isinstance(ids, list):
+                return self._send(400, {"error": {"message": "ids must be a list"}})
+            with _lock:
+                _state["probe_fail"] = {str(i) for i in ids}
+            return self._send(200, {"ok": True, "probe_fail": sorted(_state["probe_fail"])})
+
+        model = body.get("model") or ""
         if path.endswith("/responses"):
             return self._handle_responses(model, body)
-
         if path.endswith("/chat/completions"):
             return self._handle_chat(model, body)
-
         self._send(404, {"error": {"message": "not found", "type": "invalid_request_error"}})
 
     def _handle_responses(self, model: str, body: dict) -> None:
         if model == "muse-spark-free":
-            # Minimal Responses API success shape
             return self._send(
                 200,
                 {
@@ -68,16 +111,13 @@ class Handler(BaseHTTPRequestHandler):
                         {
                             "type": "message",
                             "role": "assistant",
-                            "content": [
-                                {"type": "output_text", "text": "pong-responses"},
-                            ],
+                            "content": [{"type": "output_text", "text": "pong-responses"}],
                         }
                     ],
                     "usage": {"input_tokens": 1, "output_tokens": 1, "total_tokens": 2},
                 },
             )
         if model == "broken-responses-free":
-            # Succeeds HTTP but omits extractable text — conversion must fail explicitly
             return self._send(
                 200,
                 {
@@ -95,9 +135,17 @@ class Handler(BaseHTTPRequestHandler):
             )
         self._send(404, {"error": {"message": f"unknown responses model {model}", "type": "invalid_request_error"}})
 
+    def _probe_dead(self, model: str) -> bool:
+        with _lock:
+            return model in _state["probe_fail"]
+
     def _handle_chat(self, model: str, body: dict) -> None:
+        if self._probe_dead(model):
+            return self._send(
+                503,
+                {"error": {"message": f"{model} probe dead (mock)", "type": "server_error"}},
+            )
         if model == "muse-spark-free":
-            # Responses-only upstream: chat path must not succeed
             return self._send(
                 404,
                 {
@@ -123,12 +171,12 @@ class Handler(BaseHTTPRequestHandler):
                 402,
                 {"error": {"message": "paid model (mock) — must never be silent fallback", "type": "billing_error"}},
             )
-        if model == "ok-free":
+        if model in ("ok-free", "big-pickle", "new-free", "revived-free") or model.endswith("-free"):
             if body.get("stream"):
                 payload = (
-                    'data: {"id":"mock","object":"chat.completion.chunk","model":"ok-free",'
+                    f'data: {{"id":"mock","object":"chat.completion.chunk","model":"{model}",'
                     '"choices":[{"index":0,"delta":{"role":"assistant","content":"pong"},"finish_reason":null}]}\n\n'
-                    'data: {"id":"mock","object":"chat.completion.chunk","model":"ok-free",'
+                    f'data: {{"id":"mock","object":"chat.completion.chunk","model":"{model}",'
                     '"choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}\n\n'
                     "data: [DONE]\n\n"
                 ).encode("utf-8")
@@ -143,7 +191,7 @@ class Handler(BaseHTTPRequestHandler):
                 {
                     "id": "mock-ok",
                     "object": "chat.completion",
-                    "model": "ok-free",
+                    "model": model,
                     "choices": [
                         {
                             "index": 0,
