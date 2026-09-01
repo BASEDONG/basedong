@@ -63,4 +63,10 @@ bash apps/zen-sidecar/scripts/probe-catalog-sync.sh
 - Mock controls: `/mock-admin/catalog`, `/mock-admin/probe-fail`, `/mock-admin/catalog-fail`
 - PoC sources: `apps/zen-sidecar/poc/{mock_zen.py,catalog_pool.py}`
 
+## Operator & customer docs (#18)
+
+- **Runbook (Admin):** [`docs/zen-sidecar/runbook.md`](../../docs/zen-sidecar/runbook.md) — Channel BaseURL, `Models=auto`, Sidecar Credential, RetryTimes=0, single egress
+- **Customer disclosure:** [`docs/zen-sidecar/customer-auto-disclosure.md`](../../docs/zen-sidecar/customer-auto-disclosure.md) and API docs [`/docs/api/ai-model/auto`](/docs/api/ai-model/auto)
+- **PoC exit & decision:** [`docs/zen-sidecar/poc-exit.md`](../../docs/zen-sidecar/poc-exit.md) — greenfield thin Sidecar (#16)
+
 See ADR 0004 and parent issue #9.

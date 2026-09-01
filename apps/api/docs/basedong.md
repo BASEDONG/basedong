@@ -110,6 +110,20 @@ Domain language for basedong product copy lives in `docs/backend/CONTEXT.md` (�
 
 Point the Web SPA at this Backend with `NEXT_PUBLIC_API_BASE=http://localhost:3000` (see root `docker-compose.yml` `web-dev`).
 
+## Zen Sidecar Channel (`auto`)
+
+When offering model **`auto`** backed by Anonymous Zen free pool, operators attach **one Channel** to the private Sidecar — not a second control plane. Full runbook: [`docs/zen-sidecar/runbook.md`](../../docs/zen-sidecar/runbook.md).
+
+| Item | Guidance |
+|------|----------|
+| Base URL | `http://zen-sidecar:8080` (stable compose DNS) |
+| Models | `auto` |
+| Channel.Key | **Sidecar Credential** (never Zen `public` / BYOK key) |
+| RetryTimes | **0** (or at most 1) — Sidecar owns Free Pool retry |
+| Egress v1 | Single site IP; shared free-tier quota bucket |
+
+Customer disclosure: [`docs/zen-sidecar/customer-auto-disclosure.md`](../../docs/zen-sidecar/customer-auto-disclosure.md) · Web docs `/docs/api/ai-model/auto`.
+
 ### SPA session
 
 Web calls control-plane with `NEXT_PUBLIC_API_BASE` and stores the short-lived **access** JWT in `sessionStorage` (`Authorization: Bearer`). Refresh cookies are `SameSite=Strict` on `/api/user/auth` — for silent refresh across reloads, serve Web and Backend on the **same site** (reverse proxy). Cross-origin SPAs should expect re-login when the access JWT expires (~15 minutes). `/api` applies CORS that reflects the request Origin so browser calls work.

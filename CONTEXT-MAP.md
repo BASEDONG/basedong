@@ -10,7 +10,7 @@
 
 - **Web → Backend**: Web is the customer Console and Auth UI; Backend supplies login/session, 额度/词元 billing, API Keys, model catalog, and OpenAI-compatible Relay. Web does not embed the Admin UI.
 - **Admin → Backend**: Operators use the stock new-api Admin UI (no 改皮) against the same Backend process under `apps/api`. Offline / private / enterprise packaging is out of scope for this Backend phase.
-- **Backend → Zen Sidecar**: One Admin Channel (`BaseURL` → Sidecar, `Models` includes `auto`, Channel.Key = Sidecar Credential). Sidecar holds Anonymous Zen upstream identity; customers never reach the Sidecar.
+- **Backend → Zen Sidecar**: One Admin Channel (`BaseURL` → Sidecar, `Models` includes `auto`, Channel.Key = Sidecar Credential). Sidecar holds Anonymous Zen upstream identity; customers never reach the Sidecar. Operator runbook: [`docs/zen-sidecar/runbook.md`](./docs/zen-sidecar/runbook.md).
 
 ## Web zones
 

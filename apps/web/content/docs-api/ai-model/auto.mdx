@@ -1,0 +1,40 @@
+---
+title: auto 模型说明
+description: 基于 Zen Sidecar 与 Free Pool 的稳定模型名 auto — 使用限制与披露
+---
+
+## 概述
+
+**`auto`** 是 basedong 提供的稳定模型名称。每次请求由私有 **Zen Sidecar** 从当前 **Free Pool**（匿名免费模型池）中选取一个可用上游模型，通过 **Anonymous Zen** 路径完成推理。
+
+您只需在 `POST /v1/chat/completions` 中将 `model` 设为 **`auto`**，无需自行跟踪免费模型 id 的变更。
+
+## 使用限制与披露
+
+### 第三方匿名免费档
+
+- **`auto`** 经 basedong **Zen Sidecar** 转发至 **Anonymous Zen**（OpenCode Zen 匿名免费档），**不是**专属私有模型，也**不是**您自有的 Zen 余额（BYOK）。
+- 可用性与质量取决于第三方免费档容量；**Free Pool** 成员可能随目录同步与探测结果变化。
+
+### 可能用于模型改进
+
+匿名免费档提供商**可能将提示词与输出用于改进其模型**（与常见免费档条款一致）。因此 **`auto` 不适合处理机密、受监管或敏感数据**（凭证、个人信息、商业秘密、未发布代码等）。
+
+### 站点级共享限额
+
+v1 中，免费档速率限制作用于 basedong **站点出口 IP** 的**共享配额桶**，**而非**按客户 IP 分别计量。大量 **`auto`** 调用可能触发共享限速；Sidecar 会在内部尝试重试与 Free Pool 轮换，但无法保证每次成功。
+
+## 建议
+
+对需要保密性或 SLA 的生产 workload，请选用**付费模型**及符合合规要求的渠道，**不要**使用 **`auto`**。
+
+## 技术说明
+
+- 响应 JSON 中的 `model` 字段可能返回**实际上游模型 id**（便于日志与支持）。
+- 支持流式（`stream: true`）；Sidecar **不会在已开始输出正文后**静默切换模型。
+- 您的 **API Key** 用于访问 basedong Relay，**不是** Sidecar Credential，也**不是** Zen 密钥。
+
+## 相关文档
+
+- [聊天补全（OpenAI 格式）](/docs/api/ai-model/chat/openai/createchatcompletion)
+- 运维配置见内部 runbook：`docs/zen-sidecar/runbook.md`
