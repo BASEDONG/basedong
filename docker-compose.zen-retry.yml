@@ -5,7 +5,7 @@
 #     -f docker-compose.zen-retry.yml -p basedong-zen-spine up -d
 #   bash apps/zen-sidecar/scripts/probe-auto-retry.sh
 #
-# Replaces stock opencode2api with auto-retry.mjs for this project only.
+# Replaces stock opencode2api with auto-retry.py for this project only.
 
 services:
   mock-zen:

@@ -1,0 +1,18 @@
+# Responses southbound PoC overlay (#14)
+#
+# Stack on top of zen-sidecar + zen-retry:
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
+#     -f docker-compose.zen-retry.yml -f docker-compose.zen-responses.yml \
+#     -p basedong-zen-spine up -d --pull never --no-build
+#   bash apps/zen-sidecar/scripts/probe-responses-southbound.sh
+
+services:
+  zen-sidecar:
+    environment:
+      - PORT=8080
+      - SIDECAR_KEY=basedong-sidecar-dev-credential
+      - UPSTREAM=http://mock-zen:8090
+      - FREE_POOL=muse-spark-free,ok-free
+      - PICK_ORDER=muse-spark-free
+      - RESPONSES_MODELS=muse-spark-free,broken-responses-free
+      - MAX_ATTEMPTS=3

@@ -34,4 +34,18 @@ bash apps/zen-sidecar/scripts/probe-auto-retry.sh
 - Stream: rotation only before any body bytes (no mid-stream stitch)
 - PoC sources: `apps/zen-sidecar/poc/{mock_zen.py,auto-retry.py}`
 
+## Responses southbound (#14)
+
+New API keeps speaking `POST /v1/chat/completions` only. Sidecar converts for Free Pool members listed in `RESPONSES_MODELS` (mock: `muse-spark-free`):
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
+  -f docker-compose.zen-retry.yml -f docker-compose.zen-responses.yml \
+  -p basedong-zen-spine up -d --pull never --no-build
+bash apps/zen-sidecar/scripts/probe-responses-southbound.sh
+```
+
+- Success: chat → `/v1/responses` → chat-shaped reply (`X-Basedong-Southbound: responses`)
+- Failure: stream / unconvertible output → `protocol_conversion_error` (no silent paid fallback)
+
 See ADR 0004 and parent issue #9.
