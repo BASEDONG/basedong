@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set up Go
-        uses: actions/setup-go@40a346d2a4cd6182523bb5a3b6c1c5d2b5e9726 # v5.6.0
+        uses: actions/setup-go@v5
         with:
           go-version-file: apps/api/go.mod
           cache-dependency-path: apps/api/go.sum
