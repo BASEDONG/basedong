@@ -55,6 +55,14 @@ jobs:
         run: |
           docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml build api
 
+      - name: Pull Sidecar probe base images
+        run: |
+          docker pull postgres:15-alpine
+          docker pull redis:7-alpine
+          docker pull python:3.12-alpine
+          docker pull curlimages/curl:8.12.1
+          docker pull ghcr.io/jqlang/jq:1.7
+
       - name: Run Zen Sidecar black-box probe (mock upstream)
         run: |
           set -euo pipefail
