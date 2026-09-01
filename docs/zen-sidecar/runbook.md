@@ -93,9 +93,11 @@ bash apps/zen-sidecar/scripts/probe-catalog-sync.sh         # #15
 | Always same upstream id | Free Pool size 1 or mapping bypasses Sidecar `auto` |
 | Empty pool / 503 | Catalog sync + probe; confirm last cache retained on sync failure |
 | Customer sees raw free ids only | Product should expose **`auto`**; direct ids are ops/debug |
+| Consume log shows `auto` only | Relay reads `X-Basedong-Upstream-Model`; see [`upstream-model-logging.md`](./upstream-model-logging.md) |
 
 ## Related
 
 - Sidecar README: [`apps/zen-sidecar/README.md`](../../apps/zen-sidecar/README.md)
 - Backend operator notes: [`apps/api/docs/basedong.md`](../../apps/api/docs/basedong.md)
 - Customer disclosure: [`customer-auto-disclosure.md`](./customer-auto-disclosure.md) (also in API docs)
+- Upstream model in logs: [`upstream-model-logging.md`](./upstream-model-logging.md)
