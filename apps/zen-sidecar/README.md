@@ -15,6 +15,12 @@ bash apps/zen-sidecar/scripts/probe-auto-nonstream.sh
 bash apps/zen-sidecar/scripts/probe-auto-stream.sh
 ```
 
+Seed Channel + `ModelPrice` only (idempotent, no Relay traffic):
+
+```bash
+BASEDONG_API_BASE=http://localhost:3000 bash apps/zen-sidecar/scripts/seed-zen-channel.sh
+```
+
 Black-box contract (mock Zen, deterministic):
 
 ```bash
@@ -44,6 +50,8 @@ Legacy PoC reference: [`config.poc.json`](./config.poc.json) (opencode2api; supe
 ## Operator & customer docs (#18)
 
 - **Runbook:** [`docs/zen-sidecar/runbook.md`](../../docs/zen-sidecar/runbook.md)
+- **Staging checklist:** [`docs/zen-sidecar/staging-checklist.md`](../../docs/zen-sidecar/staging-checklist.md)
+- **Live smoke:** [`docs/zen-sidecar/live-smoke.md`](../../docs/zen-sidecar/live-smoke.md)
 - **Customer disclosure:** [`docs/zen-sidecar/customer-auto-disclosure.md`](../../docs/zen-sidecar/customer-auto-disclosure.md) · [`/docs/api/ai-model/auto`](/docs/api/ai-model/auto)
 - **PoC exit & decision:** [`docs/zen-sidecar/poc-exit.md`](../../docs/zen-sidecar/poc-exit.md)
 
