@@ -156,6 +156,26 @@ class Handler(BaseHTTPRequestHandler):
                 },
             )
         if model == "fail-free":
+            # Probe uses max_tokens=1 + "ping"; full requests simulate rate limit for retry tests.
+            msgs = body.get("messages") or []
+            last = msgs[-1].get("content") if msgs and isinstance(msgs[-1], dict) else ""
+            if body.get("max_tokens") == 1 and str(last).strip().lower() == "ping":
+                return self._send(
+                    200,
+                    {
+                        "id": "mock-probe",
+                        "object": "chat.completion",
+                        "model": "fail-free",
+                        "choices": [
+                            {
+                                "index": 0,
+                                "finish_reason": "stop",
+                                "message": {"role": "assistant", "content": "pong"},
+                            }
+                        ],
+                        "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+                    },
+                )
             return self._send(
                 429,
                 {"error": {"message": "rate limited (mock)", "type": "rate_limit_error"}},

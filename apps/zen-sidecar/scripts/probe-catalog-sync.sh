@@ -10,6 +10,7 @@ COMPOSE=(
   docker compose
   -f docker-compose.yml
   -f docker-compose.zen-sidecar.yml
+  -f docker-compose.zen-mock.yml
   -f docker-compose.zen-retry.yml
   -f docker-compose.zen-catalog.yml
   -p "$PROJECT"

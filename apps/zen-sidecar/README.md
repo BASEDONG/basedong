@@ -2,71 +2,49 @@
 
 Thin upstream adapter in front of OpenCode Zen’s anonymous free tier. New API keeps a single Channel pointed here; customers never talk to this container.
 
-## PoC spine (#10) + auto path (#11–#12)
+**Implementation:** greenfield [`sidecar.py`](./sidecar.py) (#17) — Catalog Sync, Probe, `auto`, retry, chat↔responses conversion.
+
+## Quick start
 
 From repo root:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml up -d api zen-sidecar
+docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml -p basedong-zen-spine up -d api zen-sidecar
 bash apps/zen-sidecar/scripts/probe-spine.sh
 bash apps/zen-sidecar/scripts/probe-auto-nonstream.sh
 bash apps/zen-sidecar/scripts/probe-auto-stream.sh
 ```
 
+Black-box contract (mock Zen, deterministic):
+
+```bash
+bash apps/zen-sidecar/scripts/probe-blackbox.sh
+```
+
 - **Service DNS (stable):** `zen-sidecar` → New API Channel `BaseURL` = `http://zen-sidecar:8080`
-- **Sidecar Credential (Channel.Key):** `basedong-sidecar-dev-credential` (see `config.poc.json`)
-- **Customer model:** `auto` (PoC maps via Channel `model_mapping` to a Free Pool id such as `big-pickle` until native Sidecar `auto` in #17)
-- **Health:** `GET /healthz` on the PoC image (opencode2api; stands in for issue `/health`)
+- **Sidecar Credential (Channel.Key):** `basedong-sidecar-dev-credential` (rotate in production)
+- **Customer model:** `auto` — native Sidecar mapping; Channel `model_mapping` should be `{}`
+- **Health:** `GET /health` or `/healthz`; private Free Pool snapshot in JSON
 - **No host ports** on `zen-sidecar` — private compose network only
+- **Upstream (default):** `https://opencode.ai/zen/v1` (Anonymous Zen inside Sidecar only)
 
-## Retry / Free Pool rotation (#13)
-
-Stock opencode2api retries keys/proxies, not Free Pool models. This overlay swaps in a thin Node Sidecar + mock Zen so rotation is deterministic:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
-  -f docker-compose.zen-retry.yml -p basedong-zen-spine up -d
-bash apps/zen-sidecar/scripts/probe-auto-retry.sh
-```
-
-- `PICK_ORDER=fail-free,ok-free` — first member 429s; Sidecar rotates before answering
-- New API `RetryTimes=0`; Channel sends literal `auto` (empty `model_mapping`)
-- Stream: rotation only before any body bytes (no mid-stream stitch)
-- PoC sources: `apps/zen-sidecar/poc/{mock_zen.py,auto-retry.py}`
-
-## Responses southbound (#14)
-
-New API keeps speaking `POST /v1/chat/completions` only. Sidecar converts for Free Pool members listed in `RESPONSES_MODELS` (mock: `muse-spark-free`):
+## Mock overlays (regression)
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
-  -f docker-compose.zen-retry.yml -f docker-compose.zen-responses.yml \
+  -f docker-compose.zen-mock.yml -f docker-compose.zen-retry.yml \
   -p basedong-zen-spine up -d --pull never --no-build
-bash apps/zen-sidecar/scripts/probe-responses-southbound.sh
+bash apps/zen-sidecar/scripts/probe-auto-retry.sh          # #13
+bash apps/zen-sidecar/scripts/probe-responses-southbound.sh # #14 (+ zen-responses.yml)
+bash apps/zen-sidecar/scripts/probe-catalog-sync.sh         # #15 (+ zen-catalog.yml)
 ```
 
-- Success: chat → `/v1/responses` → chat-shaped reply (`X-Basedong-Southbound: responses`)
-- Failure: stream / unconvertible output → `protocol_conversion_error` (no silent paid fallback)
-
-## Catalog Sync / Probe (#15)
-
-Free Pool is not a hardcoded seven-model ops list. Sidecar syncs upstream `/v1/models`, keeps `*-free` ∨ allowlist (e.g. `big-pickle`), Probes each candidate, and on sync failure retains the last successful cache:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
-  -f docker-compose.zen-retry.yml -f docker-compose.zen-catalog.yml \
-  -p basedong-zen-spine up -d --pull never --no-build
-bash apps/zen-sidecar/scripts/probe-catalog-sync.sh
-```
-
-- Force sync: `POST /admin/sync` (Sidecar Credential)
-- Mock controls: `/mock-admin/catalog`, `/mock-admin/probe-fail`, `/mock-admin/catalog-fail`
-- PoC sources: `apps/zen-sidecar/poc/{mock_zen.py,catalog_pool.py}`
+Legacy PoC reference: [`config.poc.json`](./config.poc.json) (opencode2api; superseded by `sidecar.py`).
 
 ## Operator & customer docs (#18)
 
-- **Runbook (Admin):** [`docs/zen-sidecar/runbook.md`](../../docs/zen-sidecar/runbook.md) — Channel BaseURL, `Models=auto`, Sidecar Credential, RetryTimes=0, single egress
-- **Customer disclosure:** [`docs/zen-sidecar/customer-auto-disclosure.md`](../../docs/zen-sidecar/customer-auto-disclosure.md) and API docs [`/docs/api/ai-model/auto`](/docs/api/ai-model/auto)
-- **PoC exit & decision:** [`docs/zen-sidecar/poc-exit.md`](../../docs/zen-sidecar/poc-exit.md) — greenfield thin Sidecar (#16)
+- **Runbook:** [`docs/zen-sidecar/runbook.md`](../../docs/zen-sidecar/runbook.md)
+- **Customer disclosure:** [`docs/zen-sidecar/customer-auto-disclosure.md`](../../docs/zen-sidecar/customer-auto-disclosure.md) · [`/docs/api/ai-model/auto`](/docs/api/ai-model/auto)
+- **PoC exit & decision:** [`docs/zen-sidecar/poc-exit.md`](../../docs/zen-sidecar/poc-exit.md)
 
 See ADR 0004 and parent issue #9.

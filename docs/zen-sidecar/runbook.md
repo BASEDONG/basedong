@@ -53,9 +53,9 @@ Do not rely on New API channel retry loops to simulate Free Pool rotation.
 3. **Probe** — cheap live check; drop dead candidates; re-admit on recovery.
 4. **Cache** — if sync fails, keep the **last successful** pool; do not empty the pool.
 
-Force sync (PoC / Sidecar with admin API): `POST /admin/sync` with `Authorization: Bearer <Sidecar Credential>`.
+Force sync (Sidecar with admin API): `POST /admin/sync` with `Authorization: Bearer <Sidecar Credential>`.
 
-Health / pool snapshot (private): `GET /healthz` on the Sidecar (PoC: `/healthz`; target contract: `/health`).
+Health / pool snapshot (private): `GET /health` or `/healthz` on the Sidecar (`apps/zen-sidecar/sidecar.py`).
 
 ## Egress and quotas (v1)
 

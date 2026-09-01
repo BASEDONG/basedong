@@ -13,8 +13,6 @@ BASE="${BASEDONG_API_BASE:-http://localhost:3000}"
 BASE="${BASE%/}"
 SIDECAR_URL="${ZEN_SIDECAR_URL:-http://zen-sidecar:8080}"
 SIDECAR_KEY="${SIDECAR_CREDENTIAL:-basedong-sidecar-dev-credential}"
-# PoC: stock opencode2api has no native `auto` — Channel model_mapping bridges until #17.
-UPSTREAM_FREE="${ZEN_POC_UPSTREAM_MODEL:-big-pickle}"
 MODEL=auto
 USER="z$(date +%s | tail -c 7)$((RANDOM % 1000))"
 PASS="ProbePass123!"
@@ -139,11 +137,10 @@ echo "== create Channel (BaseURL=Sidecar, Key=Sidecar Credential, models=auto) =
 ch_payload="$(jqn -n \
   --arg key "$SIDECAR_KEY" \
   --arg base "$SIDECAR_URL" \
-  --arg up "$UPSTREAM_FREE" \
   '{mode:"single",channel:{
       type:1,name:"zen-sidecar-auto",key:$key,base_url:$base,
       models:"auto",
-      model_mapping:("{\"auto\":\""+$up+"\"}"),
+      model_mapping:"{}",
       group:"default",status:1,priority:1,weight:100,auto_ban:1
     }}')"
 ch_out="$(curl -sS -X POST "$BASE/api/channel/" \
@@ -184,7 +181,7 @@ head -c 800 /tmp/zen-auto-relay.json; echo
 grep -q '"choices"' /tmp/zen-auto-relay.json || fail "relay body missing choices"
 resp_model="$(json_str model </tmp/zen-auto-relay.json)"
 case "$resp_model" in
-  auto|"$UPSTREAM_FREE"|*-free|big-pickle) pass "response model=$resp_model (Free Pool path)" ;;
+  auto|*-free|big-pickle) pass "response model=$resp_model (Free Pool path)" ;;
   *) fail "unexpected response model: $resp_model" ;;
 esac
 
@@ -195,8 +192,8 @@ good_id="$(echo "$ch_list" | jqn '.data.items[0].id')"
 curl -fsS -X PUT "$BASE/api/channel/" \
   -H "Authorization: Bearer $root_token" \
   -H 'Content-Type: application/json' \
-  -d "$(jqn -n --argjson id "$good_id" --arg base "$SIDECAR_URL" --arg up "$UPSTREAM_FREE" \
-    '{id:$id,type:1,name:"zen-sidecar-auto",key:"definitely-wrong-sidecar-key",base_url:$base,models:"auto",model_mapping:("{\"auto\":\""+$up+"\"}"),group:"default",priority:1,weight:100,auto_ban:1}')" \
+  -d "$(jqn -n --argjson id "$good_id" --arg base "$SIDECAR_URL" \
+    '{id:$id,type:1,name:"zen-sidecar-auto",key:"definitely-wrong-sidecar-key",base_url:$base,models:"auto",model_mapping:"{}",group:"default",priority:1,weight:100,auto_ban:1}')" \
   | grep -q '"success"[[:space:]]*:[[:space:]]*true' || fail "overwrite channel key failed"
 
 bad_code="$(curl -sS -o /tmp/zen-auto-bad.json -w '%{http_code}' -X POST "$BASE/v1/chat/completions" \

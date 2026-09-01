@@ -55,8 +55,8 @@ bash apps/zen-sidecar/scripts/probe-catalog-sync.sh
 
 ### Deprecate after #17
 
-- PoC overlay compose files remain for regression until long-term Sidecar passes the same probes
-- Stock `ghcr.io/jasonxu114514/opencode2api` as default `zen-sidecar` image
+- PoC overlay compose files remain for mock-Zen regression (`probe-blackbox.sh`)
+- Stock `ghcr.io/jasonxu114514/opencode2api` superseded by [`apps/zen-sidecar/sidecar.py`](../../apps/zen-sidecar/sidecar.py) in `docker-compose.zen-sidecar.yml`
 
 ## Related docs
 
