@@ -1,0 +1,7 @@
+# Responses southbound overlay (#14) — requires mock Zen
+
+services:
+  zen-sidecar:
+    environment:
+      - RESPONSES_MODELS=muse-spark-free,broken-responses-free
+      - PICK_ORDER=muse-spark-free

@@ -1,0 +1,8 @@
+# Retry overlay — deterministic PICK_ORDER on mock Zen (#13)
+# Requires docker-compose.zen-mock.yml
+
+services:
+  zen-sidecar:
+    environment:
+      - PICK_ORDER=fail-free,ok-free
+      - MAX_ATTEMPTS=5

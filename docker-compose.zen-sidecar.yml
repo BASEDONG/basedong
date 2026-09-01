@@ -1,0 +1,50 @@
+# Zen Sidecar spine overlay (#10+ / #17 greenfield)
+#
+# Usage (from repo root):
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml -p basedong-zen-spine up -d api zen-sidecar
+#   bash apps/zen-sidecar/scripts/probe-spine.sh
+#   bash apps/zen-sidecar/scripts/probe-blackbox.sh   # mock upstream (full contract)
+#
+# New API reaches the Sidecar at: http://zen-sidecar:8080
+# Do NOT publish zen-sidecar ports to the host — private network only.
+#
+# Sidecar Credential (Channel.Key): basedong-sidecar-dev-credential
+
+services:
+  api:
+    container_name: basedong-zen-spine-api
+    image: basedong-api:dev
+    pull_policy: never
+
+  redis:
+    container_name: basedong-zen-spine-redis
+
+  postgres:
+    container_name: basedong-zen-spine-pg
+
+  zen-sidecar:
+    image: python:3.12-alpine
+    container_name: basedong-zen-sidecar
+    restart: unless-stopped
+    volumes:
+      - ./apps/zen-sidecar/sidecar.py:/sidecar.py:ro
+    command: ["python", "/sidecar.py"]
+    environment:
+      - PORT=8080
+      - SIDECAR_KEY=basedong-sidecar-dev-credential
+      - UPSTREAM=https://opencode.ai/zen/v1
+      - ALLOWLIST=big-pickle
+      - SYNC_INTERVAL_SEC=300
+      - MAX_ATTEMPTS=10
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 30s

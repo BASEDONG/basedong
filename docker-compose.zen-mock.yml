@@ -1,0 +1,23 @@
+# Mock Zen upstream for deterministic black-box tests (#13–#17)
+#
+#   docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml \
+#     -f docker-compose.zen-mock.yml -p basedong-zen-spine up -d --pull never --no-build
+#   bash apps/zen-sidecar/scripts/probe-blackbox.sh
+
+services:
+  mock-zen:
+    image: python:3.12-alpine
+    container_name: basedong-zen-mock
+    restart: unless-stopped
+    volumes:
+      - ./apps/zen-sidecar/poc/mock_zen.py:/mock_zen.py:ro
+    command: ["python", "/mock_zen.py"]
+    environment:
+      - PORT=8090
+
+  zen-sidecar:
+    environment:
+      - UPSTREAM=http://mock-zen:8090
+      - SYNC_INTERVAL_SEC=0
+    depends_on:
+      - mock-zen

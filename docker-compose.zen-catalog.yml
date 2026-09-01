@@ -1,0 +1,7 @@
+# Catalog Sync / Probe overlay (#15) — requires mock Zen
+
+services:
+  zen-sidecar:
+    environment:
+      - ALLOWLIST=big-pickle
+      - SYNC_INTERVAL_SEC=0
