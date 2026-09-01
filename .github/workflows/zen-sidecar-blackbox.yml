@@ -1,0 +1,76 @@
+name: Zen Sidecar black-box probe
+
+# Black-box northbound contract: Sidecar + mock Zen + New API compose spine.
+# Live Anonymous Zen is manual only â€” see docs/zen-sidecar/live-smoke.md.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/zen-sidecar/**"
+      - "apps/api/relay/helper/sidecar_upstream.go"
+      - "apps/api/relay/helper/sidecar_upstream_test.go"
+      - "docker-compose.yml"
+      - "docker-compose.zen-*.yml"
+      - ".github/workflows/zen-sidecar-blackbox.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/zen-sidecar/**"
+      - "apps/api/relay/helper/sidecar_upstream.go"
+      - "apps/api/relay/helper/sidecar_upstream_test.go"
+      - "docker-compose.yml"
+      - "docker-compose.zen-*.yml"
+      - ".github/workflows/zen-sidecar-blackbox.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zen-sidecar-blackbox-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  blackbox:
+    name: mock Zen black-box + Sidecar upstream log helper tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@40a346d2a4cd6182523bb5a3b6c1c5d2b5e9726 # v5.6.0
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+
+      - name: Sidecar upstream header unit tests
+        working-directory: apps/api
+        run: go test ./relay/helper/... -run Sidecar -count=1
+
+      - name: Build API image for compose spine
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.zen-sidecar.yml build api
+
+      - name: Run Zen Sidecar black-box probe (mock upstream)
+        run: |
+          set -euo pipefail
+          find apps/zen-sidecar/scripts -name '*.sh' -exec sed -i 's/\r$//' {} +
+          chmod +x apps/zen-sidecar/scripts/*.sh
+          bash apps/zen-sidecar/scripts/probe-blackbox.sh
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose \
+            -f docker-compose.yml \
+            -f docker-compose.zen-sidecar.yml \
+            -f docker-compose.zen-mock.yml \
+            -f docker-compose.zen-retry.yml \
+            -f docker-compose.zen-responses.yml \
+            -f docker-compose.zen-catalog.yml \
+            -p basedong-zen-spine \
+            down -v || true
