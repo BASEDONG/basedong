@@ -13,7 +13,7 @@ export function LoginBanner() {
     <div className="relative hidden min-h-0 flex-1 lg:block">
       <HeroSlideBackground {...heroBackground} logoAlt={copy.subtitle} />
       <div className="relative z-10 flex h-full flex-col px-14 py-14 text-slate-800">
-        <BrandLogo size="hero" priority />
+        <BrandLogo size="hero" priority alt={copy.brandName} />
         <section className="mt-16 max-w-[28rem]">
           <h1 className="text-[48px] font-semibold leading-[1.25] tracking-tight">
             {copy.brandName}

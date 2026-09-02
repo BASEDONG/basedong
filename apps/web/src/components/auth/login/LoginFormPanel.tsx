@@ -309,6 +309,7 @@ export function LoginFormPanel() {
         size="hero"
         className="mx-auto mb-8 block xl:hidden"
         priority
+        alt={COPY.brandName}
       />
       <h2 className="mb-8 text-center text-3xl font-normal leading-10 text-[var(--sf-ink)]">
         {COPY.title}
