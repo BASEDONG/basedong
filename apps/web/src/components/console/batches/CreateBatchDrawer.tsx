@@ -4,6 +4,10 @@ import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "rea
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { modelOptions, type PriceUnit } from "./content";
 import { getBatchesUiCopy, getDefaultPriceRows } from "./batches-ui-copy";
+import {
+  CONSOLE_END_DRAWER_SHELL,
+  consoleEndDrawerTranslate,
+} from "../shared/console-rtl-classes";
 
 interface CreateBatchDrawerProps {
   open: boolean;
@@ -134,7 +138,7 @@ function priceRowsForModel(modelValue: string, locale: string) {
 }
 
 export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
-  const { targetLocale } = useLocale();
+  const { targetLocale, isRtl } = useLocale();
   const copy = useMemo(() => getBatchesUiCopy(targetLocale), [targetLocale]);
   const titleId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -222,9 +226,7 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`pointer-events-auto absolute right-0 top-0 flex h-full w-[min(100%,600px)] min-w-[min(100%,600px)] max-w-full flex-col bg-white shadow-[-6px_0_16px_rgba(0,0,0,0.08),-3px_0_6px_-4px_rgba(0,0,0,0.12),-9px_0_28px_8px_rgba(0,0,0,0.05)] transition-transform duration-200 ease-out ${
-          entered ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`${CONSOLE_END_DRAWER_SHELL} w-[min(100%,600px)] min-w-[min(100%,600px)] max-w-full transition-transform duration-200 ease-out ${consoleEndDrawerTranslate(entered, isRtl)}`}
       >
         <div className="flex h-14 shrink-0 items-center px-6">
           <button

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { resolveConsoleDocumentMetadata } from "@/lib/console-page-metadata";
 import { resolveDocumentMetadata } from "@/lib/document-metadata";
-import { catalogLocale, targetCatalogLocale } from "@/lib/locale";
+import { catalogLocale, isRtlLocale, targetCatalogLocale } from "@/lib/locale";
 import { localeFromPathname, pathnameWithoutLocale } from "@/lib/locale-path";
 
 function setMetaDescription(content: string) {
@@ -30,6 +30,8 @@ export function DocumentMetadataSync() {
       : catalogLocale(localeFromPathname(pathname));
 
     document.documentElement.lang = locale;
+    document.documentElement.dir =
+      isConsole && isRtlLocale(locale) ? "rtl" : "ltr";
 
     const meta = isConsole
       ? resolveConsoleDocumentMetadata(bare, locale)

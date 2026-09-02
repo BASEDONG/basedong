@@ -43,6 +43,11 @@ export const CONSOLE_LOCALES = [
   "id",
 ] as const;
 
+/** Locales that require right-to-left document and layout mirroring in Console. */
+export const RTL_LOCALES = ["ar"] as const;
+
+export type RtlLocale = (typeof RTL_LOCALES)[number];
+
 export type TranslatedLocale = (typeof TRANSLATED_LOCALES)[number];
 export type TargetLocale = (typeof TARGET_LOCALES)[number];
 export type ConsoleLocale = (typeof CONSOLE_LOCALES)[number];
@@ -55,6 +60,7 @@ export const PREFERRED_LOCALE_STORAGE_KEY = "bd_preferred_locale";
 const TRANSLATED_SET = new Set<string>(TRANSLATED_LOCALES);
 const TARGET_SET = new Set<string>(TARGET_LOCALES);
 const CONSOLE_SET = new Set<string>(CONSOLE_LOCALES);
+const RTL_SET = new Set<string>(RTL_LOCALES);
 
 /** Prefixed Translated Locales (Source uses bare paths). */
 export const PREFIXED_LOCALES = TRANSLATED_LOCALES.filter(
@@ -71,6 +77,10 @@ export function isTargetLocale(code: string): code is TargetLocale {
 
 export function isConsoleLocale(code: string): code is ConsoleLocale {
   return CONSOLE_SET.has(code);
+}
+
+export function isRtlLocale(code: string): code is RtlLocale {
+  return RTL_SET.has(code);
 }
 
 /** Marketing + Auth catalog locale (Translated only; unknown → Fallback). */

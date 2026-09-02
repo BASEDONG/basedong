@@ -210,9 +210,9 @@ export function ChatWorkspace({ copy, model }: ChatWorkspaceProps) {
 
                       m.role === "user"
 
-                        ? "ml-auto max-w-[80%] rounded-[8px] bg-slate-100 px-3 py-2 text-sm text-slate-800"
+                        ? "ms-auto max-w-[80%] rounded-[8px] bg-slate-100 px-3 py-2 text-sm text-slate-800"
 
-                        : "mr-auto max-w-[80%] rounded-[8px] border border-slate-200 bg-white/80 px-3 py-2 text-sm text-slate-800"
+                        : "me-auto max-w-[80%] rounded-[8px] border border-slate-200 bg-white/80 px-3 py-2 text-sm text-slate-800"
 
                     }
 
@@ -226,7 +226,7 @@ export function ChatWorkspace({ copy, model }: ChatWorkspaceProps) {
 
                 {sending ? (
 
-                  <div className="mr-auto max-w-[80%] rounded-[8px] border border-dashed border-slate-200 bg-white/60 px-3 py-2 text-sm text-slate-500">
+                  <div className="me-auto max-w-[80%] rounded-[8px] border border-dashed border-slate-200 bg-white/60 px-3 py-2 text-sm text-slate-500">
 
                     {copy.callingRelay}
 

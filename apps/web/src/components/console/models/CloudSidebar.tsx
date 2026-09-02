@@ -71,7 +71,7 @@ export function CloudSidebar({
                 <div className="flex items-center px-4 pb-2 pt-4 text-xs text-slate-400">
                   <span>{group.label}</span>
                   {group.badge ? (
-                    <span className="ml-2 inline-flex h-5 items-center rounded border-none bg-[var(--sf-tint-solid)] px-[7px] text-xs leading-5 text-[var(--sf-primary)]">
+                    <span className="ms-2 inline-flex h-5 items-center rounded border-none bg-[var(--sf-tint-solid)] px-[7px] text-xs leading-5 text-[var(--sf-primary)]">
                       {group.badge}
                     </span>
                   ) : null}
@@ -91,11 +91,11 @@ export function CloudSidebar({
                           active
                             ? "bg-black/[0.04] text-[var(--sf-primary)]"
                             : "text-slate-800 hover:bg-black/[0.04] hover:text-[var(--sf-primary)]"
-                        } ${collapsed ? "justify-center px-0" : "px-4 pl-6"}`}
+                        } ${collapsed ? "justify-center px-0" : "px-4 ps-6"}`}
                       >
                         <Icon className="size-4 shrink-0" />
                         {!collapsed && (
-                          <span className="ml-2.5 truncate">{item.label}</span>
+                          <span className="ms-2.5 truncate">{item.label}</span>
                         )}
                       </a>
                     </li>
@@ -109,7 +109,7 @@ export function CloudSidebar({
 
       {!collapsed && (
         <div
-          className="fixed bottom-0 left-0 z-50 flex flex-col justify-start gap-3 p-5 pl-8 pr-0"
+          className="fixed bottom-0 start-0 z-50 flex flex-col justify-start gap-3 p-5 ps-8 pe-0"
           style={{
             backgroundImage:
               "linear-gradient(rgba(255, 255, 255, 0.85) 30%, rgb(255, 255, 255) 15%)",

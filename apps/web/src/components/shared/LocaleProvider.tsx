@@ -18,6 +18,7 @@ import {
   isTranslatedLocale,
   marketingContentLocale,
   targetCatalogLocale,
+  isRtlLocale,
   type Locale,
   type TargetLocale,
   type TranslatedLocale,
@@ -32,6 +33,8 @@ type LocaleContextValue = {
   preferredLocale: Locale;
   /** Preferred Locale when it is a Target Locale. */
   targetLocale: TargetLocale;
+  /** True when Console should mirror layout (e.g. Arabic). */
+  isRtl: boolean;
   setPreferredLocale: (code: Locale) => void;
   href: (path: string) => string;
   resolveHref: (href: string) => string;
@@ -84,6 +87,7 @@ export function LocaleProvider({
 
   const contentLocale = marketingContentLocale(preferredLocale, pathnameLocale);
   const targetLocale = targetCatalogLocale(preferredLocale);
+  const isRtl = isRtlLocale(targetLocale);
 
   const value = useMemo<LocaleContextValue>(
     () => ({
@@ -91,6 +95,7 @@ export function LocaleProvider({
       locale: contentLocale,
       preferredLocale,
       targetLocale,
+      isRtl,
       setPreferredLocale,
       href: (path: string) =>
         withLocalePrefix(path, marketingContentLocale(preferredLocale, pathnameLocale)),
@@ -100,7 +105,7 @@ export function LocaleProvider({
           marketingContentLocale(preferredLocale, pathnameLocale),
         ),
     }),
-    [pathnameLocale, contentLocale, preferredLocale, targetLocale, setPreferredLocale],
+    [pathnameLocale, contentLocale, preferredLocale, targetLocale, isRtl, setPreferredLocale],
   );
 
   return (
@@ -116,6 +121,7 @@ export function useLocale(): LocaleContextValue {
       locale: FALLBACK_LOCALE,
       preferredLocale: SOURCE_LOCALE,
       targetLocale: SOURCE_LOCALE,
+      isRtl: false,
       setPreferredLocale: persistPreferred,
       href: (path: string) => withLocalePrefix(path, FALLBACK_LOCALE),
       resolveHref: (href: string) => resolveLocalHref(href, FALLBACK_LOCALE),

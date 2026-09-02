@@ -92,7 +92,7 @@ export function CloudTopBar({
         type="button"
         onClick={onToggleCollapse}
         aria-label={chrome.topbar.menuFold}
-        className="flex h-[56px] cursor-pointer items-center justify-center pl-4 pr-3 text-xs font-medium text-zinc-500 transition-colors duration-500 hover:text-black"
+        className="flex h-[56px] cursor-pointer items-center justify-center ps-4 pe-3 text-xs font-medium text-zinc-500 transition-colors duration-500 hover:text-black"
       >
         {collapsed ? (
           <MenuUnfoldIcon className="size-4" />
@@ -109,7 +109,7 @@ export function CloudTopBar({
           ) : null}
         </div>
 
-        <div className="flex h-full items-center gap-3 pr-3">
+        <div className="flex h-full items-center gap-3 pe-3">
           <MarketingLanguageSwitcher navigateOnSelect={false} />
 
           <div className="relative">
@@ -125,14 +125,14 @@ export function CloudTopBar({
             >
               <BellIcon className="size-4" />
               {notificationCount > 0 ? (
-                <sup className="pointer-events-none absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ff4d4f] px-1 text-[10px] leading-none text-white">
+                <sup className="pointer-events-none absolute -end-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ff4d4f] px-1 text-[10px] leading-none text-white">
                   {notificationCount}
                 </sup>
               ) : null}
             </button>
 
             {bellOpen ? (
-              <div className="sf-chat-dropdown-enter absolute top-[calc(100%+8px)] right-0 z-[70] w-[360px] rounded-lg bg-white p-4 shadow-[0_6px_16px_rgba(0,0,0,0.08),0_3px_6px_-4px_rgba(0,0,0,0.12),0_9px_28px_8px_rgba(0,0,0,0.05)]">
+              <div className="sf-chat-dropdown-enter absolute top-[calc(100%+8px)] end-0 z-[70] w-[360px] rounded-lg bg-white p-4 shadow-[0_6px_16px_rgba(0,0,0,0.08),0_3px_6px_-4px_rgba(0,0,0,0.12),0_9px_28px_8px_rgba(0,0,0,0.05)]">
                 <div className="mb-2 flex items-baseline justify-between gap-3">
                   <div className="text-sm font-medium text-slate-800">
                     {chrome.topbar.notificationTitle}
@@ -163,7 +163,7 @@ export function CloudTopBar({
             </button>
 
             {avatarOpen ? (
-              <div className="sf-chat-dropdown-enter absolute top-[calc(100%+8px)] right-0 z-[70] min-w-[160px] overflow-hidden rounded-lg bg-white py-1 shadow-[0_6px_16px_rgba(0,0,0,0.08),0_3px_6px_-4px_rgba(0,0,0,0.12),0_9px_28px_8px_rgba(0,0,0,0.05)]">
+              <div className="sf-chat-dropdown-enter absolute top-[calc(100%+8px)] end-0 z-[70] min-w-[160px] overflow-hidden rounded-lg bg-white py-1 shadow-[0_6px_16px_rgba(0,0,0,0.08),0_3px_6px_-4px_rgba(0,0,0,0.12),0_9px_28px_8px_rgba(0,0,0,0.05)]">
                 {avatarMenu.map((item) => (
                   <a
                     key={item.href}
@@ -176,7 +176,7 @@ export function CloudTopBar({
                 ))}
                 <button
                   type="button"
-                  className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 hover:text-[var(--sf-cloud-primary)]"
+                  className="block w-full px-4 py-2 text-start text-sm text-slate-700 hover:bg-slate-50 hover:text-[var(--sf-cloud-primary)]"
                   onClick={() => void onLogout()}
                 >
                   {chrome.topbar.logout}

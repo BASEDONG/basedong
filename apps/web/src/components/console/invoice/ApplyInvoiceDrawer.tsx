@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
+import {
+  CONSOLE_END_DRAWER_SHELL,
+  consoleEndDrawerTranslate,
+} from "../shared/console-rtl-classes";
 import type { InvoiceUiCopy } from "./invoice-ui-copy";
 import { formatYuan, mockAmounts } from "./content";
 
@@ -215,6 +220,7 @@ export function ApplyInvoiceDrawer({
   open,
   onClose,
 }: ApplyInvoiceDrawerProps) {
+  const { isRtl } = useLocale();
   const drawerCopy = copy.drawer;
   const feeTypeOptions = copy.feeTypeOptions;
   const titleTaxOptions = copy.titleTaxOptions;
@@ -275,8 +281,9 @@ export function ApplyInvoiceDrawer({
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          "pointer-events-auto absolute right-0 top-0 flex h-full w-[530px] min-w-[530px] max-w-full flex-col bg-white shadow-[-6px_0_16px_rgba(0,0,0,0.08),-3px_0_6px_-4px_rgba(0,0,0,0.12),-9px_0_28px_8px_rgba(0,0,0,0.05)] transition-transform duration-300 ease-out",
-          entered ? "translate-x-0" : "translate-x-full",
+          CONSOLE_END_DRAWER_SHELL,
+          "w-[530px] min-w-[530px] max-w-full transition-transform duration-300 ease-out",
+          consoleEndDrawerTranslate(entered, isRtl),
         )}
       >
         <div className="flex h-14 shrink-0 items-center px-6 py-4">

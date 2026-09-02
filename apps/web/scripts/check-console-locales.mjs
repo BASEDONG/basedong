@@ -267,6 +267,58 @@ if (localizeError) {
   ok("lib/backend/localize-error.ts");
 }
 
+const localeRtl = requireFile("src/lib/locale.ts");
+if (localeRtl) {
+  for (const key of ["RTL_LOCALES", "isRtlLocale"]) {
+    if (!localeRtl.includes(key)) {
+      fail(`locale.ts missing ${key}`);
+    }
+  }
+  ok("locale.ts RTL helpers (ar)");
+}
+
+const docSync = requireFile("src/components/shared/DocumentMetadataSync.tsx");
+if (docSync) {
+  if (!docSync.includes("document.documentElement.dir")) {
+    fail("DocumentMetadataSync must set document.documentElement.dir");
+  }
+  if (!docSync.includes("isRtlLocale")) {
+    fail("DocumentMetadataSync must use isRtlLocale");
+  }
+  ok("DocumentMetadataSync Console dir=rtl sync");
+}
+
+const rtlClasses = requireFile(
+  "src/components/console/shared/console-rtl-classes.ts",
+);
+if (rtlClasses) {
+  for (const key of ["consoleEndDrawerTranslate", "CONSOLE_END_DRAWER_SHELL"]) {
+    if (!rtlClasses.includes(key)) {
+      fail(`console-rtl-classes.ts missing ${key}`);
+    }
+  }
+  ok("console/shared/console-rtl-classes.ts");
+}
+
+const globalsCss = requireFile("src/app/globals.css");
+if (globalsCss) {
+  if (
+    !globalsCss.includes('html[dir="rtl"]') ||
+    !globalsCss.includes(".sf-cloud-console")
+  ) {
+    fail("globals.css missing Console RTL rules");
+  }
+  ok("globals.css Console RTL overrides");
+}
+
+const consoleShell = requireFile("src/components/console/shared/ConsoleShell.tsx");
+if (consoleShell) {
+  if (!consoleShell.includes("flex-row-reverse") || !consoleShell.includes("isRtl")) {
+    fail("ConsoleShell must mirror layout when isRtl");
+  }
+  ok("ConsoleShell RTL layout mirroring");
+}
+
 const meta = requireFile("src/lib/console-page-metadata.ts");
 if (meta) {
   for (const key of [

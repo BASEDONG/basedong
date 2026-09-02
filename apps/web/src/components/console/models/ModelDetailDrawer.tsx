@@ -5,6 +5,10 @@ import { useLocale } from "@/components/shared/LocaleProvider";
 import type { ModelCardData } from "./content-types";
 import { deriveModelDetail } from "./model-detail";
 import { getModelsUiCopy } from "./models-ui-copy";
+import {
+  CONSOLE_END_DRAWER_SHELL,
+  consoleEndDrawerTranslate,
+} from "../shared/console-rtl-classes";
 
 const TYPE_TAG_STYLES: Record<string, string> = {
   对话:
@@ -111,7 +115,7 @@ async function copyText(text: string) {
 }
 
 export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
-  const { targetLocale } = useLocale();
+  const { targetLocale, isRtl } = useLocale();
   const ui = getModelsUiCopy(targetLocale);
   const priceTabs = [
     { id: "online" as const, label: ui.drawer.onlineInference, enabled: true },
@@ -167,14 +171,12 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
         role="dialog"
         aria-modal="true"
         aria-label={model.title}
-        className={`pointer-events-auto absolute right-0 top-0 flex h-full w-[min(100vw,736px)] flex-col bg-white text-slate-800 shadow-[-6px_0_16px_rgba(0,0,0,0.08),-3px_0_6px_-4px_rgba(0,0,0,0.12),-9px_0_28px_8px_rgba(0,0,0,0.05)] transition-transform duration-300 ease-out ${
-          visible ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`${CONSOLE_END_DRAWER_SHELL} w-[min(100vw,736px)] text-slate-800 transition-transform duration-300 ease-out ${consoleEndDrawerTranslate(visible, isRtl)}`}
       >
         <div className="hidden-scrollbar flex-1 overflow-y-auto p-6">
           {/* Header */}
-          <div className="relative mb-1 h-12 pl-[54px]">
-            <div className="absolute left-0 top-1 flex h-full w-12 items-center justify-center">
+          <div className="relative mb-1 h-12 ps-[54px]">
+            <div className="absolute start-0 top-1 flex h-full w-12 items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={model.logo}
@@ -216,7 +218,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
               type="button"
               onClick={onClose}
               aria-label={ui.drawer.close}
-              className="absolute right-0 top-0 rounded-[6px] p-2 text-slate-800 hover:bg-slate-100"
+              className="absolute end-0 top-0 rounded-[6px] p-2 text-slate-800 hover:bg-slate-100"
             >
               <CloseIcon />
             </button>
