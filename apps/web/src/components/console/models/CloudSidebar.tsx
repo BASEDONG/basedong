@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { APP_ROUTES } from "@/lib/routes";
-import { ASSET, footerLinks, icpText, navGroups } from "./content";
+import {
+  getConsoleChromeCopy,
+  getConsoleFooterLinks,
+  getConsoleNavGroups,
+} from "../shared/chrome-copy";
+import { ASSET } from "./content";
 import { ExternalLinkIcon, getNavIcon } from "../shared/icons";
 
 interface CloudSidebarProps {
@@ -16,6 +22,10 @@ export function CloudSidebar({
   collapsed,
   activeKey = "models-plaza",
 }: CloudSidebarProps) {
+  const { targetLocale } = useLocale();
+  const chrome = getConsoleChromeCopy(targetLocale);
+  const navGroups = getConsoleNavGroups(targetLocale);
+  const footerLinks = getConsoleFooterLinks(targetLocale);
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeItemRef = useRef<HTMLAnchorElement>(null);
 
@@ -38,14 +48,14 @@ export function CloudSidebar({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={ASSET.logoMark}
-            alt="八色鸫"
+            alt={chrome.brandAlt}
             className="h-8 w-8 object-contain"
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={ASSET.logo}
-            alt="八色鸫"
+            alt={chrome.brandAlt}
             className="h-[22px] w-auto object-contain"
           />
         )}
@@ -108,24 +118,23 @@ export function CloudSidebar({
         >
           {footerLinks.map((link) => {
             const Icon = getNavIcon(link.icon);
+            const external = link.href.startsWith("http");
             return (
               <a
                 key={link.key}
                 href={link.href}
-                target={link.href.startsWith("http") ? "_blank" : undefined}
-                rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noreferrer" : undefined}
                 className="flex items-center gap-2 truncate text-slate-700 hover:text-[var(--sf-cloud-primary)]"
               >
                 <Icon className="size-[1em] shrink-0" />
-                <span className="flex items-center truncate text-sm">
-                  {link.label}
-                  <ExternalLinkIcon className="size-[18px] shrink-0 -rotate-[38deg]" />
-                </span>
+                <span className="truncate text-xs">{link.label}</span>
+                {external ? <ExternalLinkIcon className="size-3 shrink-0" /> : null}
               </a>
             );
           })}
-          <div className="-ml-2 break-all pr-4 text-xs text-slate-400">
-            {icpText}
+          <div className="text-[10px] leading-4 text-slate-400">
+            {chrome.footer.copyright}
           </div>
         </div>
       )}

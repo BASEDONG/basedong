@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import type { ModelCardData } from "./content-types";
 import { deriveModelDetail } from "./model-detail";
+import { getModelsUiCopy } from "./models-ui-copy";
 
 const TYPE_TAG_STYLES: Record<string, string> = {
   对话:
@@ -19,13 +21,7 @@ const TYPE_TAG_STYLES: Record<string, string> = {
     "border-[rgb(234,255,143)] bg-[rgb(252,255,230)] text-[rgb(124,179,5)]",
 };
 
-const PRICE_TABS = [
-  { id: "在线推理", label: "在线推理", enabled: true },
-  { id: "批量推理", label: "批量推理", enabled: false },
-  { id: "微调训练", label: "微调训练", enabled: false },
-] as const;
-
-type PriceTabId = (typeof PRICE_TABS)[number]["id"];
+type PriceTabId = "online" | "batch" | "finetune";
 
 interface ModelDetailDrawerProps {
   model: ModelCardData | null;
@@ -115,8 +111,15 @@ async function copyText(text: string) {
 }
 
 export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
+  const { targetLocale } = useLocale();
+  const ui = getModelsUiCopy(targetLocale);
+  const priceTabs = [
+    { id: "online" as const, label: ui.drawer.onlineInference, enabled: true },
+    { id: "batch" as const, label: ui.drawer.batchInference, enabled: false },
+    { id: "finetune" as const, label: ui.drawer.fineTune, enabled: false },
+  ];
   const open = model !== null;
-  const [priceTab, setPriceTab] = useState<PriceTabId>("在线推理");
+  const [priceTab, setPriceTab] = useState<PriceTabId>("online");
   const [visible, setVisible] = useState(false);
   const [tabTip, setTabTip] = useState<{
     label: string;
@@ -126,7 +129,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
 
   useEffect(() => {
     if (open) {
-      setPriceTab("在线推理");
+      setPriceTab("online");
       setTabTip(null);
       const id = requestAnimationFrame(() => setVisible(true));
       return () => cancelAnimationFrame(id);
@@ -153,7 +156,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
     <div className="sf-cloud-console pointer-events-none fixed inset-0 z-[1000]">
       <button
         type="button"
-        aria-label="关闭遮罩"
+        aria-label={ui.drawer.closeOverlay}
         onClick={onClose}
         className={`pointer-events-auto absolute inset-0 border-0 bg-[rgba(2,6,23,0.45)] transition-opacity duration-300 ${
           visible ? "opacity-100" : "opacity-0"
@@ -187,7 +190,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
                   type="button"
                   onClick={() => copyText(model.title)}
                   className="m-0 flex min-w-0 items-center truncate text-base text-slate-700"
-                  title="复制"
+                  title={ui.drawer.copy}
                 >
                   <span className="truncate">{model.title}</span>
                   <CopyIcon className="ml-1 size-4 shrink-0 text-slate-400" />
@@ -212,7 +215,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
             <button
               type="button"
               onClick={onClose}
-              aria-label="关闭"
+              aria-label={ui.drawer.close}
               className="absolute right-0 top-0 rounded-[6px] p-2 text-slate-800 hover:bg-slate-100"
             >
               <CloseIcon />
@@ -254,18 +257,16 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
             {detail.experienceHref ? (
               <a
                 href={detail.experienceHref}
-                target="_blank"
-                rel="noreferrer"
                 className="bd-gradient-bg inline-flex h-11 min-w-[140px] cursor-pointer items-center justify-center rounded-[12px] px-5 text-base text-white hover:opacity-90"
               >
-                🏀 在线体验
+                🏀 {ui.drawer.tryOnline}
               </a>
             ) : (
               <span
-                title="暂未支持"
+                title={ui.drawer.unsupported}
                 className="inline-flex h-11 min-w-[140px] cursor-not-allowed items-center justify-center rounded-[12px] bg-slate-200 px-5 text-base text-slate-400"
               >
-                🏀 在线体验
+                🏀 {ui.drawer.tryOnline}
               </span>
             )}
             <a
@@ -274,7 +275,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
               rel="noreferrer"
               className="inline-flex h-11 min-w-[140px] cursor-pointer items-center justify-center rounded-[8px] bg-[rgba(108,40,246,0.2)] px-5 text-base text-[rgb(108,40,246)] hover:opacity-90"
             >
-              📖 API 文档
+              📖 {ui.drawer.apiDocs}
             </a>
           </div>
 
@@ -283,13 +284,13 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
             <div className="relative flex items-center py-3">
               <div className="h-px flex-1 bg-slate-200" />
               <span className="px-4 text-lg font-medium text-slate-800">
-                价格信息
+                {ui.drawer.pricingInfo}
               </span>
               <div className="h-px flex-1 bg-slate-200" />
             </div>
 
             <div className="relative mx-auto mb-4 flex w-[320px] rounded-[6px] bg-slate-100 p-1 text-slate-800">
-              {PRICE_TABS.map((tab) => {
+              {priceTabs.map((tab) => {
                 const active = priceTab === tab.id;
                 if (!tab.enabled) {
                   return (
@@ -300,7 +301,7 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
                       onMouseEnter={(e) => {
                         const r = e.currentTarget.getBoundingClientRect();
                         setTabTip({
-                          label: "暂未支持",
+                          label: ui.drawer.unsupported,
                           x: r.left + r.width / 2,
                           y: r.top,
                         });
@@ -352,7 +353,12 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
                   </span>
                 </div>
               </div>
-              {detail.priceRows.map((row) => (
+              {detail.priceRows.length === 0 ? (
+                <div className="px-4 py-6 text-center text-sm text-slate-500">
+                  价格信息暂未公布，稍后更新
+                </div>
+              ) : (
+                detail.priceRows.map((row) => (
                 <div
                   key={row.tokenId}
                   className="flex border-b border-slate-100 last:border-b-0"
@@ -380,7 +386,8 @@ export function ModelDetailDrawer({ model, onClose }: ModelDetailDrawerProps) {
                     </button>
                   </div>
                 </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 

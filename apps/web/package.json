@@ -24,7 +24,8 @@
     "typecheck": "tsc --noEmit",
     "check:locales": "node scripts/check-locale-catalogs.mjs && node --import ./scripts/register-ts-paths.mjs --experimental-strip-types scripts/check-locale-helpers.mjs",
     "check:docs-locales": "node scripts/check-docs-locales.mjs",
-    "check": "npm run lint && npm run typecheck && npm run check:locales && npm run check:docs-locales && npm run build",
+    "check:console-locales": "node scripts/check-console-locales.mjs",
+    "check": "npm run lint && npm run typecheck && npm run check:locales && npm run check:console-locales && npm run check:docs-locales && npm run build",
     "sync:docs": "node scripts/sync-newapi-docs.mjs"
   },
   "dependencies": {

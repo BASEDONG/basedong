@@ -56,7 +56,14 @@ function LanguageOption({
   );
 }
 
-export function MarketingLanguageSwitcher({ className }: { className?: string }) {
+export function MarketingLanguageSwitcher({
+  className,
+  /** When false (Console), only persist Preferred Locale — do not navigate to Marketing prefixes. */
+  navigateOnSelect = true,
+}: {
+  className?: string;
+  navigateOnSelect?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -95,6 +102,8 @@ export function MarketingLanguageSwitcher({ className }: { className?: string })
     setPreferredLocale(code);
     persistPreferred(code);
     setOpen(false);
+
+    if (!navigateOnSelect) return;
 
     const bare = pathnameWithoutLocale(pathname);
     const next = isTranslatedLocale(code)
