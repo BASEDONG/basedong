@@ -59,7 +59,8 @@ export function isTargetLocale(code: string): code is TargetLocale {
 }
 
 /** @deprecated Post-Graduation: always false. */
-export function isConsoleLocale(_code: string): _code is ConsoleLocale {
+export function isConsoleLocale(code: string): code is ConsoleLocale {
+  void code;
   return false;
 }
 
