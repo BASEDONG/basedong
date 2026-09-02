@@ -6,11 +6,14 @@ import {
   CaretDownIcon,
   CaretUpIcon,
 } from "../playground-chat/icons";
+import type { PlaygroundUiCopy } from "../shared/playground-ui-copy";
 import { GAIN, MODEL_OPTIONS, SPEED, VOICE_OPTIONS } from "./content";
 import { ChevronDownIcon, SearchIcon } from "./icons";
 
 interface TtsConfigPanelProps {
+  copy: PlaygroundUiCopy;
   model: string;
+  modelOptions?: readonly string[];
   onModelChange: (model: string) => void;
 }
 
@@ -124,7 +127,12 @@ function SliderField({
   );
 }
 
-export function TtsConfigPanel({ model, onModelChange }: TtsConfigPanelProps) {
+export function TtsConfigPanel({
+  copy,
+  model,
+  modelOptions = MODEL_OPTIONS,
+  onModelChange,
+}: TtsConfigPanelProps) {
   const [modelOpen, setModelOpen] = useState(false);
   const [modelQuery, setModelQuery] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
@@ -135,7 +143,7 @@ export function TtsConfigPanel({ model, onModelChange }: TtsConfigPanelProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const filteredModels = MODEL_OPTIONS.filter((opt) =>
+  const filteredModels = modelOptions.filter((opt) =>
     opt.toLowerCase().includes(modelQuery.trim().toLowerCase()),
   );
 
@@ -255,7 +263,9 @@ export function TtsConfigPanel({ model, onModelChange }: TtsConfigPanelProps) {
                   </li>
                 ))}
                 {filteredModels.length === 0 ? (
-                  <li className="px-3 py-2 text-sm text-slate-400">无数据</li>
+                  <li className="px-3 py-2 text-sm text-slate-400">
+                    {copy.noData}
+                  </li>
                 ) : null}
               </ul>
             </div>
@@ -265,7 +275,7 @@ export function TtsConfigPanel({ model, onModelChange }: TtsConfigPanelProps) {
 
       <form className="w-full" onSubmit={(e) => e.preventDefault()}>
         <SliderField
-          label="倍速"
+          label={copy.speed}
           value={speed}
           min={SPEED.min}
           max={SPEED.max}
@@ -273,7 +283,7 @@ export function TtsConfigPanel({ model, onModelChange }: TtsConfigPanelProps) {
           onChange={setSpeed}
         />
         <SliderField
-          label="音量增益 (dB)"
+          label={copy.gain}
           value={gain}
           min={GAIN.min}
           max={GAIN.max}

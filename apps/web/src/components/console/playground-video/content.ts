@@ -1,4 +1,4 @@
-﻿export const pageTitle = "视频生成";
+﻿import { APP_ROUTES } from "@/lib/routes";
 
 const ROOT =
   "/assets/console/playground-video" as const;
@@ -48,8 +48,7 @@ export const SUGGESTION_PROMPTS = [
   "A man with graying hair, a beard, and a gray shirt looks down and to his right, then turns his head to the left. The camera angle is a close-up, focused on the man's face. The lighting is dim, with a greenish tint. The scene appears to be real-life footage. Step",
 ] as const;
 
-export const TERMS_URL =
-  "https://api-docs.siliconflow.cn/docs/legals/terms-of-service";
+export const TERMS_URL = APP_ROUTES.userAgreement;
 
 export function randomSeed(): number {
   return Math.floor(Math.random() * 10_000_000_000);

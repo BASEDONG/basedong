@@ -8,6 +8,7 @@ import { getExpenseBillUiCopy } from "@/components/console/expensebill/expensebi
 import { getInvoiceUiCopy } from "@/components/console/invoice/invoice-ui-copy";
 import { getAuthUiCopy } from "@/components/console/account-authentication/account-authentication-ui-copy";
 import { getModelsUiCopy } from "@/components/console/models/models-ui-copy";
+import { getPlaygroundUiCopy } from "@/components/console/shared/playground-ui-copy";
 
 type PageMeta = { title: string; description: string };
 
@@ -168,6 +169,108 @@ export function getConsoleInvoicePageMetadata(locale: string): PageMeta {
   };
 }
 
+const PLAYGROUND_DESCRIPTIONS: Record<
+  "chat" | "image" | "video" | "tts",
+  Record<TargetLocale, string>
+> = {
+  chat: {
+    "zh-CN": "在控制台试用对话模型。",
+    en: "Try chat models in the Console Playground.",
+    "zh-TW": "在控制台試用對話模型。",
+    ja: "コンソールでチャットモデルを試せます。",
+    fr: "Essayez les modèles de chat dans la console.",
+    ru: "Пробуйте чат-модели в консоли.",
+    vi: "Thử mô hình chat trong Console.",
+    ko: "콘솔에서 채팅 모델을 체험하세요.",
+    de: "Chat-Modelle in der Konsole ausprobieren.",
+    es: "Pruebe modelos de chat en la consola.",
+    "pt-BR": "Experimente modelos de chat no console.",
+    ar: "جرّب نماذج المحادثة في لوحة التحكم.",
+    hi: "कंसोल में चैट मॉडल आज़माएँ।",
+    id: "Coba model chat di Console.",
+  },
+  image: {
+    "zh-CN": "在控制台试用图像生成模型。",
+    en: "Try image generation models in the Console Playground.",
+    "zh-TW": "在控制台試用圖像生成模型。",
+    ja: "コンソールで画像生成モデルを試せます。",
+    fr: "Essayez les modèles d'image dans la console.",
+    ru: "Пробуйте модели генерации изображений в консоли.",
+    vi: "Thử mô hình tạo ảnh trong Console.",
+    ko: "콘솔에서 이미지 생성 모델을 체험하세요.",
+    de: "Bildmodelle in der Konsole ausprobieren.",
+    es: "Pruebe modelos de imagen en la consola.",
+    "pt-BR": "Experimente modelos de imagem no console.",
+    ar: "جرّب نماذج توليد الصور في لوحة التحكم.",
+    hi: "कंसोल में छवि मॉडल आज़माएँ।",
+    id: "Coba model gambar di Console.",
+  },
+  video: {
+    "zh-CN": "在控制台试用视频生成模型。",
+    en: "Try video generation models in the Console Playground.",
+    "zh-TW": "在控制台試用影片生成模型。",
+    ja: "コンソールで動画生成モデルを試せます。",
+    fr: "Essayez les modèles vidéo dans la console.",
+    ru: "Пробуйте модели генерации видео в консоли.",
+    vi: "Thử mô hình tạo video trong Console.",
+    ko: "콘솔에서 비디오 생성 모델을 체험하세요.",
+    de: "Videomodelle in der Konsole ausprobieren.",
+    es: "Pruebe modelos de vídeo en la consola.",
+    "pt-BR": "Experimente modelos de vídeo no console.",
+    ar: "جرّب نماذج توليد الفيديو في لوحة التحكم.",
+    hi: "कंसोल में वीडियो मॉडल आज़माएँ।",
+    id: "Coba model video di Console.",
+  },
+  tts: {
+    "zh-CN": "在控制台试用语音合成模型。",
+    en: "Try speech synthesis models in the Console Playground.",
+    "zh-TW": "在控制台試用語音合成模型。",
+    ja: "コンソールで音声合成モデルを試せます。",
+    fr: "Essayez les modèles de synthèse vocale dans la console.",
+    ru: "Пробуйте модели синтеза речи в консоли.",
+    vi: "Thử mô hình tổng hợp giọng nói trong Console.",
+    ko: "콘솔에서 음성 합성 모델을 체험하세요.",
+    de: "Sprachsynthese-Modelle in der Konsole ausprobieren.",
+    es: "Pruebe modelos de síntesis de voz en la consola.",
+    "pt-BR": "Experimente modelos de síntese de fala no console.",
+    ar: "جرّب نماذج تحويل النص إلى كلام في لوحة التحكم.",
+    hi: "कंसोल में वाक् संश्लेषण मॉडल आज़माएँ।",
+    id: "Coba model sintesis ucapan di Console.",
+  },
+};
+
+function playgroundMeta(
+  locale: string,
+  page: "chat" | "image" | "video" | "tts",
+): PageMeta {
+  const copy = getPlaygroundUiCopy(locale);
+  const chrome = getConsoleChromeCopy(locale);
+  return {
+    title: `${copy.pageTitles[page]} · ${chrome.brandAlt}`,
+    description: pickTargetCatalog(locale, PLAYGROUND_DESCRIPTIONS[page]),
+  };
+}
+
+export function getConsolePlaygroundChatPageMetadata(locale: string): PageMeta {
+  return playgroundMeta(locale, "chat");
+}
+
+export function getConsolePlaygroundImagePageMetadata(
+  locale: string,
+): PageMeta {
+  return playgroundMeta(locale, "image");
+}
+
+export function getConsolePlaygroundVideoPageMetadata(
+  locale: string,
+): PageMeta {
+  return playgroundMeta(locale, "video");
+}
+
+export function getConsolePlaygroundTtsPageMetadata(locale: string): PageMeta {
+  return playgroundMeta(locale, "tts");
+}
+
 const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
   [APP_ROUTES.consoleModels]: getConsoleModelsPageMetadata,
   [APP_ROUTES.consoleAccountAk]: getConsoleAccountAkPageMetadata,
@@ -175,6 +278,10 @@ const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
   [APP_ROUTES.consoleBills]: getConsoleBillsPageMetadata,
   [APP_ROUTES.consoleExpenseBill]: getConsoleExpenseBillPageMetadata,
   [APP_ROUTES.consoleInvoice]: getConsoleInvoicePageMetadata,
+  [APP_ROUTES.consolePlaygroundChat]: getConsolePlaygroundChatPageMetadata,
+  [APP_ROUTES.consolePlaygroundImage]: getConsolePlaygroundImagePageMetadata,
+  [APP_ROUTES.consolePlaygroundVideo]: getConsolePlaygroundVideoPageMetadata,
+  [APP_ROUTES.consolePlaygroundTts]: getConsolePlaygroundTtsPageMetadata,
 };
 
 export function resolveConsoleDocumentMetadata(

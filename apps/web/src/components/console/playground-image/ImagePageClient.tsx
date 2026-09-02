@@ -1,30 +1,64 @@
-"use client";
-
-import { useState } from "react";
-import { ConsoleShell } from "../shared/ConsoleShell";
-import { pageTitle } from "./content";
-import { ImageConfigPanel } from "./ImageConfigPanel";
-import { ImageWorkspace } from "./ImageWorkspace";
-
-export function ImagePageClient() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [model, setModel] = useState("Z-Image-Turbo");
-
-  return (
-    <ConsoleShell
-      collapsed={collapsed}
-      onToggleCollapse={() => setCollapsed((v) => !v)}
-      activeKey="image"
-      title={pageTitle}
-    >
-      <div className="flex h-full">
-        <ImageConfigPanel model={model} onModelChange={setModel} />
-        <div
-          className="my-2 mr-5 w-px min-w-px shrink-0 bg-[linear-gradient(rgb(252,252,252),rgb(230,230,230),rgb(252,252,252))]"
-          aria-hidden
-        />
-        <ImageWorkspace model={model} />
-      </div>
-    </ConsoleShell>
-  );
-}
+"use client";
+
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { ConsoleShell } from "../shared/ConsoleShell";
+import { getPlaygroundUiCopy } from "../shared/playground-ui-copy";
+import {
+  pickPlaygroundModel,
+  usePlaygroundModelQuery,
+} from "../shared/usePlaygroundModelQuery";
+import { DEFAULT_MODEL, MODEL_OPTIONS } from "./content";
+import { ImageConfigPanel } from "./ImageConfigPanel";
+import { ImageWorkspace } from "./ImageWorkspace";
+
+function ImagePageInner() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getPlaygroundUiCopy(targetLocale), [targetLocale]);
+  const urlModel = usePlaygroundModelQuery();
+  const [collapsed, setCollapsed] = useState(false);
+  const [model, setModel] = useState<string>(DEFAULT_MODEL);
+
+  useEffect(() => {
+    setModel(pickPlaygroundModel(MODEL_OPTIONS, urlModel, DEFAULT_MODEL));
+  }, [urlModel]);
+
+  const modelOptions = useMemo(() => {
+    if (model && !(MODEL_OPTIONS as readonly string[]).includes(model)) {
+      return [model, ...MODEL_OPTIONS];
+    }
+    return [...MODEL_OPTIONS];
+  }, [model]);
+
+  return (
+    <ConsoleShell
+      collapsed={collapsed}
+      onToggleCollapse={() => setCollapsed((v) => !v)}
+      activeKey="image"
+      title={copy.pageTitles.image}
+    >
+      <div className="flex h-full">
+        <ImageConfigPanel
+          copy={copy}
+          model={model}
+          modelOptions={modelOptions}
+          onModelChange={setModel}
+        />
+        <div
+          className="my-2 mr-5 w-px min-w-px shrink-0 bg-[linear-gradient(rgb(252,252,252),rgb(230,230,230),rgb(252,252,252))]"
+          aria-hidden
+        />
+        <ImageWorkspace copy={copy} model={model} />
+      </div>
+    </ConsoleShell>
+  );
+}
+
+export function ImagePageClient() {
+  return (
+    <Suspense fallback={null}>
+      <ImagePageInner />
+    </Suspense>
+  );
+}
+

@@ -14,13 +14,19 @@ interface ModelSelectProps {
   value: string;
   options: readonly string[];
   onChange: (value: string) => void;
+  emptyText?: string;
 }
 
 /**
  * Ant Design Select + showSearch stand-in:
  * type to filter inside the selector (not a separate dropdown search box).
  */
-export function ModelSelect({ value, options, onChange }: ModelSelectProps) {
+export function ModelSelect({
+  value,
+  options,
+  onChange,
+  emptyText = "无数据",
+}: ModelSelectProps) {
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -184,7 +190,7 @@ export function ModelSelect({ value, options, onChange }: ModelSelectProps) {
             })}
             {filtered.length === 0 ? (
               <li className="px-3 py-2 text-center text-sm text-slate-400">
-                无数据
+                {emptyText}
               </li>
             ) : null}
           </ul>

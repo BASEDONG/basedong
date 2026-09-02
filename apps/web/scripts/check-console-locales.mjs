@@ -146,6 +146,26 @@ if (invoice) {
   ok("console/invoice/invoice-ui-copy.ts (14 locales)");
 }
 
+const playground = requireFile(
+  "src/components/console/shared/playground-ui-copy.ts",
+);
+if (playground) {
+  requireMarkers("playground-ui-copy.ts", playground);
+  for (const key of [
+    "getPlaygroundUiCopy",
+    "pageTitles",
+    "promptPlaceholder",
+    "notConnectedImage",
+    "notConnectedVideo",
+    "notConnectedTts",
+  ]) {
+    if (!playground.includes(key)) {
+      fail(`playground-ui-copy.ts missing ${key}`);
+    }
+  }
+  ok("console/shared/playground-ui-copy.ts (14 locales)");
+}
+
 const meta = requireFile("src/lib/console-page-metadata.ts");
 if (meta) {
   for (const key of [
@@ -155,12 +175,16 @@ if (meta) {
     "getConsoleBillsPageMetadata",
     "getConsoleExpenseBillPageMetadata",
     "getConsoleInvoicePageMetadata",
+    "getConsolePlaygroundChatPageMetadata",
+    "getConsolePlaygroundImagePageMetadata",
+    "getConsolePlaygroundVideoPageMetadata",
+    "getConsolePlaygroundTtsPageMetadata",
   ]) {
     if (!meta.includes(key)) {
       fail(`console-page-metadata.ts missing ${key}`);
     }
   }
-  ok("console-page-metadata.ts (models + account + billing)");
+  ok("console-page-metadata.ts (models + account + billing + playground)");
 }
 
 if (failed) {

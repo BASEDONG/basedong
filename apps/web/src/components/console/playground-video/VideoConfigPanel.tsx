@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import type { PlaygroundUiCopy } from "../shared/playground-ui-copy";
 import {
   ASSET,
   DEFAULT_NEGATIVE_PROMPT,
@@ -16,7 +17,9 @@ import { InfoCircleIcon, SyncIcon, UploadIcon } from "./icons";
 import { ModelSelect } from "./ModelSelect";
 
 interface VideoConfigPanelProps {
+  copy: PlaygroundUiCopy;
   model: string;
+  modelOptions?: readonly string[];
   onModelChange: (model: string) => void;
 }
 
@@ -48,7 +51,9 @@ function FieldLabel({
 }
 
 export function VideoConfigPanel({
+  copy,
   model,
+  modelOptions = MODEL_OPTIONS,
   onModelChange,
 }: VideoConfigPanelProps) {
   const [size, setSize] = useState<VideoSizeRatio>(DEFAULT_VIDEO_SIZE);
@@ -65,8 +70,9 @@ export function VideoConfigPanel({
         <div className="text-sm leading-5 text-slate-700">Model</div>
         <ModelSelect
           value={model}
-          options={MODEL_OPTIONS}
+          options={modelOptions}
           onChange={onModelChange}
+          emptyText={copy.noData}
         />
       </div>
 
@@ -90,7 +96,7 @@ export function VideoConfigPanel({
               className="inline-flex h-8 w-full cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-slate-300 bg-white px-[15px] text-sm leading-[22px] text-slate-800 shadow-[0_2px_0_rgba(0,0,0,0.02)] transition-all duration-200 hover:border-[rgb(74,171,240)]"
             >
               <UploadIcon />
-              <span className="truncate">{imageName ?? "Add Image"}</span>
+              <span className="truncate">{imageName ?? copy.addImage}</span>
             </button>
           </div>
         ) : (

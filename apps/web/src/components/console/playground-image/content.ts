@@ -1,4 +1,4 @@
-﻿export const pageTitle = "图像生成";
+﻿import { APP_ROUTES } from "@/lib/routes";
 
 export const ASSET = {
   hero: "/assets/console/playground-image/images/suggestion-hero.png",
@@ -13,14 +13,14 @@ export const ASSET = {
 } as const;
 
 export const MODEL_OPTIONS = [
-  "Z-Image-Turbo",
-  "Z-Image",
-  "ERNIE-Image-Turbo",
-  "Qwen-Image-Edit-2509",
-  "Qwen-Image-Edit",
-  "Qwen-Image",
-  "Kolors",
+  "gpt-image-2",
+  "grok-imagine-image-2.0",
+  "grok-imagine-image-lite",
+  "gemini-3-pro-image-preview",
+  "gemini-3.1-flash-image-preview",
 ] as const;
+
+export const DEFAULT_MODEL = MODEL_OPTIONS[0];
 
 export type ImageSizeRatio = keyof typeof ASSET.sizeIcons;
 
@@ -42,8 +42,7 @@ export const SUGGESTION_PROMPTS = [
   "detail Shot,Exaggerated Perspective View,Bottom View,Epic style,Darkness Style,Tattoo Style,ultra detailed high contrast pencil drawing by James Gilleard,Characters in ancient Chinese mythology,Vajra Bodhisattva,aquiline nose,Angry face,strong body,Holding a Buddhist artifact and soul holding banner,there are continuous mountains and temple,Swirling and Twisting Dense Clouds,conceptual art,High Metal Textures,red Black Color,Cinematic Arts,Super Reality,Super High Details and Textures,Very Detailed Textures,Highly Detailed Textures,8K",
 ] as const;
 
-export const TERMS_URL =
-  "https://api-docs.siliconflow.cn/docs/legals/terms-of-service";
+export const TERMS_URL = APP_ROUTES.userAgreement;
 
 export function randomSeed(): number {
   return Math.floor(Math.random() * 10_000_000_000);
