@@ -1,6 +1,13 @@
-import { claimCouponHref, successAlert } from "./content";
+import type { AuthUiCopy } from "./account-authentication-ui-copy";
+import { claimCouponHref } from "./content";
 
-export function AuthSuccessAlert() {
+interface AuthSuccessAlertProps {
+  copy: AuthUiCopy;
+}
+
+export function AuthSuccessAlert({ copy }: AuthSuccessAlertProps) {
+  const { successAlert } = copy;
+
   return (
     <div
       role="alert"

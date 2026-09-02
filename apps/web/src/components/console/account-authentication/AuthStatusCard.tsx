@@ -1,8 +1,6 @@
-import {
-  enterpriseChangeHref,
-  statusCard,
-  type AuthFieldRow,
-} from "./content";
+import { Card } from "@/components/ui/card";
+import type { AuthFieldRow, AuthUiCopy } from "./account-authentication-ui-copy";
+import { enterpriseChangeHref } from "./content";
 import { AuthCheckCircleIcon } from "./icons";
 
 function FieldRow({
@@ -29,9 +27,18 @@ function FieldRow({
   return <div>{inner}</div>;
 }
 
-export function AuthStatusCard() {
+interface AuthStatusCardProps {
+  copy: AuthUiCopy;
+}
+
+export function AuthStatusCard({ copy }: AuthStatusCardProps) {
+  const { statusCard } = copy;
+
   return (
-    <div className="max-w-[800px] border border-zinc-200 px-3 pb-5 text-black">
+    <Card
+      variant="surface"
+      className="max-w-[800px] rounded-none border-zinc-200 px-3 pb-5 text-black"
+    >
       <div className="mb-2 flex items-center justify-between">
         <div className="py-5 pb-3 font-medium">{statusCard.title}</div>
         <div className="flex items-center gap-3 text-sm text-[rgba(108,40,246,0.8)]">
@@ -52,6 +59,6 @@ export function AuthStatusCard() {
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

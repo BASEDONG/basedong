@@ -91,13 +91,42 @@ if (topbar) {
   }
 }
 
+const accountAk = requireFile(
+  "src/components/console/account-ak/account-ak-ui-copy.ts",
+);
+if (accountAk) {
+  requireMarkers("account-ak-ui-copy.ts", accountAk);
+  for (const key of ["getApiKeysUiCopy", "pageTitle", "warningMessage", "toasts"]) {
+    if (!accountAk.includes(key)) fail(`account-ak-ui-copy.ts missing ${key}`);
+  }
+  ok("console/account-ak/account-ak-ui-copy.ts (14 locales)");
+}
+
+const accountAuth = requireFile(
+  "src/components/console/account-authentication/account-authentication-ui-copy.ts",
+);
+if (accountAuth) {
+  requireMarkers("account-authentication-ui-copy.ts", accountAuth);
+  for (const key of ["getAuthUiCopy", "pageTitle", "successAlert", "statusCard"]) {
+    if (!accountAuth.includes(key)) {
+      fail(`account-authentication-ui-copy.ts missing ${key}`);
+    }
+  }
+  ok("console/account-authentication/account-authentication-ui-copy.ts (14 locales)");
+}
+
 const meta = requireFile("src/lib/console-page-metadata.ts");
 if (meta) {
-  if (!meta.includes("getConsoleModelsPageMetadata")) {
-    fail("console-page-metadata.ts missing models metadata");
-  } else {
-    ok("console-page-metadata.ts");
+  for (const key of [
+    "getConsoleModelsPageMetadata",
+    "getConsoleAccountAkPageMetadata",
+    "getConsoleAccountAuthPageMetadata",
+  ]) {
+    if (!meta.includes(key)) {
+      fail(`console-page-metadata.ts missing ${key}`);
+    }
   }
+  ok("console-page-metadata.ts (models + account)");
 }
 
 if (failed) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { deleteModalCopy } from "./content";
+import type { ApiKeysUiCopy } from "./account-ak-ui-copy";
 import { CloseIcon } from "./icons";
 
 const antFont =
@@ -9,6 +9,7 @@ const antFont =
 
 interface ConfirmDeleteModalProps {
   open: boolean;
+  copy: ApiKeysUiCopy;
   expectedSuffix: string;
   onClose: () => void;
   onConfirm: () => void;
@@ -17,6 +18,7 @@ interface ConfirmDeleteModalProps {
 
 export function ConfirmDeleteModal({
   open,
+  copy,
   expectedSuffix,
   onClose,
   onConfirm,
@@ -86,7 +88,7 @@ export function ConfirmDeleteModal({
                 id="ak-delete-title"
                 className="m-0 text-base font-semibold leading-6 text-[rgb(30,41,59)]"
               >
-                {deleteModalCopy.title}
+                {copy.deleteModal.title}
               </h2>
             </div>
 
@@ -94,15 +96,15 @@ export function ConfirmDeleteModal({
               role="alert"
               className="flex rounded-[8px] border border-[rgb(255,229,143)] bg-[rgb(255,251,230)] px-3 py-2 text-sm leading-[22px] text-[rgb(30,41,59)]"
             >
-              <div>{deleteModalCopy.warning}</div>
+              <div>{copy.deleteModal.warning}</div>
             </div>
 
             <div className="my-3 text-sm leading-[22px] text-[rgb(51,65,85)]">
-              {deleteModalCopy.promptBefore}{" "}
+              {copy.deleteModal.promptBefore}{" "}
               <span className="mr-2 inline-block rounded border border-[rgb(145,202,255)] bg-[rgb(230,244,255)] px-[7px] text-xs leading-5 text-[rgb(9,88,217)]">
                 {expectedSuffix}
               </span>
-              {deleteModalCopy.promptAfter}
+              {copy.deleteModal.promptAfter}
             </div>
 
             <input
@@ -131,14 +133,14 @@ export function ConfirmDeleteModal({
                 onClick={onClose}
                 className="inline-flex h-8 cursor-pointer items-center justify-center rounded-md border border-[rgb(203,213,225)] bg-white px-[15px] text-sm leading-[22px] text-[rgb(30,41,59)] shadow-[0_2px_0_rgba(0,0,0,0.02)] transition-colors hover:border-[rgb(74,171,240)] hover:text-[rgb(74,171,240)]"
               >
-                {deleteModalCopy.cancel}
+                {copy.deleteModal.cancel}
               </button>
               <button
                 type="button"
                 onClick={submit}
                 className="ml-2 inline-flex h-8 cursor-pointer items-center justify-center rounded-md border border-transparent bg-[rgb(255,77,79)] px-[15px] text-sm leading-[22px] text-white shadow-[0_2px_0_rgba(255,38,5,0.06)] transition-[background] duration-200 ease-[cubic-bezier(0.645,0.045,0.355,1)] hover:bg-[#d9363e]"
               >
-                {deleteModalCopy.confirm}
+                {copy.deleteModal.confirm}
               </button>
             </div>
           </div>
