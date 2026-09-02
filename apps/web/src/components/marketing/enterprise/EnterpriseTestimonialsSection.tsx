@@ -1,39 +1,48 @@
-import Image from "next/image";
-import { testimonials } from "./content";
+"use client";
+
+import { BrandAvatar } from "@/components/marketing/shared/BrandAvatar";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { Card } from "@/components/ui/card";
+import { getEnterpriseContent } from "./content";
+import { getEnterpriseUiCopy } from "./enterprise-ui-copy";
 
 export function EnterpriseTestimonialsSection() {
+  const { locale } = useLocale();
+  const { testimonialsTitle } = getEnterpriseUiCopy(locale);
+  const { testimonials } = getEnterpriseContent(locale);
+
   return (
     <section className="mb-[110px] w-full">
       <h3 className="mb-12 px-3.5 text-center text-[32px] font-bold md:mb-16 md:text-[48px]">
-        客户证言
+        {testimonialsTitle}
       </h3>
 
-      <div className="flex px-3.5">
-        <div className="mx-auto grid w-full max-w-[1397px] grid-cols-1 gap-8 md:grid-cols-2">
-          {testimonials.map((item) => (
-            <article
-              key={item.company}
-              className="overflow-hidden rounded-[12px] border border-[#eceef3] bg-white p-8 transition-shadow duration-300 hover:shadow-[0_22px_58px_rgba(3,7,18,0.08)] md:p-10"
-            >
-              <div className="relative mb-6 aspect-[16/9] w-full overflow-hidden rounded-[8px]">
-                <Image
-                  src={item.image}
-                  alt={item.company}
-                  fill
-                  unoptimized
-                  sizes="(max-width: 768px) 100vw, 640px"
-                  className="object-cover"
-                />
-              </div>
-              <h3 className="mb-4 text-[22px] font-bold text-[#161722] md:text-[24px]">
-                {item.company}
-              </h3>
-              <p className="text-[15px] leading-7 text-[#57627f] md:text-[16px]">
-                {item.quote}
-              </p>
-            </article>
-          ))}
-        </div>
+      <div className="sf-content grid grid-cols-1 gap-8 md:grid-cols-2">
+        {testimonials.map((item) => (
+          <Card
+            key={item.title}
+            variant="surface"
+            size="lg"
+            interactive="lift"
+          >
+            <h3 className="mb-4 text-[22px] font-bold text-[#161722] md:text-[24px]">
+              {item.title}
+            </h3>
+            <p className="mb-8 text-[15px] leading-7 text-[#57627f] md:text-[16px]">
+              {item.body}
+            </p>
+            <div className="flex items-center">
+              <BrandAvatar
+                name={item.avatarSeed}
+                size={32}
+                className="mr-3 shrink-0 overflow-hidden rounded-full"
+              />
+              <span className="text-[15px] font-medium text-[#161722]">
+                {item.role}
+              </span>
+            </div>
+          </Card>
+        ))}
       </div>
     </section>
   );

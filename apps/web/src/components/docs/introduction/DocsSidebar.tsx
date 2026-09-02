@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -10,10 +9,11 @@ import {
   PanelLeftIcon,
   SearchIcon,
 } from "@/components/docs/shared/icons";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 import { cn } from "@/lib/utils";
 import { APP_ROUTES, RESERVED_PAGE_ENABLED } from "@/lib/routes";
 
-import { logoHref, logoSrc, navItems } from "./content";
+import { logoHref, navItems } from "./content";
 import type { NavFolder, NavItem, NavLink, NavSection } from "./content-types";
 
 function MethodBadge({ method }: { method: "GET" | "POST" }) {
@@ -241,14 +241,7 @@ export function DocsSidebar({
             target="_blank"
             rel="noreferrer"
           >
-            <Image
-              src={logoSrc}
-              alt="八色鸫 basedong"
-              width={200}
-              height={32}
-              className="h-auto w-[200px]"
-              priority
-            />
+            <BrandLogo size="nav" priority />
           </a>
           <button
             type="button"

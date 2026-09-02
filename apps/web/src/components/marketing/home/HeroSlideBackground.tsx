@@ -27,7 +27,10 @@ function OrbitDecor({
           >
             <span
               className="absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full shadow-lg"
-              style={{ backgroundColor: orbPrimary, boxShadow: `0 0 20px ${orbPrimary}80` }}
+              style={{
+                backgroundColor: orbPrimary,
+                boxShadow: `0 0 20px ${orbPrimary}80`,
+              }}
             />
             <span
               className="absolute top-1/2 -right-2 h-3 w-3 -translate-y-1/2 rounded-full"
@@ -70,7 +73,11 @@ export function HeroSlideBackground({
   accent,
   logoSrc,
   logoAlt,
+  logoOpacity,
 }: SfGradientPalette) {
+  const artOpacity = logoOpacity ?? 0.22;
+  const artProminent = artOpacity >= 0.7;
+
   return (
     <div className="absolute inset-0 overflow-hidden" aria-hidden>
       <div className="absolute inset-0" style={{ background: base }} />
@@ -103,32 +110,43 @@ export function HeroSlideBackground({
         style={{ backgroundColor: accent }}
       />
 
-      <OrbitDecor
-        orbPrimary={orbPrimary}
-        orbSecondary={orbSecondary}
-        accent={accent}
-        subdued={Boolean(logoSrc)}
-      />
+      {!artProminent ? (
+        <OrbitDecor
+          orbPrimary={orbPrimary}
+          orbSecondary={orbSecondary}
+          accent={accent}
+          subdued={Boolean(logoSrc)}
+        />
+      ) : null}
 
       {logoSrc ? (
         <img
           src={logoSrc}
           alt={logoAlt ?? ""}
-          className="pointer-events-none absolute right-[6%] top-1/2 hidden h-[min(280px,35vh)] w-auto -translate-y-1/2 opacity-[0.22] max-lg:right-[4%] max-lg:h-[min(180px,28vh)] max-lg:opacity-[0.15] lg:block"
+          className={
+            artProminent
+              ? "pointer-events-none absolute right-[4%] top-1/2 h-[min(220px,32vh)] w-auto -translate-y-1/2 opacity-[var(--hero-art-op)] max-lg:right-[2%] max-lg:opacity-85 lg:h-[min(460px,58vh)]"
+              : "pointer-events-none absolute right-[6%] top-1/2 hidden h-[min(280px,35vh)] w-auto -translate-y-1/2 opacity-[var(--hero-art-op)] max-lg:right-[4%] max-lg:h-[min(180px,28vh)] max-lg:!opacity-[0.15] lg:block"
+          }
+          style={{ ["--hero-art-op" as string]: String(artOpacity) }}
         />
       ) : null}
 
       <div
         className="absolute inset-0 max-lg:opacity-60"
         style={{
-          background: `linear-gradient(105deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 38%, ${accent}18 72%, ${orbSecondary}28 100%)`,
+          background: artProminent
+            ? "linear-gradient(105deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.78) 22%, rgba(255,255,255,0.2) 36%, transparent 42%)"
+            : `linear-gradient(105deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 38%, ${accent}18 72%, ${orbSecondary}28 100%)`,
         }}
       />
 
       <div
         className="absolute inset-x-0 bottom-0 h-32"
         style={{
-          background: "linear-gradient(to top, rgba(255,255,255,0.85), transparent)",
+          background: artProminent
+            ? "linear-gradient(to top, rgba(255,255,255,0.55), transparent)"
+            : "linear-gradient(to top, rgba(255,255,255,0.85), transparent)",
         }}
       />
     </div>

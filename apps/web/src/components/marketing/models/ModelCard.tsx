@@ -1,18 +1,31 @@
 "use client";
 
 import Image from "next/image";
-import type { ModelCardData } from "./content";
-import { modelDetailHref } from "./content";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { cardVariants } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { getModelsContent, modelDetailHref } from "./content";
+import type { ModelCardData } from "./content-types";
 
 export function ModelCard({ model }: { model: ModelCardData }) {
+  const { locale } = useLocale();
+  const { modelCard: copy, typeLabels } = getModelsContent(locale);
   const href = modelDetailHref(model.modelId);
+  const typeLabel = typeLabels[model.type] ?? model.type;
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group h-[210px] w-full max-w-[340px] cursor-pointer rounded-[8px] border border-slate-200 bg-white p-6 transition hover:border hover:border-[#4AABF0] hover:bg-[#4AABF01A] max-md:h-auto max-md:min-h-[210px] min-[1490px]:h-auto min-[1490px]:min-h-[210px]"
+      className={cn(
+        cardVariants({
+          variant: "surface",
+          interactive: "lift",
+          size: "md",
+        }),
+        "h-[210px] w-full cursor-pointer hover:bg-[#4AABF01A] max-md:h-auto max-md:min-h-[210px] min-[1490px]:h-auto min-[1490px]:min-h-[210px]",
+      )}
     >
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center justify-center gap-2">
@@ -27,7 +40,7 @@ export function ModelCard({ model }: { model: ModelCardData }) {
           <span className="text-sm text-slate-500">{model.vendor}</span>
         </div>
         <span className="inline-flex h-[22px] items-center rounded border border-[#91CAFF] bg-[#E6F4FF] px-[7px] text-xs leading-5 text-[#0958D9]">
-          {model.type}
+          {typeLabel}
         </span>
       </div>
 
@@ -41,7 +54,7 @@ export function ModelCard({ model }: { model: ModelCardData }) {
             {model.sceneTags.map((tag) => (
               <span
                 key={tag}
-                className="mr-0 inline-flex h-[22px] items-center rounded border border-[#D3ADF7] bg-[#F9F0FF] px-[7px] text-xs font-medium leading-5"
+                className="mr-0 inline-flex h-[22px] items-center rounded border border-[#91CAFF] bg-[#EEF7FD] px-[7px] text-xs font-medium leading-5"
               >
                 <span className="text-[#4AABF0]">{tag}</span>
               </span>
@@ -58,7 +71,7 @@ export function ModelCard({ model }: { model: ModelCardData }) {
         </div>
         {model.features.length > 0 ? (
           <div>
-            <div className="text-sm text-slate-500">支持功能：</div>
+            <div className="text-sm text-slate-500">{copy.featuresLabel}</div>
             <div className="flex flex-wrap gap-1.5">
               {model.features.map((f) => (
                 <span key={f} className="text-sm text-slate-800">
@@ -70,25 +83,45 @@ export function ModelCard({ model }: { model: ModelCardData }) {
         ) : null}
       </div>
 
-      <div className="mb-2.5 h-px w-full border-b border-slate-200 group-hover:border-slate-400" />
+      <div className="mb-2.5 h-px w-full border-b border-[var(--sf-card-border)] group-hover:border-slate-400" />
 
       <div className="flex items-center justify-between text-xs text-slate-500 group-hover:hidden">
-        <div>
-          输入: <span className="text-[#4AABF0]">￥{model.inputPrice}</span> / M
-          Tokens
-        </div>
-        <div>
-          输出: <span className="text-[#4AABF0]">￥{model.outputPrice}</span> / M
-          Tokens
-        </div>
+        {model.inputPrice || model.outputPrice ? (
+          <>
+            <div>
+              {copy.inputLabel}{" "}
+              <span className="text-[#4AABF0]">￥{model.inputPrice || "—"}</span>{" "}
+              {copy.perMTokens}
+            </div>
+            <div>
+              {copy.outputLabel}{" "}
+              <span className="text-[#4AABF0]">
+                ￥{model.outputPrice || "—"}
+              </span>{" "}
+              {copy.perMTokens}
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              {copy.contextLabel}{" "}
+              <span className="text-[#4AABF0]">{model.context}</span>
+            </div>
+            <div>
+              {copy.sizeLabel}
+              <span className="text-[#4AABF0]">{model.size}</span>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="hidden items-center justify-between text-xs text-slate-500 group-hover:flex">
         <div>
-          上下文长度: <span className="text-[#4AABF0]">{model.context}</span>
+          {copy.contextLabel}{" "}
+          <span className="text-[#4AABF0]">{model.context}</span>
         </div>
         <div>
-          尺寸：
+          {copy.sizeLabel}
           <span className="text-[#4AABF0]">{model.size}</span>
         </div>
       </div>

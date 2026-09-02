@@ -1,16 +1,15 @@
-﻿export const FORM_TITLE = "硅基流动 SiliconFlow - 商务需求反馈表";
+﻿import { APP_ROUTES } from "@/lib/routes";
+
+export const FORM_TITLE = "八色鸫 - 商务需求反馈表";
 
 export const ASSET_BASE =
   "/assets/forms/business/images";
 
-export const ECOSYSTEM_FORM_URL =
-  "https://siliconflow.feishu.cn/share/base/form/shrcnFexyHcMNEntvR08shp8Tbd";
+export const ECOSYSTEM_FORM_URL = APP_ROUTES.formBusiness;
 
-export const COMPUTE_FORM_URL =
-  "https://siliconflow.feishu.cn/share/base/form/shrcnsVyHOdT78tTRfUQo2KtO7f";
+export const COMPUTE_FORM_URL = APP_ROUTES.formBusiness;
 
-export const PRIVACY_POLICY_URL =
-  "https://api-docs.siliconflow.cn/docs/legals/privacy-policy";
+export const PRIVACY_POLICY_URL = APP_ROUTES.userAgreement;
 
 export const SERVICE_USAGE_OPTIONS = [
   "公有云模型 API（按 Tokens 付费）",

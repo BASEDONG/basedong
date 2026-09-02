@@ -5,13 +5,11 @@ import { PricingSection } from "@/components/marketing/reserved/PricingSection";
 import { ReservedCta } from "@/components/marketing/reserved/ReservedCta";
 import { ReservedHero } from "@/components/marketing/reserved/ReservedHero";
 import { WhyReservedSection } from "@/components/marketing/reserved/WhyReservedSection";
+import { getReservedPageMetadata } from "@/lib/marketing-page-metadata";
+import { staticPageMetadata } from "@/lib/static-page-metadata";
 import { APP_ROUTES, RESERVED_PAGE_ENABLED } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "硅基流动预留实例服务｜大模型预留算力与企业级推理部署",
-  description:
-    "锁定算力，支撑关键业务稳定运行。可预期性能 · 高用量场景更优成本结构 · 企业级 SLA 保障",
-};
+export const metadata: Metadata = staticPageMetadata(getReservedPageMetadata);
 
 export default function ReservedPage() {
   if (!RESERVED_PAGE_ENABLED) {
@@ -20,11 +18,11 @@ export default function ReservedPage() {
 
   return (
     <div>
-        <ReservedHero />
-        <WhyReservedSection />
-        <PricingSection />
-        <DeliverySlaSection />
-        <ReservedCta />
-      </div>
+      <ReservedHero />
+      <WhyReservedSection />
+      <PricingSection />
+      <DeliverySlaSection />
+      <ReservedCta />
+    </div>
   );
 }

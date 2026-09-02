@@ -1,0 +1,9 @@
+/* Fumadocs OpenAPI UI — scoped under docs (.sf-docs). */
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+@import "fumadocs-openapi/css/preset.css";
+
+.sf-docs {
+  --color-fd-primary: #4aabf0;
+  --color-fd-primary-foreground: #ffffff;
+}

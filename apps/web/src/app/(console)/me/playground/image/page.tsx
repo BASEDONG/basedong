@@ -2,7 +2,7 @@
 import { ImagePageClient } from "@/components/console/playground-image/ImagePageClient";
 
 export const metadata: Metadata = {
-  title: "硅基流动 SiliconFlow",
+  title: "图像生成 - 八色鸫",
 };
 
 export default function PlaygroundImagePage() {

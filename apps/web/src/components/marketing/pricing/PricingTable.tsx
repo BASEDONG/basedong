@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
 import type {
   PricingModel,
@@ -9,8 +11,9 @@ import type {
   PricingVendorGroup,
 } from "./content-types";
 import { logoSrc } from "./content";
+import { getPricingUiCopy } from "./pricing-ui-copy";
 
-function PriceValue({ value }: { value: string }) {
+function PriceValue({ value, freeLabel }: { value: string; freeLabel: string }) {
   if (value === "-" || value === "") {
     return (
       <span className="inline-flex w-[82px] justify-center font-semibold text-slate-300">
@@ -18,11 +21,11 @@ function PriceValue({ value }: { value: string }) {
       </span>
     );
   }
-  if (value === "免费") {
+  if (value === "免费" || value === freeLabel) {
     return (
       <span className="inline-flex w-[82px] justify-center">
         <span className="inline-flex min-w-[58px] justify-center rounded-full bg-slate-100 px-3 py-1 text-[13px] font-semibold leading-5 text-slate-500">
-          免费
+          {freeLabel}
         </span>
       </span>
     );
@@ -38,41 +41,77 @@ function ModelRow({
   model,
   priceColumns,
   variant,
+  striped,
+  vendor,
+  showVendor,
+  freeLabel,
 }: {
   model: PricingModel;
   priceColumns: number;
   variant: "chat" | "media";
+  striped: boolean;
+  vendor: PricingVendorGroup;
+  showVendor: boolean;
+  freeLabel: string;
 }) {
   const tierCount = Math.max(1, model.tiers.length);
+  const rowBg = striped ? "bg-[#EEF7FD]" : "bg-transparent";
+  const vendorWidth = variant === "chat" ? "md:w-[210px]" : "md:w-[170px]";
+
+  const vendorCell = (
+    <div
+      className={cn(
+        "flex shrink-0 items-center gap-3 px-5 py-4 text-[14px] font-semibold text-slate-700 md:items-start md:border-r md:border-[#E1E8F2]",
+        vendorWidth,
+      )}
+    >
+      {showVendor ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={logoSrc(vendor.logoFile, vendor.logo)}
+            alt=""
+            className="h-[18px] w-[18px] rounded-full object-contain"
+          />
+          {vendor.vendor}
+        </>
+      ) : null}
+    </div>
+  );
 
   if (variant === "media") {
-    // Original pads to 4 grid tracks: model + price + 2 empty
     const price = model.tiers[0]?.values[0] ?? "-";
     return (
       <div
-        className="grid min-h-[48px] scroll-mt-[120px] items-stretch text-[13px] transition-colors odd:bg-white even:bg-[#F8FAFC] md:min-h-[60px] md:grid-cols-[minmax(240px,1fr)_165px_165px_165px]"
+        className={cn(
+          "flex min-h-[48px] scroll-mt-[120px] items-stretch border-b border-[#E1E8F2] text-[13px] transition-colors last:border-b-0 md:min-h-[60px]",
+          rowBg,
+        )}
       >
-        <div className="flex min-w-0 items-center px-5 py-4">
-          <div className="min-w-0">
-            <a
-              href={model.href}
-              target="_blank"
-              rel="noreferrer"
-              title={model.modelId}
-              className="block truncate font-semibold text-slate-700 transition-colors duration-150 hover:text-[#4AABF0]"
-            >
-              {model.displayName}
-            </a>
-            <div className="mt-1 truncate text-[12px] text-slate-400 md:hidden">
-              {model.modelId}
+        {vendorCell}
+        <div className="grid min-w-0 flex-1 md:grid-cols-[minmax(240px,1fr)_165px_165px_165px]">
+          <div className="flex min-w-0 items-center px-5 py-4">
+            <div className="min-w-0">
+              <a
+                href={model.href}
+                target="_blank"
+                rel="noreferrer"
+                title={model.modelId}
+                className="block truncate font-semibold text-slate-700 transition-colors duration-150 hover:text-[#4AABF0]"
+              >
+                {model.displayName}
+              </a>
+              <div className="mt-1 truncate text-[12px] text-slate-400 md:hidden">
+                {model.modelId}
+              </div>
             </div>
           </div>
+          <div className="flex min-h-[60px] items-center justify-center px-5 py-2 text-[#4AABF0]">
+            <PriceValue value={price} freeLabel={freeLabel} />
+          </div>
+          <div />
+          <div />
         </div>
-        <div className="flex min-h-[60px] items-center justify-center px-5 py-2 text-[#4AABF0]">
-          <PriceValue value={price} />
-        </div>
-        <div />
-        <div />
       </div>
     );
   }
@@ -80,111 +119,61 @@ function ModelRow({
   return (
     <div
       className={cn(
-        "grid min-h-[48px] scroll-mt-[120px] items-stretch text-[13px] transition-colors odd:bg-white even:bg-[#F8FAFC] md:min-h-[60px]",
-        "md:grid-cols-[minmax(260px,1fr)_minmax(210px,1fr)_minmax(210px,1fr)_minmax(250px,1fr)]",
+        "flex min-h-[48px] scroll-mt-[120px] items-stretch border-b border-[#E1E8F2] text-[13px] transition-colors last:border-b-0 md:min-h-[60px]",
+        rowBg,
       )}
     >
+      {vendorCell}
       <div
-        className="min-w-0 px-5 py-4"
-        style={{ gridRow: `span ${tierCount} / span ${tierCount}` }}
+        className={cn(
+          "grid min-w-0 flex-1",
+          "md:grid-cols-[minmax(260px,1fr)_minmax(210px,1fr)_minmax(210px,1fr)_minmax(250px,1fr)]",
+        )}
       >
-        <a
-          href={model.href}
-          target="_blank"
-          rel="noreferrer"
-          title={model.modelId}
-          className="block truncate font-semibold text-slate-700 transition-colors duration-150 hover:text-[#4AABF0]"
+        <div
+          className="min-w-0 px-5 py-4"
+          style={{ gridRow: `span ${tierCount} / span ${tierCount}` }}
         >
-          {model.displayName}
-        </a>
-        <div className="mt-1 truncate text-[12px] text-slate-400 md:hidden">
-          {model.modelId}
+          <a
+            href={model.href}
+            target="_blank"
+            rel="noreferrer"
+            title={model.modelId}
+            className="block truncate font-semibold text-slate-700 transition-colors duration-150 hover:text-[#4AABF0]"
+          >
+            {model.displayName}
+          </a>
+          <div className="mt-1 truncate text-[12px] text-slate-400 md:hidden">
+            {model.modelId}
+          </div>
         </div>
-      </div>
 
-      {model.tiers.map((tier, ti) =>
-        Array.from({ length: priceColumns }).map((_, ci) => {
-          const value = tier.values[ci] ?? "-";
-          const showLabel = Boolean(tier.label) && value !== "-" && value !== "";
-          return (
-            <div
-              key={`${model.modelId}-${ti}-${ci}`}
-              className={cn(
-                "flex min-h-[60px] items-center justify-between gap-3 border-l border-[#E1E8F2] px-5 py-3",
-                ti > 0 && "border-t border-[#E1E8F2]",
-              )}
-            >
-              <span
+        {model.tiers.map((tier, ti) =>
+          Array.from({ length: priceColumns }).map((_, ci) => {
+            const value = tier.values[ci] ?? "-";
+            const showLabel = Boolean(tier.label) && value !== "-" && value !== "";
+            return (
+              <div
+                key={`${model.modelId}-${ti}-${ci}`}
                 className={cn(
-                  showLabel
-                    ? "min-w-0 flex-1 text-[13px] leading-5 text-slate-500"
-                    : "flex-1",
+                  "flex min-h-[60px] items-center justify-between gap-3 border-l border-[#E1E8F2] px-5 py-3",
+                  ti > 0 && "border-t border-[#E1E8F2]",
                 )}
               >
-                {showLabel ? <span className="block">{tier.label}</span> : null}
-              </span>
-              <PriceValue value={value} />
-            </div>
-          );
-        }),
-      )}
-    </div>
-  );
-}
-
-function VendorGroup({
-  group,
-  priceColumns,
-  variant,
-}: {
-  group: PricingVendorGroup;
-  priceColumns: number;
-  variant: "chat" | "media";
-}) {
-  const [expanded, setExpanded] = useState(
-    group.models.length <= group.initialVisible,
-  );
-  const visibleCount = expanded ? group.models.length : group.initialVisible;
-  const visibleModels = group.models.slice(0, visibleCount);
-  const hidden = group.models.length - visibleCount;
-  const vendorCols =
-    variant === "chat" ? "md:grid-cols-[210px_1fr]" : "md:grid-cols-[170px_1fr]";
-
-  return (
-    <div
-      id={group.providerId}
-      className="scroll-mt-[120px] border-b border-[#E1E8F2] last:border-b-0"
-    >
-      <div className={cn("md:grid", vendorCols)}>
-        <div className="flex items-center gap-3 bg-[#F3F0FF] px-5 py-4 text-[14px] font-semibold text-slate-700 transition-colors md:items-start md:border-r md:border-[#E1E8F2]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={logoSrc(group.logoFile, group.logo)}
-            alt=""
-            className="h-[18px] w-[18px] rounded-full object-contain"
-          />
-          {group.vendor}
-        </div>
-        <div className="divide-y divide-[#E8EDF5]">
-          {visibleModels.map((m) => (
-            <ModelRow
-              key={m.modelId}
-              model={m}
-              priceColumns={priceColumns}
-              variant={variant}
-            />
-          ))}
-          {hidden > 0 && (
-            <button
-              type="button"
-              onClick={() => setExpanded(true)}
-              className="flex h-[52px] w-full items-center justify-center gap-2 text-[13px] font-semibold text-[#4AABF0] transition duration-150 hover:bg-[#F9F7FF]"
-            >
-              展开更多 {hidden} 个模型
-              <ChevronDown className="h-4 w-4" aria-hidden />
-            </button>
-          )}
-        </div>
+                <span
+                  className={cn(
+                    showLabel
+                      ? "min-w-0 flex-1 text-[13px] leading-5 text-slate-500"
+                      : "flex-1",
+                  )}
+                >
+                  {showLabel ? <span className="block">{tier.label}</span> : null}
+                </span>
+                <PriceValue value={value} freeLabel={freeLabel} />
+              </div>
+            );
+          }),
+        )}
       </div>
     </div>
   );
@@ -196,6 +185,9 @@ type PricingTableProps = {
 };
 
 export function PricingTable({ section, query }: PricingTableProps) {
+  const { locale } = useLocale();
+  const ui = getPricingUiCopy(locale);
+  const freeLabel = ui.free;
   const q = query.trim().toLowerCase();
   const variant: "chat" | "media" =
     section.priceColumns === 3 ? "chat" : "media";
@@ -214,6 +206,44 @@ export function PricingTable({ section, query }: PricingTableProps) {
       .filter((g) => g.models.length > 0);
   }, [section.groups, q]);
 
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
+
+  const tableRows = useMemo(() => {
+    const rows: {
+      group: PricingVendorGroup;
+      model: PricingModel;
+      showVendor: boolean;
+      striped: boolean;
+      isFirstOfGroup: boolean;
+      hiddenAfter: number;
+    }[] = [];
+
+    let rowIndex = 0;
+    for (const group of filteredGroups) {
+      const expanded =
+        expandedIds[group.providerId] ??
+        group.models.length <= group.initialVisible;
+      const visibleCount = expanded
+        ? group.models.length
+        : group.initialVisible;
+      const visibleModels = group.models.slice(0, visibleCount);
+      const hidden = group.models.length - visibleCount;
+
+      visibleModels.forEach((model, modelIndex) => {
+        rows.push({
+          group,
+          model,
+          showVendor: modelIndex === 0,
+          striped: rowIndex % 2 === 0,
+          isFirstOfGroup: modelIndex === 0,
+          hiddenAfter: modelIndex === visibleModels.length - 1 ? hidden : 0,
+        });
+        rowIndex += 1;
+      });
+    }
+    return rows;
+  }, [filteredGroups, expandedIds]);
+
   if (!filteredGroups.length) return null;
 
   const headerCols =
@@ -221,7 +251,6 @@ export function PricingTable({ section, query }: PricingTableProps) {
       ? "grid-cols-[210px_minmax(260px,1fr)_minmax(210px,1fr)_minmax(210px,1fr)_minmax(250px,1fr)]"
       : "grid-cols-[170px_minmax(240px,1fr)_165px_165px_165px]";
 
-  // Media headers on original still show 厂商/模型/输出 only in first 3 slots
   const headers =
     variant === "chat"
       ? section.headers
@@ -232,7 +261,7 @@ export function PricingTable({ section, query }: PricingTableProps) {
       <h2 className="mb-4 text-[18px] font-bold text-slate-800">
         {section.title}
       </h2>
-      <div className="overflow-hidden rounded-[8px] border border-[#E1E8F2] bg-white">
+      <Card variant="surface" className="rounded-lg border-[#E1E8F2]">
         <div
           className={cn(
             "hidden min-h-[46px] items-center border-b border-[#E1E8F2] bg-[#F8FAFD] text-[13px] font-semibold text-slate-600 md:grid",
@@ -252,15 +281,40 @@ export function PricingTable({ section, query }: PricingTableProps) {
             </div>
           ))}
         </div>
-        {filteredGroups.map((g) => (
-          <VendorGroup
-            key={g.providerId}
-            group={g}
-            priceColumns={section.priceColumns}
-            variant={variant}
-          />
+
+        {tableRows.map((row) => (
+          <div
+            key={row.model.modelId}
+            id={row.isFirstOfGroup ? row.group.providerId : undefined}
+            className={row.isFirstOfGroup ? "scroll-mt-[120px]" : undefined}
+          >
+            <ModelRow
+              model={row.model}
+              priceColumns={section.priceColumns}
+              variant={variant}
+              striped={row.striped}
+              vendor={row.group}
+              showVendor={row.showVendor}
+              freeLabel={freeLabel}
+            />
+            {row.hiddenAfter > 0 && (
+              <button
+                type="button"
+                onClick={() =>
+                  setExpandedIds((prev) => ({
+                    ...prev,
+                    [row.group.providerId]: true,
+                  }))
+                }
+                className="flex h-[52px] w-full items-center justify-center gap-2 border-b border-[#E1E8F2] text-[13px] font-semibold text-[#4AABF0] transition duration-150 hover:bg-[#F0F7FC] last:border-b-0"
+              >
+                {ui.expandMore(row.hiddenAfter)}
+                <ChevronDown className="h-4 w-4" aria-hidden />
+              </button>
+            )}
+          </div>
         ))}
-      </div>
+      </Card>
     </section>
   );
 }

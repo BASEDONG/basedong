@@ -1,49 +1,17 @@
+"use client";
+
 import Link from "next/link";
-import { CONSULT_URL } from "./content";
-
-function ChatIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      stroke="currentColor"
-      fill="none"
-      strokeWidth={2}
-      viewBox="0 0 24 24"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      height="1em"
-      width="1em"
-      aria-hidden="true"
-    >
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      <path d="M8 10h.01" />
-      <path d="M12 10h.01" />
-      <path d="M16 10h.01" />
-    </svg>
-  );
-}
-
-function DiagonalArrowIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      stroke="currentColor"
-      fill="none"
-      strokeWidth={2}
-      viewBox="0 0 24 24"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      height="1em"
-      width="1em"
-      aria-hidden="true"
-    >
-      <path d="M7 7h10v10" />
-      <path d="M7 17 17 7" />
-    </svg>
-  );
-}
+import { ArrowUpRight, MessageCircle } from "lucide-react";
+import { cardVariants } from "@/components/ui/card";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { cn } from "@/lib/utils";
+import { getReservedContent } from "./content";
 
 export function ReservedCta() {
+  const { locale } = useLocale();
+  const c = getReservedContent(locale);
+  const [ctaTitleLine1, ctaTitleLine2 = ""] = c.ctaTitle.split("\n");
+
   return (
     <div className="bg-[#4AABF0]">
       <section className="relative isolate overflow-hidden bg-[#4AABF0] px-6 py-[88px] max-[960px]:px-4 max-[960px]:py-14">
@@ -79,23 +47,26 @@ export function ReservedCta() {
               <span className="mr-1.5 text-[16px] leading-none text-[#02F6F7]">
                 •
               </span>
-              支持专属定制
+              {c.ctaBadge}
             </div>
             <h2 className="mb-4 text-[48px] font-semibold leading-[1.18] tracking-[-0.03em] text-white max-[960px]:text-[28px] max-[960px]:leading-[1.28]">
-              开启专属算力
+              {ctaTitleLine1}
               <br />
-              加速业务增长
+              {ctaTitleLine2}
             </h2>
             <p className="max-w-[520px] text-[18px] leading-[1.85] text-white max-[960px]:max-w-full max-[960px]:text-[15px] max-[960px]:leading-[1.75]">
-              支持更多模型预留实例部署方案，我们的专家团队将根据您的业务需求，提供更贴合场景的定制化解决方案与报价建议。
+              {c.ctaBody}
             </p>
           </div>
 
           <Link
-            href={CONSULT_URL}
+            href={c.consultUrl}
             target="_blank"
             rel="noreferrer"
-            className="group relative block w-full max-w-[580px] overflow-hidden rounded-[24px] border border-white/20 bg-white/[0.10] p-7 shadow-[0_20px_60px_rgba(0,0,0,0.18)] backdrop-blur-[14px] transition-all duration-500 ease-out hover:-translate-y-1 hover:border-white/35 hover:bg-white/[0.14] hover:shadow-[0_28px_80px_rgba(0,0,0,0.24)] max-[960px]:max-w-full max-[960px]:rounded-[20px] max-[960px]:p-5"
+            className={cn(
+              cardVariants({ variant: "promo", interactive: "raise" }),
+              "relative block w-full max-w-[580px] p-7 max-[960px]:max-w-full max-[960px]:rounded-[20px] max-[960px]:p-5",
+            )}
           >
             <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
               <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.04)_38%,rgba(255,255,255,0)_100%)]" />
@@ -105,23 +76,23 @@ export function ReservedCta() {
 
             <div className="relative z-[1] flex items-start gap-[18px]">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-white/15 bg-white/15 text-white shadow-[0_10px_24px_rgba(0,0,0,0.12)] transition-all duration-500 group-hover:scale-[1.06] group-hover:bg-white/20 group-hover:shadow-[0_14px_32px_rgba(2,246,247,0.14)] max-[960px]:h-10 max-[960px]:w-10 max-[960px]:rounded-xl">
-                <ChatIcon className="h-[18px] w-[18px] max-[960px]:h-4 max-[960px]:w-4" />
+                <MessageCircle className="h-[18px] w-[18px] max-[960px]:h-4 max-[960px]:w-4" aria-hidden />
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="mb-2.5 text-[30px] font-semibold leading-[1.32] tracking-[-0.02em] text-white max-[960px]:text-[20px] max-[960px]:leading-[1.4]">
-                  获取更多模型预留实例信息
+                  {c.ctaCardTitle}
                 </div>
                 <div className="text-[18px] leading-[1.8] text-white max-[960px]:text-[14px] max-[960px]:leading-[1.7]">
-                  欢迎预约咨询，获取详细规格、部署方案与报价信息
+                  {c.ctaCardBody}
                 </div>
 
                 <div className="mt-[22px] flex items-center justify-between gap-4 border-t border-white/10 pt-[18px] max-[960px]:mt-[18px] max-[960px]:pt-3.5">
                   <div className="text-[14px] leading-[1.6] text-white/60 max-[960px]:text-[12px]" />
                   <div className="inline-flex items-center gap-2 text-[15px] font-medium text-white max-[960px]:text-[13px]">
-                    立即咨询
+                    {c.ctaButton}
                     <span className="transition-transform duration-500 group-hover:translate-x-1">
-                      <DiagonalArrowIcon className="h-4 w-4" />
+                      <ArrowUpRight className="h-4 w-4" aria-hidden />
                     </span>
                   </div>
                 </div>

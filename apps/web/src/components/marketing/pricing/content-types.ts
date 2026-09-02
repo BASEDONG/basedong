@@ -34,18 +34,3 @@ export type PricingChip = {
   logoFile?: string;
   providerId: string;
 };
-
-export type PricingData = {
-  categories: { id: PricingCategoryId; label: string }[];
-  chips: PricingChip[];
-  sections: Record<Exclude<PricingCategoryId, "全部">, PricingSection>;
-  hero: {
-    eyebrow: string;
-    titleBefore: string;
-    titleHighlight: string;
-    titleAfter: string;
-    subtitle: string;
-    searchPlaceholder: string;
-    features: string[];
-  };
-};

@@ -1,18 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { ABOUT_ASSETS, ABOUT_COPY } from "./content";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { getAboutContent } from "./content";
 
 export function HonorsMarquee() {
-  const honors = [...ABOUT_ASSETS.honors, ...ABOUT_ASSETS.honors];
+  const { locale } = useLocale();
+  const { assets, honorsTitle } = getAboutContent(locale);
+  const honors = [...assets.honors, ...assets.honors];
 
   return (
     <section
       className="h-[878px] w-full bg-center bg-no-repeat py-20 [background-size:100%_100%] max-[1024px]:h-[304px]"
-      style={{ backgroundImage: `url(${ABOUT_ASSETS.honorsBg})` }}
+      style={{ backgroundImage: `url(${assets.honorsBg})` }}
     >
       <h3 className="mb-9 w-full text-center text-[48px] text-[#1e293b] max-[1024px]:text-[36px]">
-        {ABOUT_COPY.honorsTitle}
+        {honorsTitle}
       </h3>
       <div className="relative h-[720px] w-full overflow-hidden max-[1024px]:h-[170px]">
         <div className="about-honors-track absolute top-[160px] left-0 flex w-max max-[1024px]:top-0">

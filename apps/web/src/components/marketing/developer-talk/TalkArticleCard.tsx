@@ -1,12 +1,14 @@
 import type { TalkArticle } from "./content-types";
+import { Card } from "@/components/ui/card";
 
 interface TalkArticleCardProps {
   article: TalkArticle;
+  tagLabel: string;
 }
 
-export function TalkArticleCard({ article }: TalkArticleCardProps) {
+export function TalkArticleCard({ article, tagLabel }: TalkArticleCardProps) {
   return (
-    <article className="group relative min-w-0">
+    <Card variant="ghost" className="relative min-w-0 overflow-visible">
       <a
         href={article.href}
         className="absolute inset-0 z-10"
@@ -20,11 +22,11 @@ export function TalkArticleCard({ article }: TalkArticleCardProps) {
         {article.title}
       </h3>
       <div className="mt-[12px] flex flex-wrap items-center gap-[16px] text-[14px] text-[#718096]">
-        <span className="flex h-[30px] w-[76px] items-center justify-center rounded-full border border-slate-400 bg-white text-[14px] leading-none text-slate-500">
-          {article.tag}
+        <span className="flex h-[30px] min-w-[76px] items-center justify-center rounded-full border border-slate-400 bg-white px-3 text-[14px] leading-none text-slate-500">
+          {tagLabel}
         </span>
         <span>{article.date}</span>
       </div>
-    </article>
+    </Card>
   );
 }

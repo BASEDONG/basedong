@@ -1,13 +1,19 @@
 ﻿import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { AboutPageClient } from "@/components/marketing/about/AboutPageClient";
+import { getMarketingPageMetadata } from "@/lib/marketing-page-metadata";
+import { staticPageMetadata } from "@/lib/static-page-metadata";
+import { ABOUT_MENU_ENABLED, APP_ROUTES } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "公司介绍 - 硅基流动 SiliconFlow",
-  description:
-    "硅基流动（SiliconFlow）成立于2023年，是国内领先的独立生态词元（Token）供应平台，做所有人的 AI。",
-};
+export const metadata: Metadata = staticPageMetadata((locale) =>
+  getMarketingPageMetadata("about", locale),
+);
 
 export default function AboutPage() {
+  if (!ABOUT_MENU_ENABLED) {
+    redirect(APP_ROUTES.home);
+  }
+
   return (
     <div className="bg-white text-slate-900">
       <AboutPageClient />

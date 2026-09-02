@@ -1,15 +1,26 @@
-import type { PricingModel } from "./content";
+"use client";
+
+import { Card } from "@/components/ui/card";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { getReservedContent } from "./content";
+import type { ReservedPricingModel } from "./content-types";
 import { ScrollReveal } from "./ScrollReveal";
 
 type PricingModelCardProps = {
-  model: PricingModel;
+  model: ReservedPricingModel;
   delay?: number;
 };
 
 export function PricingModelCard({ model, delay = 0 }: PricingModelCardProps) {
+  const { locale } = useLocale();
+  const c = getReservedContent(locale);
+
   return (
     <ScrollReveal delay={delay} y={28}>
-      <article className="group relative mx-auto min-h-[604px] w-full max-w-[676px] overflow-hidden rounded-[18px] border border-slate-200 border-t-[3px] border-t-[#4AABF0] bg-white px-12 py-8 max-[1280px]:max-w-full max-[960px]:h-auto max-[960px]:px-6 max-[960px]:py-6">
+      <Card
+        variant="accent"
+        className="relative mx-auto min-h-[604px] w-full max-w-[676px] rounded-[18px] px-12 py-8 max-[1280px]:max-w-full max-[960px]:h-auto max-[960px]:px-6 max-[960px]:py-6"
+      >
         <div
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(74,171,240,0.10),transparent_30%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           aria-hidden="true"
@@ -30,29 +41,35 @@ export function PricingModelCard({ model, delay = 0 }: PricingModelCardProps) {
             {model.description}
           </p>
 
-          <div className="mb-5 rounded-[14px] border border-slate-100 bg-slate-50/70 p-[18px]">
+          <Card
+            variant="surface"
+            className="mb-5 rounded-[14px] border-slate-100 bg-slate-50/70 p-[18px]"
+          >
             <p className="mb-3.5 text-[14px] font-semibold text-[#4AABF0]">
-              费用参考
+              {c.costReferenceLabel}
             </p>
             <div className="mb-3 flex items-center justify-between gap-4 border-b border-slate-200 pb-3">
-              <span className="text-[15px] text-slate-500">价格</span>
+              <span className="text-[15px] text-slate-500">{c.priceLabel}</span>
               <span className="rounded-lg bg-[#F1ECFF] px-2.5 py-1 text-[14px] font-semibold text-[#4AABF0] shadow-sm">
                 {model.price}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4 pt-0.5">
               <span className="text-[15px] text-slate-500">
-                折合单价 <span className="text-red-500">*</span>
+                {c.unitPriceLabel} <span className="text-red-500">*</span>
               </span>
               <span className="text-[15px] font-medium text-slate-800">
                 {model.unitPrice}
               </span>
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-[14px] border border-slate-100 bg-white p-[18px]">
+          <Card
+            variant="surface"
+            className="rounded-[14px] border-slate-100 p-[18px]"
+          >
             <p className="mb-3.5 text-[14px] font-semibold text-[#4AABF0]">
-              性能参考 <span className="text-red-500">**</span>
+              {c.perfReferenceLabel} <span className="text-red-500">**</span>
             </p>
             <div className="space-y-1.5">
               {[
@@ -71,14 +88,14 @@ export function PricingModelCard({ model, delay = 0 }: PricingModelCardProps) {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
         </div>
 
         <div
           className="pointer-events-none absolute bottom-0 left-0 h-[3px] w-0 bg-[#4AABF0]/80 transition-all duration-300 group-hover:w-full"
           aria-hidden="true"
         />
-      </article>
+      </Card>
     </ScrollReveal>
   );
 }

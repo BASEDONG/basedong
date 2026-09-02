@@ -2,7 +2,7 @@
 import { ChatPageClient } from "@/components/console/playground-chat/ChatPageClient";
 
 export const metadata: Metadata = {
-  title: "硅基流动 SiliconFlow",
+  title: "对话 - 八色鸫",
 };
 
 export default function PlaygroundChatPage() {

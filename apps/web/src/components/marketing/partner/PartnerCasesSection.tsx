@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { GatewayReveal } from "@/components/marketing/ai-gateway/GatewayReveal";
-import { MORE_CASES_URL, partnerCases } from "./content";
-import { ArrowRightIcon } from "./icons";
+import { MarketingButton } from "@/components/marketing/shared/MarketingButton";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { Card } from "@/components/ui/card";
+import { getPartnerContent } from "./content";
 import { PartnerSectionIntro } from "./PartnerSectionIntro";
 
 function PartnerCaseCard({
@@ -15,7 +16,10 @@ function PartnerCaseCard({
   image: string;
 }) {
   return (
-    <div className="group flex h-[102px] cursor-pointer select-none flex-col justify-between overflow-hidden rounded-[6px] bg-[#F1ECFF] px-5 py-[18px]">
+    <Card
+      variant="ghost"
+      className="h-[102px] cursor-pointer select-none justify-between rounded-md border-transparent bg-[#F1ECFF] px-5 py-[18px]"
+    >
       <div className="flex h-[38px] items-center">
         <Image
           src={image}
@@ -28,26 +32,29 @@ function PartnerCaseCard({
       <p className="truncate text-[14px] leading-[22px] text-[#667085]">
         {title}
       </p>
-    </div>
+    </Card>
   );
 }
 
 export function PartnerCasesSection() {
+  const { locale } = useLocale();
+  const content = getPartnerContent(locale);
+
   return (
     <div className="bg-white py-[110px]">
-      <div className="mx-auto max-w-[1440px] px-6 max-[1180px]:max-w-full max-[960px]:px-4">
+      <div className="sf-content">
         <section>
           <GatewayReveal variant="soft">
             <PartnerSectionIntro
-              label="PARTNER CASE"
-              title="生态伙伴案例"
-              subtitle="以下为部分合作伙伴展示，顺序不分先后"
+              label={content.casesSectionLabel}
+              title={content.casesSectionTitle}
+              subtitle={content.casesSectionSubtitle}
               titleClassName="text-[#101828]"
               subtitleClassName="mb-[46px] leading-7"
             />
           </GatewayReveal>
           <div className="grid grid-cols-4 gap-x-6 gap-y-[22px] max-[1280px]:grid-cols-2 max-[960px]:grid-cols-1">
-            {partnerCases.map((item, index) => (
+            {content.partnerCases.map((item, index) => (
               <GatewayReveal
                 key={item.title}
                 variant="card"
@@ -59,15 +66,14 @@ export function PartnerCasesSection() {
             ))}
           </div>
           <div className="mt-[34px] flex justify-center">
-            <Link
-              href={MORE_CASES_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="group flex h-[42px] items-center gap-2.5 rounded-full bg-[linear-gradient(90deg,#4AABF0_0%,#4AABF0_100%)] px-6 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgba(58,97,255,0.28)] transition-all duration-300 hover:scale-[1.04] hover:bg-[linear-gradient(90deg,#4AABF0_0%,#5DCDE8_100%)] hover:shadow-[0_14px_32px_rgba(58,97,255,0.38)]"
+            <MarketingButton
+              href={content.moreCasesUrl}
+              size="sm"
+              showArrow
+              className="h-[42px] min-w-0 px-6 text-[14px] shadow-[0_10px_24px_rgba(58,97,255,0.28)] hover:scale-[1.04] hover:shadow-[0_14px_32px_rgba(58,97,255,0.38)]"
             >
-              更多场景示例
-              <ArrowRightIcon size={16} />
-            </Link>
+              {content.moreCasesLabel}
+            </MarketingButton>
           </div>
         </section>
       </div>

@@ -3,12 +3,16 @@ import { cn } from "@/lib/utils";
 
 type NewsCategoryFilterProps = {
   categories: NewsCategory[];
+  categoryLabels: Record<NewsCategory, string>;
+  filterTitle: string;
   active: NewsCategory;
   onChange: (category: NewsCategory) => void;
 };
 
 export function NewsCategoryFilter({
   categories,
+  categoryLabels,
+  filterTitle,
   active,
   onChange,
 }: NewsCategoryFilterProps) {
@@ -16,7 +20,7 @@ export function NewsCategoryFilter({
     <div className="w-[248px] max-[1024px]:w-full">
       <div className="sticky top-[120px]">
         <div className="mb-[26px] text-[24px] leading-5 font-semibold text-slate-400 max-[1024px]:hidden">
-          类别
+          {filterTitle}
         </div>
         <div className="flex flex-wrap gap-4 whitespace-nowrap max-[1024px]:justify-center max-[1024px]:gap-3">
           {categories.map((category) => {
@@ -31,7 +35,7 @@ export function NewsCategoryFilter({
                   isActive && "border-[#4AABF0] bg-[#4AABF0] text-white",
                 )}
               >
-                {category}
+                {categoryLabels[category]}
               </button>
             );
           })}

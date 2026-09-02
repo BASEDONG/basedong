@@ -1,0 +1,10 @@
+{
+  "title": "API Reference",
+  "description": "basedong AI Model API Documentation",
+  "icon": "Code",
+  "root": true,
+  "pages": [
+    "index",
+    "ai-model"
+  ]
+}

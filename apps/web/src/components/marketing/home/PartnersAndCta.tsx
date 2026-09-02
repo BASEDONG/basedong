@@ -1,7 +1,10 @@
-import Link from "next/link";
+"use client";
+
 import Image from "next/image";
-import { logoRow1, logoRow2, logoRow3, partnersBg } from "./content";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { MarketingButton } from "@/components/marketing/shared/MarketingButton";
 import { APP_ROUTES } from "@/lib/routes";
+import { getHomeContent, logoRow1, logoRow2, logoRow3, partnersBg } from "./content";
 
 /** Calibrated from original clone, then slowed for readability (Row2 stays faster than Row1). */
 const MARQUEE_SLOWDOWN = 2;
@@ -56,13 +59,16 @@ function MarqueeRow({
 }
 
 export function PartnersAndCta() {
+  const { locale } = useLocale();
+  const { partners } = getHomeContent(locale);
+
   return (
     <div
       className="w-full bg-cover bg-no-repeat py-[88px]"
       style={{ backgroundImage: `url(${partnersBg})` }}
     >
       <h3 className="mb-12 px-3.5 text-center text-[32px] font-bold md:mb-16 md:text-[48px]">
-        众多客户与生态伙伴
+        {partners.title}
       </h3>
 
       <div className="mb-16">
@@ -73,22 +79,20 @@ export function PartnersAndCta() {
 
       <div className="mx-auto flex max-w-[900px] flex-col items-center justify-center gap-8 px-6 md:flex-row md:gap-16">
         <div className="text-center">
-          <p className="mb-5 text-[20px] font-medium md:text-[24px]">几分钟即可开通模型 API</p>
-          <Link
-            href={APP_ROUTES.consoleAccountAk}
-            className="bd-gradient-bg inline-flex h-14 min-w-[160px] items-center justify-center rounded-[12px] px-8 text-lg text-white"
-          >
-            开始试用
-          </Link>
+          <p className="mb-5 text-[20px] font-medium md:text-[24px]">
+            {partners.ctaPrimaryDesc}
+          </p>
+          <MarketingButton href={APP_ROUTES.consoleAccountAk}>
+            {partners.ctaPrimaryButton}
+          </MarketingButton>
         </div>
         <div className="text-center">
-          <p className="mb-5 text-[20px] font-medium md:text-[24px]">需要专属方案？联系我们</p>
-          <Link
-            href={APP_ROUTES.formBusiness}
-            className="inline-flex h-14 min-w-[160px] items-center justify-center rounded-[12px] border border-[#4AABF0] bg-white px-8 text-lg text-[#4AABF0]"
-          >
-            提交需求
-          </Link>
+          <p className="mb-5 text-[20px] font-medium md:text-[24px]">
+            {partners.ctaSecondaryDesc}
+          </p>
+          <MarketingButton href={APP_ROUTES.formBusiness} variant="secondary">
+            {partners.ctaSecondaryButton}
+          </MarketingButton>
         </div>
       </div>
     </div>

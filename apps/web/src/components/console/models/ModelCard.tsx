@@ -1,4 +1,5 @@
 import type { ModelCardData } from "./content-types";
+import { Card } from "@/components/ui/card";
 
 interface ModelCardProps {
   model: ModelCardData;
@@ -22,9 +23,11 @@ const TYPE_TAG_STYLES: Record<string, string> = {
 
 export function ModelCard({ model, onSelect }: ModelCardProps) {
   return (
-    <article
+    <Card
       role="button"
       tabIndex={0}
+      variant="surface"
+      interactive="lift"
       onClick={() => onSelect?.(model)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -32,7 +35,7 @@ export function ModelCard({ model, onSelect }: ModelCardProps) {
           onSelect?.(model);
         }
       }}
-      className="relative flex h-[162px] min-w-0 cursor-pointer flex-col justify-between overflow-hidden rounded-[12px] border border-[#eceef3] bg-white p-4 transition-shadow hover:border-[#eceef3] hover:shadow-md"
+      className="relative h-[162px] min-w-0 cursor-pointer justify-between p-4 hover:bg-[#4AABF01A]"
     >
       {model.badge ? (
         <div
@@ -58,7 +61,7 @@ export function ModelCard({ model, onSelect }: ModelCardProps) {
           />
         </div>
         <div className="flex h-full min-w-0 w-full flex-col justify-center text-slate-800">
-          <div className="w-full truncate break-all align-top text-base font-normal text-slate-800">
+          <div className="w-full truncate break-all align-top text-base font-semibold text-slate-800">
             {model.title}
           </div>
           <div className="flex h-5 min-w-0 items-center gap-2 text-xs text-slate-500">
@@ -105,6 +108,6 @@ export function ModelCard({ model, onSelect }: ModelCardProps) {
           </div>
         ))}
       </div>
-    </article>
+    </Card>
   );
 }

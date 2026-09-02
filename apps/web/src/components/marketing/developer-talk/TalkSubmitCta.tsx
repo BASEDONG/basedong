@@ -1,4 +1,4 @@
-import { SubmitArrowIcon } from "./icons";
+import { ArrowUpRight } from "lucide-react";
 
 interface TalkSubmitCtaProps {
   title: string;
@@ -8,7 +8,7 @@ interface TalkSubmitCtaProps {
 
 export function TalkSubmitCta({ title, label, href }: TalkSubmitCtaProps) {
   return (
-    <section className="relative isolate overflow-hidden bg-[#4AABF0] px-[16px] py-[40px]">
+    <section className="relative isolate overflow-hidden bg-[#4AABF0] py-[40px]">
       <div
         className="absolute inset-0"
         style={{
@@ -34,7 +34,7 @@ export function TalkSubmitCta({ title, label, href }: TalkSubmitCtaProps) {
             "radial-gradient(circle at center, black 0%, rgba(0,0,0,0.92) 46%, rgba(0,0,0,0.55) 72%, transparent 100%)",
         }}
       />
-      <div className="relative z-[1] mx-auto flex min-h-[150px] max-w-[1440px] items-center justify-center gap-[72px] px-[24px] text-center max-[720px]:min-h-[180px] max-[720px]:flex-col max-[720px]:gap-[24px] max-[720px]:px-0">
+      <div className="sf-content relative z-[1] flex min-h-[150px] items-center justify-center gap-[72px] text-center max-[720px]:min-h-[180px] max-[720px]:flex-col max-[720px]:gap-[24px]">
         <h2 className="text-[36px] font-semibold leading-[1.25] text-white max-[1280px]:text-[32px] max-[720px]:text-[24px]">
           {title}
         </h2>
@@ -46,7 +46,7 @@ export function TalkSubmitCta({ title, label, href }: TalkSubmitCtaProps) {
         >
           <span>{label}</span>
           <span className="transition-transform duration-500 ease-out group-hover:translate-x-[6px]">
-            <SubmitArrowIcon className="h-[20px] w-[20px]" />
+            <ArrowUpRight className="h-5 w-5" aria-hidden />
           </span>
         </a>
       </div>
