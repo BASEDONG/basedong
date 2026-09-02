@@ -70,15 +70,15 @@ A Locale that has a complete catalog for the in-scope Zones and may appear as a 
 _Avoid_: supported language, enabled locale
 
 **Console Locale**:
-A Locale in the **Target Locale Set** with a complete **Console** catalog but not yet complete Marketing + Auth catalogs. Appears in the language switcher; **Preferred Locale** persists; Marketing and Auth **Fallback Locale** until **Graduation**. Switcher shows a Console-only hint; Marketing shows a persistent banner when active.
+*(Pre-Graduation only.)* A Locale in the **Target Locale Set** with a complete **Console** catalog but not yet complete Marketing + Auth catalogs. Appears in the language switcher; **Preferred Locale** persists; Marketing and Auth **Fallback Locale** until **Graduation**. Switcher shows a Console-only hint; Marketing shows a persistent banner when active. **Target end state:** empty — every Target Locale is a Translated Locale; remove banner, switcher hint, and `CONSOLE_LOCALES` registry.
 _Avoid_: partial locale, beta language
 
 **Graduation**:
-When a **Console Locale** gains complete Marketing + Auth catalogs, it becomes a **Translated Locale** (URL prefixes, `check:locales` parity). Existing **Preferred Locale** values must keep working.
+When a **Console Locale** gains complete Marketing + Auth + shared chrome catalogs, it becomes a **Translated Locale** (URL prefixes, `check:locales` parity). Existing **Preferred Locale** values must keep working. **Planned:** all seven pending Console Locales graduate in one increment together with Marketing RTL for `ar`.
 _Avoid_: locale promotion, full translation
 
 **Target Locale Set**:
-The customer Web languages we ship toward: `zh-CN`, `en`, `zh-TW`, `ja`, `fr`, `ru`, `vi`, `ko`, `de`, `es`, `pt-BR`, `ar`, `hi`, `id`. Portuguese is `pt-BR` (Brazil), not `pt`. Spanish is a single `es` catalog (Spain + LATAM). Arabic requires RTL layout in Console.
+The customer Web languages we ship toward: `zh-CN`, `en`, `zh-TW`, `ja`, `fr`, `ru`, `vi`, `ko`, `de`, `es`, `pt-BR`, `ar`, `hi`, `id`. Portuguese is `pt-BR` (Brazil), not `pt`. Spanish is a single `es` catalog (Spain + LATAM). Arabic requires RTL layout in **Console and Marketing/Auth** (shared shell, forms, nav).
 _Avoid_: supported languages list, locale roadmap
 
 **Fallback Locale**:
@@ -89,9 +89,17 @@ _Avoid_: English fallback, best-effort locale
 The Locale the user last chose in the language switcher. Covers the **Target Locale Set**; persisted (`bd_preferred_locale` cookie / localStorage). Bare-path Marketing/Auth entry redirects to the prefixed URL when Preferred Locale is a **Translated Locale** (not Source). Console paths stay bare; copy follows Preferred Locale.
 _Avoid_: selected language, display language
 
-**Translated Locale set** (Marketing + Auth, current):
-`zh-CN` (Source; bare paths), `en`, `zh-TW`, `fr`, `ru`, `ja`, `vi`. Each must have complete Marketing + Auth catalogs (`check:locales`). New Target locales start as **Console Locale** until **Graduation**.
+**Translated Locale set** (Marketing + Auth):
+Target end state: every **Target Locale** is a **Translated Locale** — full Marketing (12 pages), Auth, and shared chrome catalogs; URL prefixes for all non-Source locales. **Launch set** (shipped today): `zh-CN` (Source; bare paths), `en`, `zh-TW`, `fr`, `ru`, `ja`, `vi`. **Pending Graduation**: `ko`, `de`, `es`, `pt-BR`, `ar`, `hi`, `id` (Console catalog complete; Marketing/Auth/chrome still **Fallback Locale** until graduated). `check:locales` must cover the full Translated set once graduated.
 _Avoid_: supported languages, Admin locale list (different codes and product surface)
+
+**Marketing Graduation scope**:
+In scope for each **Translated Locale**: 12 Marketing page catalogs (`content-locales` or `*-ui-copy.ts`), Auth login/register catalog, shared chrome (`chrome-copy.ts`, `locale-ui-copy.ts`), page SEO metadata, and **illustration copy** (diagram labels inside enterprise scenario SVGs and any other marketing illustration with readable text). Out of scope: **Forms**, **Docs** (separate locale sets per ADR).
+_Avoid_: whole-site i18n, Admin UI
+
+**Catalog production**:
+Marketing + Auth strings are **authored by agents into the repo** (Cursor agents reading `zh-CN` source). No commercial MT API, in-app translation SDK, or i18next-style key files on Web.
+_Avoid_: translation plugin, auto-translate pipeline
 
 ### Catalog layout (Marketing + Auth)
 
@@ -103,6 +111,9 @@ Per-page copy lives under `src/components/{zone}/{page}/`:
 - **`*-ui-copy.ts`** (optional) — section titles / hero shell when the main catalog is large.
 
 **Category filters** use Source-locale Chinese IDs as keys (e.g. `"全部"`, `"对话"`); `categoryLabels` maps keys to display labels per locale (same pattern as pricing/models).
+
+**Illustration copy**:
+Readable text in marketing diagrams (e.g. enterprise `ScenarioDesignSvgs`, scenario detail specs in page catalogs) is locale-specific catalog content, not baked into static asset files. Prefer React SVG components fed by catalogs; use per-locale static `.svg` duplicates only when an asset cannot be componentized (currently a small set under `public/assets/marketing/`).
 
 **Backend-derived UI** (pricing table headers, model card description fallback) takes `locale` and reads from the nearest catalog or `src/lib/backend/catalog.ts` helpers — not from static JSON fixtures.
 

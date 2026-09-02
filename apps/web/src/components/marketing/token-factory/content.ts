@@ -11,7 +11,7 @@ import {
   WHY_CARD_BASE,
   heroBackgroundBase,
 } from "./content-base";
-import { en, fr, ja, ru, vi, zhCN, zhTW } from "./content-locales";
+import { en, fr, ja, ru, vi, zhCN, zhTW, ko, de, es, ptBR, ar, hi, id } from "./content-locales";
 import type { TokenFactoryContent, TokenFactoryStrings } from "./content-types";
 
 export type { TokenFactoryContent, TokenFactoryStrings } from "./content-types";
@@ -86,7 +86,14 @@ const TOKEN_FACTORY_STRINGS: Partial<
   fr,
   ru,
   ja,
-  vi,
+  vi,
+  ko: ko,
+  de: de,
+  es: es,
+  "pt-BR": ptBR,
+  ar: ar,
+  hi: hi,
+  id: id,
 };
 
 export function getTokenFactoryContent(locale: string): TokenFactoryContent {

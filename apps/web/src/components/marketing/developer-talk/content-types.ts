@@ -7,6 +7,13 @@ export type TalkCategory =
   | "用户故事"
   | "用户测评";
 
+export const FILTERABLE_TALK_CATEGORIES = [
+  "技术实践",
+  "平台活动",
+  "用户故事",
+  "用户测评",
+] as const satisfies readonly TalkCategory[];
+
 export type TalkArticleTag =
   | "技术实践"
   | "平台活动"

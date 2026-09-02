@@ -220,6 +220,194 @@ const vi: EnterpriseUiCopy = {
   faqTitle: "Câu hỏi thường gặp",
 };
 
+const ko: EnterpriseUiCopy = {
+  logoAlt: "엔터프라이즈 LLM 서비스 플랫폼",
+  brandName: "basedong",
+  heroTitleAccent: "엔터프라이즈 MaaS 플랫폼",
+  heroSubtitle: "풀스택 AI, 한곳에서 제공",
+  heroTags: [
+    "더 나은 ROI",
+    "프로덕션급 고처리량",
+    "신규 모델 빠른 온보딩",
+    "다중 소스 연산 통합 거버넌스",
+    "멀티 벤더 하드웨어",
+  ],
+  consultCta: "상담 예약",
+  advantagesTitle: "제품 장점",
+  introSummary:
+    "basedong 엔터프라이즈 LLM 플랫폼은 글로벌 조직이 이기종 연산 거버넌스, 학습, 추론, 애플리케이션을 아우르도록 지원합니다. 더 낮은 TCO, 더 빠른 납기, 더 높은 성능과 안정적인 품질로 파일럿에서 프로덕션까지 지원합니다.",
+  introTitle: "플랫폼 개요",
+  archSectionTitle: "basedong 엔터프라이즈 플랫폼 아키텍처",
+  archAria: "basedong 엔터프라이즈 플랫폼 아키텍처",
+  scenariosTitle: "산업 및 시나리오",
+  scenariosSubtitle: "에너지, AI 센터, 교통, 제조, 통신사 등 핵심 산업 경로",
+  scenariosValueLabel: "비즈니스 가치",
+  testimonialsTitle: "고객 사례",
+  faqTitle: "FAQ",
+};
+
+const de: EnterpriseUiCopy = {
+  logoAlt: "Enterprise-LLM-Serviceplattform",
+  brandName: "basedong",
+  heroTitleAccent: "Enterprise-MaaS-Plattform",
+  heroSubtitle: "Full-Stack-KI — alles aus einer Hand",
+  heroTags: [
+    "Besserer ROI",
+    "Produktions-Durchsatz",
+    "Schnelles Modell-Onboarding",
+    "Einheitliche Multi-Source-Compute-Governance",
+    "Multi-Vendor-Hardware",
+  ],
+  consultCta: "Beratung buchen",
+  advantagesTitle: "Produktvorteile",
+  introSummary:
+    "Die Enterprise-LLM-Plattform von basedong unterstützt globale Organisationen bei heterogener Compute-Governance, Training, Inferenz und Anwendungen — mit niedrigerem TCO, schnellerer Lieferung und zuverlässiger Qualität vom Pilot bis zur Produktion.",
+  introTitle: "Plattformübersicht",
+  archSectionTitle: "basedong Enterprise-Plattformarchitektur",
+  archAria: "basedong Enterprise-Plattformarchitektur",
+  scenariosTitle: "Branchen & Szenarien",
+  scenariosSubtitle:
+    "Wege für Energie, KI-Zentren, Transport, Fertigung und Carrier",
+  scenariosValueLabel: "Geschäftswert",
+  testimonialsTitle: "Kundenstimmen",
+  faqTitle: "FAQ",
+};
+
+const es: EnterpriseUiCopy = {
+  logoAlt: "Plataforma de servicios LLM empresarial",
+  brandName: "basedong",
+  heroTitleAccent: "Plataforma MaaS empresarial",
+  heroSubtitle: "IA full-stack, entregada en un solo lugar",
+  heroTags: [
+    "Mejor ROI",
+    "Rendimiento de producción",
+    "Incorporación rápida de modelos",
+    "Gobernanza unificada de cómputo",
+    "Hardware multivendor",
+  ],
+  consultCta: "Reservar consulta",
+  advantagesTitle: "Ventajas del producto",
+  introSummary:
+    "La plataforma LLM empresarial de basedong ayuda a organizaciones globales a cubrir gobernanza de cómputo heterogéneo, entrenamiento, inferencia y aplicaciones — con menor TCO, entrega más rápida y calidad confiable del piloto a producción.",
+  introTitle: "Resumen de la plataforma",
+  archSectionTitle: "Arquitectura de plataforma empresarial basedong",
+  archAria: "Arquitectura de plataforma empresarial basedong",
+  scenariosTitle: "Industrias y escenarios",
+  scenariosSubtitle:
+    "Rutas para energía, centros de IA, transporte, manufactura y operadores",
+  scenariosValueLabel: "Valor de negocio",
+  testimonialsTitle: "Historias de clientes",
+  faqTitle: "FAQ",
+};
+
+const ptBR: EnterpriseUiCopy = {
+  logoAlt: "Plataforma de serviços LLM empresarial",
+  brandName: "basedong",
+  heroTitleAccent: "Plataforma MaaS empresarial",
+  heroSubtitle: "IA full-stack, entregue em um só lugar",
+  heroTags: [
+    "Melhor ROI",
+    "Throughput de produção",
+    "Onboarding rápido de modelos",
+    "Governança unificada de computação",
+    "Hardware multivendor",
+  ],
+  consultCta: "Agendar consulta",
+  advantagesTitle: "Vantagens do produto",
+  introSummary:
+    "A plataforma LLM empresarial basedong ajuda organizações globais a cobrir governança de computação heterogênea, treinamento, inferência e aplicações — com TCO menor, entrega mais rápida e qualidade confiável do piloto à produção.",
+  introTitle: "Visão geral da plataforma",
+  archSectionTitle: "Arquitetura da plataforma empresarial basedong",
+  archAria: "Arquitetura da plataforma empresarial basedong",
+  scenariosTitle: "Indústrias e cenários",
+  scenariosSubtitle:
+    "Caminhos para energia, centros de IA, transporte, manufatura e operadoras",
+  scenariosValueLabel: "Valor de negócio",
+  testimonialsTitle: "Histórias de clientes",
+  faqTitle: "FAQ",
+};
+
+const ar: EnterpriseUiCopy = {
+  logoAlt: "منصة خدمات LLM للمؤسسات",
+  brandName: "basedong",
+  heroTitleAccent: "منصة MaaS للمؤسسات",
+  heroSubtitle: "ذكاء اصطناعي متكامل، يُسلّم من مكان واحد",
+  heroTags: [
+    "عائد استثمار أفضل",
+    "إنتاجية على مستوى الإنتاج",
+    "إدماج سريع للنماذج الجديدة",
+    "حوكمة موحدة للحوسبة متعددة المصادر",
+    "أجهزة متعددة الموردين",
+  ],
+  consultCta: "حجز استشارة",
+  advantagesTitle: "مزايا المنتج",
+  introSummary:
+    "تساعد منصة LLM للمؤسسات basedong المنظمات العالمية على تغطية حوكمة الحوسبة غير المتجانسة والتدريب والاستدلال والتطبيقات — بتكلفة إجمالية أقل وتسليم أسرع وجودة موثوقة من التجريب إلى الإنتاج.",
+  introTitle: "نظرة عامة على المنصة",
+  archSectionTitle: "بنية منصة basedong للمؤسسات",
+  archAria: "بنية منصة basedong للمؤسسات",
+  scenariosTitle: "القطاعات والسيناريوهات",
+  scenariosSubtitle:
+    "مسارات للطاقة ومراكز الذكاء الاصطناعي والنقل والتصنيع والمشغلين",
+  scenariosValueLabel: "القيمة التجارية",
+  testimonialsTitle: "قصص العملاء",
+  faqTitle: "الأسئلة الشائعة",
+};
+
+const hi: EnterpriseUiCopy = {
+  logoAlt: "एंटरप्राइज LLM सेवा प्लेटफ़ॉर्म",
+  brandName: "basedong",
+  heroTitleAccent: "एंटरप्राइज MaaS प्लेटफ़ॉर्म",
+  heroSubtitle: "फुल-स्टैक AI, एक ही स्थान पर",
+  heroTags: [
+    "बेहतर ROI",
+    "प्रोडक्शन-ग्रेड थ्रूपुट",
+    "नए मॉडल की तेज़ ऑनबोर्डिंग",
+    "एकीकृत मल्टी-सोर्स कंप्यूट गवर्नेंस",
+    "मल्टी-वेंडर हार्डवेयर",
+  ],
+  consultCta: "परामर्श बुक करें",
+  advantagesTitle: "उत्पाद लाभ",
+  introSummary:
+    "basedong का एंटरप्राइज LLM प्लेटफ़ॉर्म वैश्विक संगठनों को हेटेरोजीनस कंप्यूट गवर्नेंस, प्रशिक्षण, इन्फ़रेंस और एप्लिकेशन कवर करने में मदद करता है — कम TCO, तेज़ डिलीवरी और पायलट से प्रोडक्शन तक विश्वसनीय गुणवत्ता।",
+  introTitle: "प्लेटफ़ॉर्म अवलोकन",
+  archSectionTitle: "basedong एंटरप्राइज प्लेटफ़ॉर्म आर्किटेक्चर",
+  archAria: "basedong एंटरप्राइज प्लेटफ़ॉर्म आर्किटेक्चर",
+  scenariosTitle: "उद्योग और परिदृश्य",
+  scenariosSubtitle:
+    "ऊर्जा, AI केंद्र, परिवहन, विनिर्माण और ऑपरेटर के लिए मार्ग",
+  scenariosValueLabel: "व्यावसायिक मूल्य",
+  testimonialsTitle: "ग्राहक कहानियाँ",
+  faqTitle: "FAQ",
+};
+
+const id: EnterpriseUiCopy = {
+  logoAlt: "Platform layanan LLM enterprise",
+  brandName: "basedong",
+  heroTitleAccent: "Platform MaaS enterprise",
+  heroSubtitle: "AI full-stack, diserahkan di satu tempat",
+  heroTags: [
+    "ROI lebih baik",
+    "Throughput tingkat produksi",
+    "Onboarding model baru cepat",
+    "Tata kelola komputasi multi-sumber terpadu",
+    "Perangkat keras multi-vendor",
+  ],
+  consultCta: "Jadwalkan konsultasi",
+  advantagesTitle: "Keunggulan produk",
+  introSummary:
+    "Platform LLM enterprise basedong membantu organisasi global mencakup tata kelola komputasi heterogen, pelatihan, inferensi, dan aplikasi — dengan TCO lebih rendah, pengiriman lebih cepat, dan kualitas andal dari pilot ke produksi.",
+  introTitle: "Ikhtisar platform",
+  archSectionTitle: "Arsitektur platform enterprise basedong",
+  archAria: "Arsitektur platform enterprise basedong",
+  scenariosTitle: "Industri & skenario",
+  scenariosSubtitle:
+    "Jalur untuk energi, pusat AI, transportasi, manufaktur, dan operator",
+  scenariosValueLabel: "Nilai bisnis",
+  testimonialsTitle: "Kisah pelanggan",
+  faqTitle: "FAQ",
+};
+
 const catalogs: Record<TranslatedLocale, EnterpriseUiCopy> = {
   "zh-CN": zhCN,
   en,
@@ -228,6 +416,13 @@ const catalogs: Record<TranslatedLocale, EnterpriseUiCopy> = {
   ru,
   ja,
   vi,
+  ko,
+  de,
+  es,
+  "pt-BR": ptBR,
+  ar,
+  hi,
+  id,
 };
 
 export function getEnterpriseUiCopy(locale: string): EnterpriseUiCopy {

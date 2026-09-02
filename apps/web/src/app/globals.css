@@ -910,3 +910,22 @@ html[dir="rtl"] .sf-cloud-console .rounded-bl-\[6px\] {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 6px;
 }
+
+/* Marketing + Auth RTL (Graduation #35) — html[dir="rtl"] when locale is ar */
+html[dir="rtl"] .sf-site .text-left {
+  text-align: start;
+}
+html[dir="rtl"] .sf-site .text-right {
+  text-align: end;
+}
+html[dir="rtl"] .sf-site table,
+html[dir="rtl"] .sf-site th,
+html[dir="rtl"] .sf-site td {
+  text-align: start;
+}
+html[dir="rtl"] .sf-account-login .text-left {
+  text-align: start;
+}
+html[dir="rtl"] .sf-account-login .text-right {
+  text-align: end;
+}

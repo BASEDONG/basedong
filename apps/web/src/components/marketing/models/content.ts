@@ -8,7 +8,7 @@ import {
   TYPE_OPTIONS,
   seriesExploreHref,
 } from "./content-base";
-import { en, fr, ja, ru, vi, zhCN, zhTW } from "./content-locales";
+import { en, fr, ja, ru, vi, zhCN, zhTW, ko, de, es, ptBR, ar, hi, id } from "./content-locales";
 import type {
   ModelType,
   ModelsPageContent,
@@ -103,6 +103,13 @@ const MODELS_STRINGS: Partial<Record<TranslatedLocale, ModelsPageStrings>> & {
   ru,
   ja,
   vi,
+  ko: ko,
+  de: de,
+  es: es,
+  "pt-BR": ptBR,
+  ar: ar,
+  hi: hi,
+  id: id,
 };
 
 export function getModelsContent(locale: string): ModelsPageContent {

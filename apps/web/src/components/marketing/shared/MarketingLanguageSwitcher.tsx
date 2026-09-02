@@ -13,7 +13,6 @@ import {
   pathnameWithoutLocale,
   withLocalePrefix,
 } from "@/lib/locale-path";
-import { getLocaleUiCopy } from "@/lib/locale-ui-copy";
 import {
   persistPreferred,
   useLocale,
@@ -26,12 +25,10 @@ const listClass = "flex w-max flex-col gap-[6px] px-[6px] py-[20px]";
 function LanguageOption({
   item,
   selected,
-  hint,
   onSelect,
 }: {
   item: SiteLanguage;
   selected: boolean;
-  hint: string;
   onSelect: (code: TargetLocale) => void;
 }) {
   return (
@@ -44,14 +41,6 @@ function LanguageOption({
       )}
     >
       <span dir="auto">{item.nativeLabel}</span>
-      {item.consoleOnly ? (
-        <span
-          className="mt-1 block text-[11px] font-normal leading-snug text-slate-500"
-          dir="auto"
-        >
-          {hint}
-        </span>
-      ) : null}
     </button>
   );
 }
@@ -70,7 +59,6 @@ export function MarketingLanguageSwitcher({
   const router = useRouter();
   const { locale, preferredLocale, setPreferredLocale } = useLocale();
   const chrome = getChromeCopy(locale);
-  const uiCopy = getLocaleUiCopy(preferredLocale);
   const selected = preferredLocale || locale;
 
   useEffect(() => {
@@ -150,7 +138,6 @@ export function MarketingLanguageSwitcher({
                 key={item.code}
                 item={item}
                 selected={selected === item.code}
-                hint={uiCopy.consoleLocaleSwitcherHint}
                 onSelect={handleSelect}
               />
             ))}

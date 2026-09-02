@@ -36,6 +36,34 @@ const LOGIN: PageMetaCatalog = {
     title: "Đăng nhập — basedong",
     description: "Chào mừng đến basedong — AI cho mọi người.",
   },
+  ko: {
+    title: "로그인 — basedong",
+    description: "basedong에 오신 것을 환영합니다 — 모두를 위한 AI.",
+  },
+  de: {
+    title: "Anmelden — basedong",
+    description: "Willkommen bei basedong — KI für alle.",
+  },
+  es: {
+    title: "Iniciar sesión — basedong",
+    description: "Bienvenido a basedong — IA para todos.",
+  },
+  "pt-BR": {
+    title: "Entrar — basedong",
+    description: "Bem-vindo ao basedong — IA para todos.",
+  },
+  ar: {
+    title: "تسجيل الدخول — basedong",
+    description: "مرحبًا بك في basedong — ذكاء اصطناعي للجميع.",
+  },
+  hi: {
+    title: "साइन इन — basedong",
+    description: "basedong में आपका स्वागत है — सभी के लिए AI।",
+  },
+  id: {
+    title: "Masuk — basedong",
+    description: "Selamat datang di basedong — AI untuk semua.",
+  },
 };
 
 export function getLoginPageMetadata(locale: string): PageMeta {
