@@ -1,12 +1,45 @@
-﻿export const pageTitle = "文本对话";
+﻿import { APP_ROUTES } from "@/lib/routes";
 
 export const MODEL_OPTIONS = [
-  "LongCat-2.0",
-  "DeepSeek-V3.2",
-  "Qwen3-235B-A22B",
-  "Kimi-K2.5",
-  "GLM-5",
+  "claude-haiku-4-5",
+  "claude-opus-4-5",
+  "claude-opus-4-6",
+  "claude-opus-4-7",
+  "claude-opus-4-8",
+  "claude-opus-5",
+  "claude-sonnet-4-6",
+  "claude-sonnet-5",
+  "codex-auto-review",
+  "codex-auto-review-openai-compact",
+  "gpt-5.4",
+  "gpt-5.4-mini",
+  "gpt-5.4-openai-compact",
+  "gpt-5.5",
+  "gpt-5.5-mini",
+  "gpt-5.5-openai-compact",
+  "gpt-5.6-luna",
+  "gpt-5.6-sol",
+  "gpt-5.6-terra",
+  "grok-4.20-multi-agent-xhigh",
+  "grok-4.5",
+  "grok-4.5-聊天",
+  "grok-4.6",
+  "doubao-seed-2.0-code",
+  "doubao-seed-2.0-lite",
+  "doubao-seed-2.0-mini",
+  "doubao-seed-2.0-pro",
+  "glm-5-turbo",
+  "glm-5.1",
+  "glm-5.2",
+  "glm-5.3",
+  "kimi-k2.6",
+  "kimi-k2.7-code",
+  "kimi-k3",
+  "MiniMax-M2.7",
+  "MiniMax-M3",
 ] as const;
+
+export const DEFAULT_MODEL = MODEL_OPTIONS[0];
 
 export const SUGGESTION_PROMPTS = [
   "非洲平头哥是哪种动物？",
@@ -15,8 +48,7 @@ export const SUGGESTION_PROMPTS = [
   "抗生素能治疗病毒感染吗？",
 ] as const;
 
-export const TERMS_URL =
-  "https://api-docs.siliconflow.cn/docs/legals/terms-of-service";
+export const TERMS_URL = APP_ROUTES.userAgreement;
 
 export interface ParamDef {
   key: "maxTokens" | "temperature" | "topP" | "topK" | "frequencyPenalty";

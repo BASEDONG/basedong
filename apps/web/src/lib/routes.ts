@@ -8,7 +8,7 @@ export const PARTNER_PAGE_ENABLED = false;
 export const ABOUT_MENU_ENABLED = false;
 
 /** Set false to hide docs center links in marketing nav and console sidebar. */
-export const DOCS_CENTER_ENABLED = false;
+export const DOCS_CENTER_ENABLED = true;
 
 /** 发票 is not supported by basedong Backend — keep Console entry hidden. */
 export const INVOICE_ENABLED = false;
@@ -27,9 +27,11 @@ export const APP_ROUTES = {
   news: "/news",
   developerTalk: "/developer-talk",
   partner: "/partner",
-  docsIntroduction: "/docs/userguide/introduction",
-  login: "/zh/login",
-  loginEmail: "/zh/login/email",
+  /** Local docs shell; content adapted from New API AI model APIs. */
+  docsIntroduction: "/docs/api",
+  login: "/login",
+  /** @deprecated Use APP_ROUTES.login — email is the only auth path now. */
+  loginEmail: "/login",
   consoleModels: "/me/models",
   consoleBatches: "/me/batches",
   consoleBills: "/me/bills",
@@ -37,14 +39,18 @@ export const APP_ROUTES = {
   consoleExpenseBill: "/me/expensebill",
   consoleInvitation: "/me/invitation",
   consoleAccountAk: "/me/account/ak",
+  consoleAccountAuthentication: "/me/account/authentication",
   consoleDedicatedApply: "/me/dedicated/apply",
   consoleCampaignInviter: "/me/campaigns/inviter",
+  consoleCampaignRealName: "/me/campaigns/real-name",
   consolePlaygroundChat: "/me/playground/chat",
   consolePlaygroundImage: "/me/playground/image",
   consolePlaygroundTts: "/me/playground/text-to-speech",
   consolePlaygroundVideo: "/me/playground/video",
   formBusiness: "/share/base/form/shrcn2G8XKaFfNasfwD1lgDUbcb",
   formSupport: "/share/base/form/shrcnDiK9EIkGN3sK0PepqN1Ppb",
+  /** 用户使用声明与合规使用协议（短链文案多为「用户协议」） */
+  userAgreement: "/legals/user-agreement",
 } as const;
 
 const ABOUT_MENU_ROUTES = new Set<string>([
@@ -76,6 +82,11 @@ export function isInternalHref(href: string): boolean {
 const LOCAL_FORM_PATHS: Record<string, string> = {
   shrcn2G8XKaFfNasfwD1lgDUbcb: APP_ROUTES.formBusiness,
   shrcnDiK9EIkGN3sK0PepqN1Ppb: APP_ROUTES.formSupport,
+  /** Uncloned Feishu forms → nearest local form */
+  shrcnFexyHcMNEntvR08shp8Tbd: APP_ROUTES.formBusiness,
+  shrcnsVyHOdT78tTRfUQo2KtO7f: APP_ROUTES.formBusiness,
+  shrcnGqeuLHP7ByyGXcS1Gls9hd: APP_ROUTES.formBusiness,
+  shrcnN8lrKXCbYJQScKDTNsAuHc: APP_ROUTES.formSupport,
 };
 
 const MARKETING_PATH_MAP: Record<string, string> = {
@@ -93,7 +104,7 @@ const MARKETING_PATH_MAP: Record<string, string> = {
   "/partner": APP_ROUTES.partner,
 };
 
-function normalizeUrl(href: string): string {
+function hostKey(href: string): string {
   try {
     const u = new URL(href);
     return `${u.hostname}${u.pathname.replace(/\/$/, "") || "/"}`;
@@ -113,10 +124,31 @@ function mapCloudPath(pathname: string): string | null {
 }
 
 function mapDocsPath(pathname: string): string | null {
-  if (!pathname || pathname === "/") {
+  if (!pathname || pathname === "/" || pathname === "/docs") {
     return APP_ROUTES.docsIntroduction;
   }
-  if (pathname.startsWith("/docs/")) return pathname;
+  if (
+    pathname.includes("/legals/terms-of-service") ||
+    pathname.includes("/legals/privacy-policy") ||
+    pathname.includes("/legals/recharge-policy")
+  ) {
+    return APP_ROUTES.userAgreement;
+  }
+  // SiliconFlow guide/API trees are not mirrored — collapse to local docs hub
+  if (pathname.startsWith("/docs/")) {
+    return APP_ROUTES.docsIntroduction;
+  }
+  return null;
+}
+
+function mapMarketingLegalPath(pathname: string): string | null {
+  if (
+    pathname.includes("/legals/terms-of-service") ||
+    pathname.includes("/legals/privacy-policy") ||
+    pathname.includes("/cn/legals/")
+  ) {
+    return APP_ROUTES.userAgreement;
+  }
   return null;
 }
 
@@ -129,7 +161,7 @@ function mapFeishuForm(pathname: string): string | null {
 
 /**
  * Rewrite known SiliconFlow clone-origin URLs to local app paths.
- * Unmapped URLs (news detail, uncloned forms, legal docs) stay external.
+ * Unmapped URLs stay external unless a host mapper returns a local path.
  */
 export function resolveLocalHref(href: string): string {
   if (!href || isInternalHref(href)) return href;
@@ -142,9 +174,19 @@ export function resolveLocalHref(href: string): string {
   const path = url.pathname.replace(/\/$/, "") || "/";
 
   if (host === "siliconflow.cn" || host === "www.siliconflow.cn") {
+    const legal = mapMarketingLegalPath(path);
+    if (legal) return legal;
     const local = MARKETING_PATH_MAP[path];
     if (local) return local;
+    if (path.startsWith("/news")) return APP_ROUTES.news;
+    if (path.startsWith("/developer-talk")) return APP_ROUTES.developerTalk;
     return href;
+  }
+
+  if (host === "docs.siliconflow.cn") {
+    const legal = mapMarketingLegalPath(path);
+    if (legal) return legal;
+    return APP_ROUTES.docsIntroduction;
   }
 
   if (host === "cloud.siliconflow.cn") {
@@ -154,14 +196,20 @@ export function resolveLocalHref(href: string): string {
   }
 
   if (host === "account.siliconflow.cn") {
-    if (path.startsWith("/zh/login")) return path;
+    if (path.startsWith("/zh/login") || path.startsWith("/login")) {
+      return APP_ROUTES.login;
+    }
+    if (path.includes("/user/settings") || path.includes("/zh/user")) {
+      return APP_ROUTES.consoleAccountAk;
+    }
     return href;
   }
 
   if (host === "api-docs.siliconflow.cn") {
-    const local = mapDocsPath(path);
-    if (local) return local;
-    return href;
+    const legal = mapDocsPath(path);
+    if (legal) return legal;
+    // SF guide/API paths are not mirrored 1:1 — send users to local docs hub
+    return APP_ROUTES.docsIntroduction;
   }
 
   if (host === "siliconflow.feishu.cn") {
@@ -170,5 +218,6 @@ export function resolveLocalHref(href: string): string {
     return href;
   }
 
+  void hostKey;
   return href;
 }

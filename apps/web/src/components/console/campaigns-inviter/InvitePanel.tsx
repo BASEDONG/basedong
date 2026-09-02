@@ -1,6 +1,9 @@
 "use client";
 
-import { ASSET, DEMO_INVITE, inviteOverview } from "./content";
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { ASSET, DEMO_INVITE } from "./content";
+import { getCampaignsInviterUiCopy } from "./campaigns-inviter-ui-copy";
 
 function CopyIcon() {
   return (
@@ -62,13 +65,15 @@ function InviteField({
   label,
   value,
   copyLabel,
+  isCodeField,
 }: {
   label: string;
   value: string;
   copyLabel: string;
+  isCodeField?: boolean;
 }) {
   return (
-    <div className={label === "邀请码" ? "mb-6 w-full" : undefined}>
+    <div className={isCodeField ? "mb-6 w-full" : undefined}>
       <div className="mb-2 text-sm font-semibold">{label}</div>
       <div className="inviter-input-group flex h-8 w-full">
         <input
@@ -92,6 +97,13 @@ function InviteField({
 }
 
 export function InvitePanel() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsInviterUiCopy(targetLocale),
+    [targetLocale],
+  );
+  const { inviteOverview, invitePanel } = copy;
+
   return (
     <div className="relative h-auto w-full">
       <div
@@ -133,20 +145,21 @@ export function InvitePanel() {
               className="inline-flex h-8 cursor-pointer items-center justify-center gap-2 rounded-[6px] border border-transparent bg-[rgb(74,171,240)] px-[15px] text-sm leading-[21px] text-white"
             >
               <DownloadIcon />
-              下载二维码
+              {invitePanel.downloadQr}
             </button>
           </div>
 
           <div className="mt-8 w-full min-w-[220px]">
             <InviteField
-              label="邀请码"
+              label={invitePanel.inviteCode}
               value={DEMO_INVITE.code}
-              copyLabel="copy-code"
+              copyLabel={invitePanel.copyCode}
+              isCodeField
             />
             <InviteField
-              label="邀请链接"
+              label={invitePanel.inviteLink}
               value={DEMO_INVITE.link}
-              copyLabel="copy-link"
+              copyLabel={invitePanel.copyLink}
             />
           </div>
         </div>

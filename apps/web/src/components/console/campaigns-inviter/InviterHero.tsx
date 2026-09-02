@@ -1,6 +1,17 @@
-import { ASSET, heroCopy } from "./content";
+"use client";
+
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { ASSET } from "./content";
+import { getCampaignsInviterUiCopy } from "./campaigns-inviter-ui-copy";
 
 export function InviterHero() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsInviterUiCopy(targetLocale),
+    [targetLocale],
+  );
+
   return (
     <div className="bg relative box-content h-[400px] w-full">
       <div
@@ -26,10 +37,10 @@ export function InviterHero() {
               className="mr-[-32px] mt-[96px] max-w-[418px]"
             />
             <div className="mt-[24px] text-3xl font-bold text-slate-700">
-              {heroCopy.headline}
+              {copy.heroCopy.headline}
             </div>
             <div className="mt-[24px] text-lg text-slate-500">
-              {heroCopy.deadline}
+              {copy.heroCopy.deadline}
             </div>
           </div>
           <div className="w-[8%]" />

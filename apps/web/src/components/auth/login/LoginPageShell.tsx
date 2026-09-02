@@ -1,22 +1,20 @@
-﻿import { LanguageSwitcher } from "./LanguageSwitcher";
+﻿import { MarketingLanguageSwitcher } from "@/components/marketing/shared/MarketingLanguageSwitcher";
+import { ConsoleLocaleBanner } from "@/components/marketing/shared/ConsoleLocaleBanner";
 import { LoginBanner } from "./LoginBanner";
-import { LoginFormPanel, type LoginMode } from "./LoginFormPanel";
+import { LoginFormPanel } from "./LoginFormPanel";
 
-type LoginPageShellProps = {
-  mode: LoginMode;
-};
-
-export function LoginPageShell({ mode }: LoginPageShellProps) {
+export function LoginPageShell() {
   return (
-    <div className="sf-account-login relative flex h-full min-h-dvh w-full overflow-hidden bg-white text-black">
-      <div
-        className="pointer-events-none fixed bottom-0 right-0 z-0 hidden h-[100vh] w-screen bg-[url('/assets/auth/login/images/auth-bg-rb.svg')] bg-[length:auto] bg-[position:100%_100%] bg-no-repeat opacity-65 lg:block"
-        aria-hidden
-      />
-      <LanguageSwitcher />
-      <LoginBanner />
-      <div className="relative z-[1] flex min-h-0 flex-1 flex-col items-center justify-center">
-        <LoginFormPanel mode={mode} />
+    <div className="sf-account-login relative flex h-full min-h-dvh w-full flex-col overflow-hidden bg-white text-black">
+      <ConsoleLocaleBanner />
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        <div className="absolute right-6 top-6 z-10">
+          <MarketingLanguageSwitcher />
+        </div>
+        <LoginBanner />
+        <div className="relative z-[1] flex min-h-0 flex-1 flex-col items-center justify-center px-10 lg:px-16">
+          <LoginFormPanel />
+        </div>
       </div>
     </div>
   );

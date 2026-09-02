@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode, RefObject } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { CloudSidebar } from "../models/CloudSidebar";
 import { CloudTopBar } from "../models/CloudTopBar";
 import { CONSOLE_ASSET } from "./content";
@@ -35,14 +36,15 @@ export function ConsoleShell({
   children,
   overlay,
 }: ConsoleShellProps) {
+  const { isRtl } = useLocale();
   const textClass = textTone === "black" ? "text-black" : "text-slate-700";
 
   return (
     <div
-      className={`sf-cloud-console relative flex h-dvh min-h-0 overflow-hidden bg-[#f2f5fa] ${textClass}`}
+      className={`sf-cloud-console relative flex h-dvh min-h-0 overflow-hidden bg-[#f2f5fa] ${textClass} ${isRtl ? "flex-row-reverse" : ""}`}
     >
       <div
-        className="pointer-events-none fixed left-0 top-0 -z-10 h-[100vh] w-screen bg-no-repeat opacity-45"
+        className="pointer-events-none fixed start-0 top-0 -z-10 h-[100vh] w-screen bg-no-repeat opacity-45"
         style={{
           backgroundImage: `url(${CONSOLE_ASSET.wallpaper0})`,
           backgroundPosition: "0% 0%",
@@ -50,7 +52,7 @@ export function ConsoleShell({
         }}
       />
       <div
-        className="pointer-events-none fixed bottom-0 right-0 -z-10 h-[100vh] w-screen bg-no-repeat opacity-40"
+        className="pointer-events-none fixed bottom-0 end-0 -z-10 h-[100vh] w-screen bg-no-repeat opacity-40"
         style={{
           backgroundImage: `url(${CONSOLE_ASSET.wallpaper1})`,
           backgroundPosition: "100% 100%",

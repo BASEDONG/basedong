@@ -1,49 +1,30 @@
-﻿import Image from "next/image";
-import { ASSET, COPY } from "./content";
+﻿"use client";
+
+import { HeroSlideBackground } from "@/components/marketing/home/HeroSlideBackground";
+import { BrandLogo } from "@/components/shared/BrandLogo";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { getAuthCopy, heroBackground } from "./content";
 
 export function LoginBanner() {
+  const { targetLocale } = useLocale();
+  const copy = getAuthCopy(targetLocale);
+
   return (
     <div className="relative hidden min-h-0 flex-1 lg:block">
-      <div className="absolute inset-0 bg-[url('/assets/auth/login/images/login.png')] bg-cover bg-center bg-no-repeat text-white">
-        <div className="absolute inset-0 bg-black/30" />
-        <Image
-          src={ASSET.logoWhite}
-          alt="八色鸫 basedong"
-          width={260}
-          height={42}
-          className="absolute left-[56px] top-[56px] h-auto w-[260px]"
-          priority
-          unoptimized
-        />
-        <section className="absolute left-[56px] top-[170px] text-[48px] font-semibold leading-[72px]">
-          <h1>{COPY.brandName}</h1>
-          <p>{COPY.tagline}</p>
-          <div className="mt-6 text-[28px] leading-[42px]">
-            <p>{COPY.feature1}</p>
-            <p>
-              {COPY.feature2Lead}{" "}
-              <span className="mx-3">{COPY.feature2Mid}</span>{" "}
-              {COPY.feature2Tail}
-            </p>
-          </div>
-        </section>
-        <section className="absolute bottom-[120px] left-[56px] text-[48px] leading-[52px]">
-          <p className="mb-1.5 text-[48px] font-semibold text-[#02F6F7]">
-            {COPY.claim1}{" "}
+      <HeroSlideBackground {...heroBackground} logoAlt={copy.subtitle} />
+      <div className="relative z-10 flex h-full flex-col px-14 py-14 text-slate-800">
+        <BrandLogo size="hero" priority />
+        <section className="mt-16 max-w-[28rem]">
+          <h1 className="text-[48px] font-semibold leading-[1.25] tracking-tight">
+            {copy.brandName}
+          </h1>
+          <p className="mt-3 bg-[linear-gradient(135deg,#5DCDE8_0%,#4AABF0_35%,#E848A0_70%,#FF9142_100%)] bg-clip-text text-[36px] font-semibold leading-[1.35] text-transparent">
+            {copy.tagline}
           </p>
-          <p className="mb-1.5 flex items-start text-[48px] font-semibold text-[#02F6F7]">
-            {COPY.claim2}
-            <span className="ml-1.5 text-[14px] leading-[30px] text-white">
-              *
-            </span>
-          </p>
-          <p className="text-[28px] font-semibold leading-[52px] text-white">
-            {COPY.claimUsers}
+          <p className="mt-6 text-[20px] leading-8 text-slate-600">
+            {copy.subtitle}
           </p>
         </section>
-        <footer className="absolute bottom-[56px] left-[56px] flex items-center gap-[3px] text-[18px] text-white/40">
-          {COPY.footnote}
-        </footer>
       </div>
     </div>
   );

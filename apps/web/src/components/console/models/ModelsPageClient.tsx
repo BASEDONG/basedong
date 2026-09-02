@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { getPricingCatalog, getUserModels } from "@/lib/backend/client";
 import { ConsoleShell } from "../shared/ConsoleShell";
 import {
   enabledModelsToCards,
   pricingToModelCards,
 } from "./catalog";
-import { filterSections, modelsData } from "./content";
 import type { FilterOption, FilterSection, ModelCardData } from "./content-types";
 import { ModelDetailDrawer } from "./ModelDetailDrawer";
 import { ModelGrid } from "./ModelGrid";
 import { ModelsFilterPanel } from "./ModelsFilterPanel";
 import { ModelsToolbar } from "./ModelsToolbar";
+import {
+  getFilterSections,
+  getMatchKey,
+  getModelsUiCopy,
+} from "./models-ui-copy";
 import { ScrollTopIcon } from "../shared/icons";
 
 const SERIES_ALIASES: Record<string, string[]> = {
@@ -72,46 +77,46 @@ function maxParamB(model: ModelCardData): number {
   return max;
 }
 
-function matchesType(model: ModelCardData, label: string): boolean {
-  return model.typeTags.includes(label);
+function matchesType(model: ModelCardData, matchKey: string): boolean {
+  return model.typeTags.includes(matchKey);
 }
 
-function matchesTag(model: ModelCardData, label: string): boolean {
-  const aliases = TAG_ALIASES[label] ?? [label];
+function matchesTag(model: ModelCardData, matchKey: string): boolean {
+  const aliases = TAG_ALIASES[matchKey] ?? [matchKey];
   const haystack = model.featureTags.join(" ").toLowerCase();
   return aliases.some((alias) => haystack.includes(alias.toLowerCase()));
 }
 
-function matchesSeries(model: ModelCardData, label: string): boolean {
-  if (label === "更多") return true;
-  const aliases = SERIES_ALIASES[label] ?? [label];
+function matchesSeries(model: ModelCardData, matchKey: string): boolean {
+  if (matchKey === "更多") return true;
+  const aliases = SERIES_ALIASES[matchKey] ?? [matchKey];
   const haystack = `${model.title} ${model.provider}`.toLowerCase();
   return aliases.some((alias) => haystack.includes(alias.toLowerCase()));
 }
 
-function matchesContext(model: ModelCardData, label: string): boolean {
+function matchesContext(model: ModelCardData, matchKey: string): boolean {
   const max = maxContextK(model);
   if (max <= 0) return false;
-  if (label === "≥ 8K") return max >= 8;
-  if (label === "≥ 16K") return max >= 16;
-  if (label === "≥ 32K") return max >= 32;
-  if (label === "≥ 128K") return max >= 128;
+  if (matchKey === "≥ 8K") return max >= 8;
+  if (matchKey === "≥ 16K") return max >= 16;
+  if (matchKey === "≥ 32K") return max >= 32;
+  if (matchKey === "≥ 128K") return max >= 128;
   return false;
 }
 
-function matchesSpec(model: ModelCardData, label: string): boolean {
+function matchesSpec(model: ModelCardData, matchKey: string): boolean {
   const max = maxParamB(model);
   if (max <= 0) return false;
-  if (label === "10B 以下") return max < 10;
-  if (label === "10 ~ 50B") return max >= 10 && max <= 50;
-  if (label === "50 ~ 100B") return max > 50 && max <= 100;
-  if (label === "100B 以上") return max > 100;
+  if (matchKey === "10B 以下") return max < 10;
+  if (matchKey === "10 ~ 50B") return max >= 10 && max <= 50;
+  if (matchKey === "50 ~ 100B") return max > 50 && max <= 100;
+  if (matchKey === "100B 以上") return max > 100;
   return false;
 }
 
-function matchesDate(model: ModelCardData, label: string): boolean {
+function matchesDate(model: ModelCardData, matchKey: string): boolean {
   if (!model.badge) return false;
-  if (label === "近 30 天" || label === "近 90 天") {
+  if (matchKey === "近 30 天" || matchKey === "近 90 天") {
     return /new/i.test(model.badge);
   }
   return false;
@@ -122,19 +127,20 @@ function matchesOption(
   section: FilterSection,
   option: FilterOption,
 ): boolean {
+  const matchKey = getMatchKey(option);
   switch (section.id) {
     case "type":
-      return matchesType(model, option.label);
+      return matchesType(model, matchKey);
     case "tag":
-      return matchesTag(model, option.label);
+      return matchesTag(model, matchKey);
     case "series":
-      return matchesSeries(model, option.label);
+      return matchesSeries(model, matchKey);
     case "context":
-      return matchesContext(model, option.label);
+      return matchesContext(model, matchKey);
     case "spec":
-      return matchesSpec(model, option.label);
+      return matchesSpec(model, matchKey);
     case "date":
-      return matchesDate(model, option.label);
+      return matchesDate(model, matchKey);
     default:
       return true;
   }
@@ -144,8 +150,9 @@ function filterModels(
   all: ModelCardData[],
   searchQuery: string,
   selectedChips: Set<string>,
+  sections: FilterSection[],
 ): ModelCardData[] {
-  const selectedBySection = filterSections
+  const selectedBySection = sections
     .map((section) => ({
       section,
       options: section.options.filter((option) => selectedChips.has(option.id)),
@@ -173,6 +180,12 @@ function filterModels(
 }
 
 export function ModelsPageClient() {
+  const { targetLocale } = useLocale();
+  const ui = getModelsUiCopy(targetLocale);
+  const filterSections = useMemo(
+    () => getFilterSections(targetLocale),
+    [targetLocale],
+  );
   const mainRef = useRef<HTMLElement>(null);
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -185,11 +198,12 @@ export function ModelsPageClient() {
   const [selectedModel, setSelectedModel] = useState<ModelCardData | null>(
     null,
   );
-  const [catalog, setCatalog] = useState<ModelCardData[]>(modelsData);
-  const [catalogSource, setCatalogSource] = useState<"backend" | "static">(
-    "static",
-  );
+  const [catalog, setCatalog] = useState<ModelCardData[]>([]);
   const [catalogNote, setCatalogNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCatalogNote(ui.loadingCatalog);
+  }, [ui.loadingCatalog]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 768px)");
@@ -221,26 +235,21 @@ export function ModelsPageClient() {
         }
         if (cards.length > 0) {
           setCatalog(cards);
-          setCatalogSource("backend");
           setCatalogNote(null);
           return;
         }
-        setCatalog(modelsData);
-        setCatalogSource("static");
-        setCatalogNote(
-          "Backend 暂无可用模型目录，当前显示静态占位列表。配置 Channel 后将优先展示 Backend 目录。",
-        );
+        setCatalog([]);
+        setCatalogNote(ui.emptyCatalog);
       } catch {
         if (cancelled) return;
-        setCatalog(modelsData);
-        setCatalogSource("static");
-        setCatalogNote("无法连接 Backend 模型目录，当前显示静态占位列表。");
+        setCatalog([]);
+        setCatalogNote(ui.catalogError);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [ui.emptyCatalog, ui.catalogError]);
 
   useEffect(() => {
     setShowScrollTop(false);
@@ -249,8 +258,8 @@ export function ModelsPageClient() {
   }, [filterOpen]);
 
   const filtered = useMemo(
-    () => filterModels(catalog, searchQuery, selectedChips),
-    [catalog, searchQuery, selectedChips],
+    () => filterModels(catalog, searchQuery, selectedChips, filterSections),
+    [catalog, searchQuery, selectedChips, filterSections],
   );
 
   function handleToggleChip(id: string) {
@@ -276,7 +285,7 @@ export function ModelsPageClient() {
       collapsed={collapsed}
       onToggleCollapse={() => setCollapsed((v) => !v)}
       activeKey="models-plaza"
-      title="模型广场"
+      title={ui.pageTitle}
       mainRef={mainRef}
       mainClassName={`relative z-0 min-h-0 flex-1 px-5 pb-2.5 pt-2 ${
         filterOpen
@@ -303,61 +312,63 @@ export function ModelsPageClient() {
         </>
       }
     >
-          {catalogNote ? (
-            <p
-              className="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
-              role="status"
+      {catalogNote ? (
+        <p
+          className="mb-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600"
+          role="status"
+        >
+          {catalogNote}
+        </p>
+      ) : null}
+      {filterOpen ? (
+        <div className="flex h-full min-h-0 w-full overflow-hidden">
+          <ModelsFilterPanel
+            sections={filterSections}
+            selectedChips={selectedChips}
+            onToggleChip={handleToggleChip}
+          />
+          <div className="my-2 mr-3 hidden w-px shrink-0 self-stretch bg-slate-200 lg:block" />
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col pt-0">
+            <ModelsToolbar
+              filterOpen={filterOpen}
+              onToggleFilter={() => setFilterOpen((v) => !v)}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              hideFiltersLabel={ui.hideFilters}
+              showFiltersLabel={ui.showFilters}
+              searchPlaceholder={ui.searchPlaceholder}
+            />
+            <div
+              ref={gridScrollRef}
+              className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto"
+              onScroll={(e) => onScrollableScroll(e.currentTarget.scrollTop)}
             >
-              {catalogNote}
-              {catalogSource === "static"
-                ? " （后续以 Backend /api/pricing 与 /api/user/models 为准）"
-                : null}
-            </p>
-          ) : null}
-          {filterOpen ? (
-            <div className="flex h-full min-h-0 w-full overflow-hidden">
-              <ModelsFilterPanel
-                selectedChips={selectedChips}
-                onToggleChip={handleToggleChip}
-              />
-              <div className="my-2 mr-3 hidden w-px shrink-0 self-stretch bg-slate-200 lg:block" />
-              <div className="flex min-h-0 min-w-0 flex-1 flex-col pt-0">
-                <ModelsToolbar
-                  filterOpen={filterOpen}
-                  onToggleFilter={() => setFilterOpen((v) => !v)}
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                />
-                <div
-                  ref={gridScrollRef}
-                  className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto"
-                  onScroll={(e) =>
-                    onScrollableScroll(e.currentTarget.scrollTop)
-                  }
-                >
-                  <ModelGrid
-                    models={filtered}
-                    filterOpen={filterOpen}
-                    onSelectModel={setSelectedModel}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex min-w-0 flex-1 flex-col pt-0">
-              <ModelsToolbar
-                filterOpen={filterOpen}
-                onToggleFilter={() => setFilterOpen((v) => !v)}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-              />
               <ModelGrid
                 models={filtered}
                 filterOpen={filterOpen}
                 onSelectModel={setSelectedModel}
               />
             </div>
-          )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex min-w-0 flex-1 flex-col pt-0">
+          <ModelsToolbar
+            filterOpen={filterOpen}
+            onToggleFilter={() => setFilterOpen((v) => !v)}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            hideFiltersLabel={ui.hideFilters}
+            showFiltersLabel={ui.showFilters}
+            searchPlaceholder={ui.searchPlaceholder}
+          />
+          <ModelGrid
+            models={filtered}
+            filterOpen={filterOpen}
+            onSelectModel={setSelectedModel}
+          />
+        </div>
+      )}
     </ConsoleShell>
   );
 }

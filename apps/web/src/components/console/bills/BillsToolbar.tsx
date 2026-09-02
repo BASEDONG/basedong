@@ -1,11 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  allocationDimensionOptions,
-  copy,
-  type ViewMode,
-} from "./content";
+import type { BillsUiCopy } from "./bills-ui-copy";
+import { getAllocationDimensionKeys } from "./bills-ui-copy";
+import type { ViewMode } from "./content";
 import { BillsSelect } from "./BillsSelect";
 import { ExportIcon } from "./icons";
 
@@ -13,6 +11,7 @@ const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
 
 interface BillsToolbarProps {
+  copy: BillsUiCopy;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   allocationDimension: string;
@@ -22,6 +21,7 @@ interface BillsToolbarProps {
 }
 
 export function BillsToolbar({
+  copy,
   viewMode,
   onViewModeChange,
   allocationDimension,
@@ -29,6 +29,8 @@ export function BillsToolbar({
   onOpenExportRecords,
   onExport,
 }: BillsToolbarProps) {
+  const allocationKeys = getAllocationDimensionKeys();
+
   return (
     <div
       className="flex min-w-max flex-wrap items-start gap-6"
@@ -75,8 +77,14 @@ export function BillsToolbar({
           </div>
           <BillsSelect
             value={allocationDimension}
-            options={allocationDimensionOptions}
-            placeholder={allocationDimensionOptions[0]}
+            options={allocationKeys}
+            labels={copy.allocationDimensionLabels}
+            placeholder={
+              copy.allocationDimensionLabels[allocationKeys[0] ?? ""] ??
+              allocationKeys[0] ??
+              ""
+            }
+            emptyText={copy.noData}
             onChange={(v) => {
               if (v) onAllocationDimensionChange(v);
             }}

@@ -2,12 +2,13 @@
 
 import { useEffect, useId, useState } from "react";
 import { cn } from "@/lib/utils";
-import { copy } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { CloseIcon } from "./icons";
 
 export type WarningMode = "auto" | "custom" | "off";
 
 interface BalanceWarningModalProps {
+  copy: ExpenseBillUiCopy;
   open: boolean;
   mode: WarningMode;
   threshold: number;
@@ -37,6 +38,7 @@ function AntRadio({ checked }: { checked: boolean }) {
 }
 
 export function BalanceWarningModal({
+  copy,
   open,
   mode,
   threshold,

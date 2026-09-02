@@ -8,19 +8,22 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
 import {
-  BackendError,
   getTopupInfo,
   requestEpayPay,
   submitPaymentForm,
 } from "@/lib/backend/client";
-import { ASSET, amountPresets, copy, formatYuan } from "./content";
+import { localizeBackendError } from "@/lib/backend/localize-error";
+import { ASSET, amountPresets, formatYuan } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { DownIcon } from "./icons";
 
 type PayMethod = "alipay" | "wechat";
 
 interface OnlineRechargeFormProps {
+  copy: ExpenseBillUiCopy;
   amount: number | "other";
   customAmount: number;
   onAmountChange: (v: number | "other") => void;
@@ -68,11 +71,13 @@ function toEpayMethod(method: PayMethod): string {
 }
 
 export function OnlineRechargeForm({
+  copy,
   amount,
   customAmount,
   onAmountChange,
   onCustomAmountChange,
 }: OnlineRechargeFormProps) {
+  const { targetLocale } = useLocale();
   const [captchaDone, setCaptchaDone] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [payMethod, setPayMethod] = useState<PayMethod>("alipay");
@@ -160,9 +165,7 @@ export function OnlineRechargeForm({
       );
       submitPaymentForm(url, params);
     } catch (e) {
-      setError(
-        e instanceof BackendError ? e.message : copy.payError,
-      );
+      setError(localizeBackendError(targetLocale, e, copy.payError));
     } finally {
       setPaying(false);
     }

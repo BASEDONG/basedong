@@ -5,12 +5,13 @@ import { cn } from "@/lib/utils";
 import {
   autoAmountPresets,
   autoThresholdPresets,
-  copy,
   formatYuan,
 } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { AlipayCircleIcon, InfoCircleIcon } from "./icons";
 
 interface AutoRechargeFormProps {
+  copy: ExpenseBillUiCopy;
   threshold: number | "other";
   amount: number | "other";
   onThresholdChange: (v: number | "other") => void;
@@ -56,6 +57,7 @@ function ChoiceButton({
 }
 
 export function AutoRechargeForm({
+  copy,
   threshold,
   amount,
   onThresholdChange,

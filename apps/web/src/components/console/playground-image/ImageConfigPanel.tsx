@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import type { PlaygroundUiCopy } from "../shared/playground-ui-copy";
 import {
   ASSET,
   DEFAULT_IMAGE_SIZE,
@@ -14,7 +15,9 @@ import { InfoCircleIcon, SyncIcon } from "./icons";
 import { ModelSelect } from "./ModelSelect";
 
 interface ImageConfigPanelProps {
+  copy: PlaygroundUiCopy;
   model: string;
+  modelOptions?: readonly string[];
   onModelChange: (model: string) => void;
 }
 
@@ -32,7 +35,9 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function ImageConfigPanel({
+  copy,
   model,
+  modelOptions = MODEL_OPTIONS,
   onModelChange,
 }: ImageConfigPanelProps) {
   const [size, setSize] = useState<ImageSizeRatio>(DEFAULT_IMAGE_SIZE);
@@ -45,8 +50,9 @@ export function ImageConfigPanel({
         <div className="text-sm leading-5 text-slate-700">Model</div>
         <ModelSelect
           value={model}
-          options={MODEL_OPTIONS}
+          options={modelOptions}
           onChange={onModelChange}
+          emptyText={copy.noData}
         />
       </div>
 

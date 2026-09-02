@@ -1,6 +1,17 @@
-import { ASSET, heroCopy } from "./content";
+"use client";
+
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { ASSET } from "./content";
+import { getCampaignsRealNameUiCopy } from "./campaigns-real-name-ui-copy";
 
 export function HeroBanner() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsRealNameUiCopy(targetLocale),
+    [targetLocale],
+  );
+
   return (
     <div className="bg relative mb-8 box-content h-[400px] w-full">
       <div
@@ -21,10 +32,10 @@ export function HeroBanner() {
             />
             <div className="flex flex-col gap-4">
               <div className="mt-[20px] text-xl font-bold text-slate-700">
-                {heroCopy.subtitle}
+                {copy.heroCopy.subtitle}
                 <span className="ml-2">ℹ️</span>
               </div>
-              <div className="text-lg text-slate-500">{heroCopy.deadline}</div>
+              <div className="text-lg text-slate-500">{copy.heroCopy.deadline}</div>
             </div>
             <div className="mt-4 h-1 w-[50px] rounded-[8px] bg-primary-20" />
           </div>

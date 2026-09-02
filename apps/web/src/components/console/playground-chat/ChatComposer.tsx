@@ -7,9 +7,15 @@ interface ChatComposerProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
+  placeholder: string;
 }
 
-export function ChatComposer({ value, onChange, onSend }: ChatComposerProps) {
+export function ChatComposer({
+  value,
+  onChange,
+  onSend,
+  placeholder,
+}: ChatComposerProps) {
   const canSend = value.trim().length > 0;
 
   return (
@@ -25,7 +31,7 @@ export function ChatComposer({ value, onChange, onSend }: ChatComposerProps) {
                 onSend();
               }
             }}
-            placeholder="请输入提示词..."
+            placeholder={placeholder}
             className="no-scrollbar h-full w-full resize-none rounded-[6px] border-0 bg-transparent px-[11px] py-1 text-sm leading-[22px] text-slate-800 outline-none"
           />
         </div>

@@ -1,4 +1,8 @@
-import { rulesHtml } from "./content";
+"use client";
+
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { getCampaignsRealNameUiCopy } from "./campaigns-real-name-ui-copy";
 
 function RulesSpeakerIcon() {
   return (
@@ -22,15 +26,21 @@ function RulesSpeakerIcon() {
 }
 
 export function RulesSection() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsRealNameUiCopy(targetLocale),
+    [targetLocale],
+  );
+
   return (
     <div className="mt-8 h-auto w-full items-center rounded-[8px] border border-slate-200 px-14 py-14">
       <div className="flex items-center gap-1">
-        <span className="text-xl font-semibold text-primary">活动规则</span>
+        <span className="text-xl font-semibold text-primary">{copy.rulesHeading}</span>
         <RulesSpeakerIcon />
       </div>
       <div
         className="real-name-rules-md mt-4 text-slate-800"
-        dangerouslySetInnerHTML={{ __html: rulesHtml }}
+        dangerouslySetInnerHTML={{ __html: copy.rulesHtml }}
       />
     </div>
   );

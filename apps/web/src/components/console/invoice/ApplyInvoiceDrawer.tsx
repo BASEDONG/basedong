@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
 import {
-  copy,
-  drawerCopy,
-  feeTypeOptions,
-  formatYuan,
-  invoiceTypeOptions,
-  mockAmounts,
-  titleTaxOptions,
-} from "./content";
+  CONSOLE_END_DRAWER_SHELL,
+  consoleEndDrawerTranslate,
+} from "../shared/console-rtl-classes";
+import type { InvoiceUiCopy } from "./invoice-ui-copy";
+import { formatYuan, mockAmounts } from "./content";
 
 const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
@@ -18,6 +16,7 @@ const antFont =
 const DIVIDER_LINE = "rgba(13, 63, 130, 0.12)";
 
 interface ApplyInvoiceDrawerProps {
+  copy: InvoiceUiCopy;
   open: boolean;
   onClose: () => void;
 }
@@ -216,7 +215,16 @@ function SelectField({
   );
 }
 
-export function ApplyInvoiceDrawer({ open, onClose }: ApplyInvoiceDrawerProps) {
+export function ApplyInvoiceDrawer({
+  copy,
+  open,
+  onClose,
+}: ApplyInvoiceDrawerProps) {
+  const { isRtl } = useLocale();
+  const drawerCopy = copy.drawer;
+  const feeTypeOptions = copy.feeTypeOptions;
+  const titleTaxOptions = copy.titleTaxOptions;
+  const invoiceTypeOptions = copy.invoiceTypeOptions;
   const titleId = useId();
   const [visible, setVisible] = useState(false);
   const [entered, setEntered] = useState(false);
@@ -273,8 +281,9 @@ export function ApplyInvoiceDrawer({ open, onClose }: ApplyInvoiceDrawerProps) {
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          "pointer-events-auto absolute right-0 top-0 flex h-full w-[530px] min-w-[530px] max-w-full flex-col bg-white shadow-[-6px_0_16px_rgba(0,0,0,0.08),-3px_0_6px_-4px_rgba(0,0,0,0.12),-9px_0_28px_8px_rgba(0,0,0,0.05)] transition-transform duration-300 ease-out",
-          entered ? "translate-x-0" : "translate-x-full",
+          CONSOLE_END_DRAWER_SHELL,
+          "w-[530px] min-w-[530px] max-w-full transition-transform duration-300 ease-out",
+          consoleEndDrawerTranslate(entered, isRtl),
         )}
       >
         <div className="flex h-14 shrink-0 items-center px-6 py-4">
@@ -375,7 +384,7 @@ export function ApplyInvoiceDrawer({ open, onClose }: ApplyInvoiceDrawerProps) {
                     rel="noopener noreferrer"
                     className="text-[rgb(108,40,246)] hover:text-[#b17dff]"
                   >
-                    {drawerCopy.registerHere}
+                    {copy.registerHere}
                   </a>
                 </>
               }

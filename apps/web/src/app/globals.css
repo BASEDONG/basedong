@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./(docs)/docs/docs-openapi.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -195,6 +196,9 @@
   --sf-ink-deep: #161722;
   --sf-card-dark: #36384a;
   --sf-card-lilac: #eef6fe;
+  --sf-card-border: #eceef3;
+  --sf-card-shadow-hover: 0 24px 70px rgba(3, 7, 18, 0.08);
+  --sf-content-max: 1440px;
   --sf-footer: #f2f5fa;
   --sf-muted: #57627f;
   --sf-font: Roboto, "SF Pro SC", "SF Pro Display", "PingFang SC",
@@ -202,6 +206,14 @@
   font-family: var(--sf-font);
   color: var(--sf-ink);
   background: #fff;
+}
+
+/* Marketing content column: max width + page gutter (do not nest another px on children) */
+.sf-site .sf-content {
+  width: 100%;
+  max-width: var(--sf-content-max);
+  margin-inline: auto;
+  padding-inline: 14px;
 }
 
 /* Match original documentElement scroll-behavior for chip / back-to-top smooth scroll */
@@ -357,34 +369,6 @@ html:has(.sf-site) {
   animation: float 6s ease-in-out infinite;
 }
 
-@keyframes gw-arch-arrow-pulse {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(4px);
-  }
-}
-
-@keyframes gw-arch-arrow-pulse-rev {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(-4px);
-  }
-}
-
-.sf-site .gw-arch-arrow-left {
-  animation: gw-arch-arrow-pulse 1.6s ease-in-out infinite;
-}
-
-.sf-site .gw-arch-arrow-right {
-  animation: gw-arch-arrow-pulse-rev 1.6s ease-in-out infinite;
-}
-
 /* Scenario panel: Framer-like exit / enter (blur + translateX + scale) */
 @keyframes gw-scenario-exit {
   from {
@@ -491,7 +475,7 @@ html:has(.sf-site) {
 
 /* Brand page (/brand) — scoped utilities from siliconflow.cn */
 .sf-brand .sf-brand-w-content {
-  width: 1434px;
+  width: var(--sf-content-max, 1440px);
   max-width: 100%;
 }
 
@@ -893,4 +877,36 @@ html:has(.sf-cloud-console) body {
 }
 .sf-cloud-console .real-name-rules-md strong {
   font-weight: 700;
+}
+
+/* Console RTL (#32) — html[dir="rtl"] when Preferred Locale is ar on /me/* */
+.sf-cloud-console .console-slide-drawer {
+  box-shadow:
+    -6px 0 16px rgba(0, 0, 0, 0.08),
+    -3px 0 6px -4px rgba(0, 0, 0, 0.12),
+    -9px 0 28px 8px rgba(0, 0, 0, 0.05);
+}
+html[dir="rtl"] .sf-cloud-console .console-slide-drawer {
+  box-shadow:
+    6px 0 16px rgba(0, 0, 0, 0.08),
+    3px 0 6px -4px rgba(0, 0, 0, 0.12),
+    9px 0 28px 8px rgba(0, 0, 0, 0.05);
+}
+html[dir="rtl"] .sf-cloud-console .text-left {
+  text-align: start;
+}
+html[dir="rtl"] .sf-cloud-console .text-right {
+  text-align: end;
+}
+html[dir="rtl"] .sf-cloud-console table,
+html[dir="rtl"] .sf-cloud-console th,
+html[dir="rtl"] .sf-cloud-console td {
+  text-align: start;
+}
+html[dir="rtl"] .sf-cloud-console .real-name-rules-md ul {
+  padding: 0 22.4px 0 0;
+}
+html[dir="rtl"] .sf-cloud-console .rounded-bl-\[6px\] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 6px;
 }

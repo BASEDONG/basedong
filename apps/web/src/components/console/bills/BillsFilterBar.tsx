@@ -1,10 +1,8 @@
 "use client";
 
-import {
-  copy,
-  periodOptions,
-  type PeriodType,
-} from "./content";
+import type { BillsUiCopy } from "./bills-ui-copy";
+import { getPeriodOptions } from "./bills-ui-copy";
+import type { PeriodType } from "./content";
 import { BillsRangePicker } from "./BillsRangePicker";
 import { ChevronDownIcon } from "./icons";
 import { cn } from "@/lib/utils";
@@ -14,13 +12,14 @@ const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
 
 interface BillsFilterBarProps {
+  copy: BillsUiCopy;
+  locale: string;
   period: PeriodType;
   onPeriodChange: (v: PeriodType) => void;
   startDate: string;
   endDate: string;
   onStartDateChange: (v: string) => void;
   onEndDateChange: (v: string) => void;
-  /** Kept for call-site compatibility; unused (Backend has no product filter). */
   products?: string[];
   onProductsChange?: (v: string[]) => void;
   dimensions?: string[];
@@ -30,16 +29,20 @@ interface BillsFilterBarProps {
 }
 
 function PeriodSelect({
+  locale,
   value,
   onChange,
 }: {
+  locale: string;
   value: PeriodType;
   onChange: (v: PeriodType) => void;
 }) {
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const label = periodOptions.find((o) => o.value === value)?.label ?? "按天";
+  const periodOptions = getPeriodOptions(locale);
+  const label =
+    periodOptions.find((o) => o.value === value)?.label ?? periodOptions[1]?.label;
 
   useEffect(() => {
     if (!open) return;
@@ -93,6 +96,8 @@ function PeriodSelect({
 }
 
 export function BillsFilterBar({
+  copy,
+  locale,
   period,
   onPeriodChange,
   startDate,
@@ -103,8 +108,13 @@ export function BillsFilterBar({
   return (
     <div className="mb-0 flex flex-wrap gap-4" style={{ fontFamily: antFont }}>
       <div className="mb-4 flex h-10 min-w-fit items-stretch">
-        <PeriodSelect value={period} onChange={onPeriodChange} />
+        <PeriodSelect
+          locale={locale}
+          value={period}
+          onChange={onPeriodChange}
+        />
         <BillsRangePicker
+          copy={copy}
           startDate={startDate}
           endDate={endDate}
           onStartDateChange={onStartDateChange}

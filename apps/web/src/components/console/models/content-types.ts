@@ -35,6 +35,8 @@ export interface FooterLink {
 export interface FilterOption {
   id: string;
   label: string;
+  /** Source-locale key for filter matching (Chinese IDs). */
+  matchKey?: string;
 }
 
 export interface FilterSection {

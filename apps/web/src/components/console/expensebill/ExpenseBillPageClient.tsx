@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
 import { getSelf } from "@/lib/backend/client";
 import { ConsoleShell } from "../shared/ConsoleShell";
+import { getExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { AutoRechargeForm } from "./AutoRechargeForm";
 import { BalanceWarningModal, type WarningMode } from "./BalanceWarningModal";
 import { BenefitSummaryTabs } from "./BenefitSummaryTabs";
@@ -16,7 +18,6 @@ import {
   defaultAmount,
   defaultAutoAmount,
   defaultAutoThreshold,
-  pageTitle,
   type BenefitTab,
   type RechargeMethod,
   type SegmentFilter,
@@ -35,6 +36,8 @@ function searchFromTab(tab: BenefitTab): string | null {
 }
 
 export function ExpenseBillPageClient() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getExpenseBillUiCopy(targetLocale), [targetLocale]);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -93,12 +96,13 @@ export function ExpenseBillPageClient() {
       collapsed={collapsed}
       onToggleCollapse={() => setCollapsed((v) => !v)}
       activeKey="wallet"
-      title={pageTitle}
+      title={copy.pageTitle}
       notificationCount={0}
       textTone="black"
       mainClassName="z-50 min-h-0 flex-1 overflow-y-auto px-5 pb-2.5 pt-2 text-black"
       overlay={
         <BalanceWarningModal
+          copy={copy}
           open={warningOpen}
           mode={warningMode}
           threshold={warningThreshold}
@@ -113,6 +117,7 @@ export function ExpenseBillPageClient() {
     >
       <div className="flex h-full w-full min-w-[1000px] flex-col gap-2">
         <BenefitSummaryTabs
+          copy={copy}
           active={benefit}
           onChange={onBenefitChange}
           quota={quota}
@@ -123,6 +128,7 @@ export function ExpenseBillPageClient() {
             {benefit === "balance" ? (
               <div className="flex flex-col">
                 <RechargeMethodTabs
+                  copy={copy}
                   method={method}
                   onChange={setMethod}
                   warningEnabled={warningMode !== "off"}
@@ -135,6 +141,7 @@ export function ExpenseBillPageClient() {
                 >
                   {method === "online" ? (
                     <OnlineRechargeForm
+                      copy={copy}
                       amount={amount}
                       customAmount={customAmount}
                       onAmountChange={setAmount}
@@ -143,6 +150,7 @@ export function ExpenseBillPageClient() {
                   ) : null}
                   {method === "auto" ? (
                     <AutoRechargeForm
+                      copy={copy}
                       threshold={autoThreshold}
                       amount={autoAmount}
                       onThresholdChange={(v) => {
@@ -164,6 +172,7 @@ export function ExpenseBillPageClient() {
               </div>
             ) : (
               <CouponPackagePanel
+                copy={copy}
                 filter={segment}
                 onFilterChange={setSegment}
                 onRedeemed={() => {
@@ -172,7 +181,7 @@ export function ExpenseBillPageClient() {
               />
             )}
 
-            {benefit === "balance" ? <RechargeRecordsTable /> : null}
+            {benefit === "balance" ? <RechargeRecordsTable copy={copy} /> : null}
           </div>
         </div>
       </div>

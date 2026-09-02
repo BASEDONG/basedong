@@ -1,13 +1,23 @@
-import { productParagraphs } from "./content";
+"use client";
+
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { getDedicatedApplyUiCopy } from "./dedicated-apply-ui-copy";
 
 export function ProductIntro() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getDedicatedApplyUiCopy(targetLocale),
+    [targetLocale],
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <h3 className="text-[24px] font-semibold leading-[32px] tracking-[-0.14px] text-[#1e293b]">
-        产品说明
+        {copy.productIntro.heading}
       </h3>
       <div className="pl-5 text-[14px] leading-[24px] text-[#1e293b]">
-        {productParagraphs.map((p, i) => (
+        {copy.productIntro.paragraphs.map((p, i) => (
           <li key={i} className={i === 0 ? "mb-2" : undefined}>
             {p.prefix}
             <span className="font-medium">{p.highlight}</span>

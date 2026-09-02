@@ -1,11 +1,10 @@
 ﻿"use client";
 
 import { useState } from "react";
-import { filterSections } from "./content";
 import type { FilterOption, FilterSection } from "./content-types";
+import { getMatchKey } from "./models-ui-copy";
 
-const LOGO_BASE =
-  "/assets/console/models/images/logos";
+const LOGO_BASE = "/assets/console/models/images/logos";
 
 const SERIES_LOGOS: Record<string, string> = {
   DeepSeek: `${LOGO_BASE}/DeepSeek.svg`,
@@ -19,6 +18,7 @@ const SERIES_LOGOS: Record<string, string> = {
 };
 
 interface ModelsFilterPanelProps {
+  sections: FilterSection[];
   selectedChips: Set<string>;
   onToggleChip: (id: string) => void;
 }
@@ -53,7 +53,8 @@ function FilterChip({
   onToggle: () => void;
   withLogo?: boolean;
 }) {
-  const logo = withLogo ? SERIES_LOGOS[option.label] : undefined;
+  const matchKey = getMatchKey(option);
+  const logo = withLogo ? SERIES_LOGOS[matchKey] : undefined;
 
   return (
     <button
@@ -86,8 +87,8 @@ function FilterSectionBlock({
   onToggleChip: (id: string) => void;
 }) {
   const [open, setOpen] = useState(true);
-  const moreOption = section.options.find((o) => o.label === "更多");
-  const chips = section.options.filter((o) => o.label !== "更多");
+  const moreOption = section.options.find((o) => o.id === "series-更多");
+  const chips = section.options.filter((o) => o.id !== "series-更多");
 
   return (
     <div className="flex w-full flex-col gap-3">
@@ -126,12 +127,13 @@ function FilterSectionBlock({
 }
 
 export function ModelsFilterPanel({
+  sections,
   selectedChips,
   onToggleChip,
 }: ModelsFilterPanelProps) {
   return (
     <aside className="hidden-scrollbar flex h-full w-[260px] shrink-0 flex-col gap-5 overflow-y-auto px-3 py-5 pl-0 pt-0">
-      {filterSections.map((section) => (
+      {sections.map((section) => (
         <FilterSectionBlock
           key={section.id}
           section={section}

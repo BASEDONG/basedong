@@ -1,6 +1,12 @@
-import { copy } from "./content";
+import type { InvoiceUiCopy } from "./invoice-ui-copy";
 
-export function InvoiceNoticeAlert() {
+interface InvoiceNoticeAlertProps {
+  copy: InvoiceUiCopy;
+}
+
+export function InvoiceNoticeAlert({ copy }: InvoiceNoticeAlertProps) {
+  const [line1, line2, line3Prefix] = copy.noticeLines;
+
   return (
     <div
       role="alert"
@@ -8,37 +14,17 @@ export function InvoiceNoticeAlert() {
     >
       <div className="w-full">
         <ul className="m-0 list-none p-0 text-sm leading-[22px] text-slate-700">
+          <li>{line1}</li>
+          <li>{line2}</li>
           <li>
-            1. 仅
-            <span className="font-semibold text-slate-700">已消费</span>
-            金额可以申请开具发票，
-            <span className="font-semibold text-slate-700">
-              充值未消费的充值余额不可开具发票
-            </span>
-            ，您可酌情申请退款；已开票金额不可重复开票；
-          </li>
-          <li>
-            2.{" "}
-            <span className="font-semibold text-slate-700">
-              工作日 10:00 ~ 19:00
-            </span>{" "}
-            可以提交开票申请，通常发票会在您申请开票后
-            <span className="font-semibold text-slate-700">2个工作日</span>
-            内开具完成；
-          </li>
-          <li>
-            3. 根据我国税收相关政策要求，
-            <span className="font-semibold text-slate-700">
-              发票抬头需与账户主体名称一致
-            </span>
-            ；如需开具机构抬头发票且可以配合提供相应证明材料，请
+            {line3Prefix}
             <a
               href={copy.registerFormHref}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[rgb(108,40,246)] no-underline hover:text-[#b17dff]"
             >
-              点击这里登记
+              {copy.registerHere}
             </a>
           </li>
         </ul>

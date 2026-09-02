@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import type { ApiKeysUiCopy } from "./account-ak-ui-copy";
 import type { ApiKeyRow } from "./content";
-import { emptyText, tableHeaders } from "./content";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import { EditKeyModal } from "./EditKeyModal";
 import {
@@ -18,6 +18,7 @@ const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
 
 interface ApiKeysTableProps {
+  copy: ApiKeysUiCopy;
   keys: ApiKeyRow[];
   onDelete: (id: string) => void;
   onUpdateDescription: (id: string, description: string) => void;
@@ -34,6 +35,7 @@ function maskKey(key: string) {
 }
 
 export function ApiKeysTable({
+  copy,
   keys,
   onDelete,
   onUpdateDescription,
@@ -127,16 +129,16 @@ export function ApiKeysTable({
                   </button>
                 </th>
                 <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
-                  {tableHeaders.key}
+                  {copy.tableHeaders.key}
                 </th>
                 <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
-                  {tableHeaders.description}
+                  {copy.tableHeaders.description}
                 </th>
                 <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
-                  {tableHeaders.createdAt}
+                  {copy.tableHeaders.createdAt}
                 </th>
                 <th className="h-[55px] rounded-tr-[8px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
-                  {tableHeaders.actions}
+                  {copy.tableHeaders.actions}
                 </th>
               </tr>
             </thead>
@@ -149,9 +151,9 @@ export function ApiKeysTable({
                   >
                     <div className="mx-2 my-8 text-center text-[rgb(100,116,139)]">
                       <div className="mb-2 flex justify-center">
-                        <EmptyBoxIcon aria-label="暂无数据" />
+                        <EmptyBoxIcon aria-label={copy.table.emptyAria} />
                       </div>
-                      <div className="text-sm leading-[22px]">{emptyText}</div>
+                      <div className="text-sm leading-[22px]">{copy.emptyText}</div>
                     </div>
                   </td>
                 </tr>
@@ -177,7 +179,7 @@ export function ApiKeysTable({
                           </span>
                           <button
                             type="button"
-                            aria-label="复制"
+                            aria-label={copy.table.copyAria}
                             onClick={() => copyKey(row)}
                             className="ml-1 inline-flex shrink-0 cursor-pointer border-0 bg-transparent p-0 text-sm text-[rgb(148,163,184)] transition-colors hover:text-[rgb(74,171,240)]"
                           >
@@ -200,14 +202,14 @@ export function ApiKeysTable({
                             onClick={() => setPendingDelete(row)}
                             className="cursor-pointer border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(220,38,38)] transition-opacity hover:opacity-80"
                           >
-                            删除
+                            {copy.table.delete}
                           </button>
                           <button
                             type="button"
                             onClick={() => setPendingEdit(row)}
                             className="cursor-pointer border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(74,171,240)] transition-opacity hover:opacity-80"
                           >
-                            编辑
+                            {copy.table.edit}
                           </button>
                         </div>
                       </td>
@@ -255,6 +257,7 @@ export function ApiKeysTable({
 
       <ConfirmDeleteModal
         open={pendingDelete !== null}
+        copy={copy}
         expectedSuffix={pendingDelete?.key.slice(-6) ?? ""}
         onClose={() => setPendingDelete(null)}
         onMismatch={onDeleteMismatch}
@@ -266,6 +269,7 @@ export function ApiKeysTable({
 
       <EditKeyModal
         open={pendingEdit !== null}
+        copy={copy}
         initialDescription={pendingEdit?.description ?? ""}
         onClose={() => setPendingEdit(null)}
         onSave={(description) => {

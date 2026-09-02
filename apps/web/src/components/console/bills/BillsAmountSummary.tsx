@@ -1,9 +1,10 @@
 "use client";
 
 import type { UsageStat } from "@/lib/backend/client";
-import { copy } from "./content";
+import type { BillsUiCopy } from "./bills-ui-copy";
 
 interface BillsAmountSummaryProps {
+  copy: BillsUiCopy;
   stat: UsageStat;
   loading?: boolean;
   onRefresh?: () => void;
@@ -37,6 +38,7 @@ function Metric({
 }
 
 export function BillsAmountSummary({
+  copy,
   stat,
   loading,
   onRefresh,

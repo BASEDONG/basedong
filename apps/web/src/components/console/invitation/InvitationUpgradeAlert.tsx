@@ -1,7 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import { copy } from "./content";
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { inviterPlanHref } from "./content";
+import { getInvitationUiCopy } from "./invitation-ui-copy";
 
 export function InvitationUpgradeAlert() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getInvitationUiCopy(targetLocale), [targetLocale]);
+
   return (
     <div
       role="alert"
@@ -13,14 +21,14 @@ export function InvitationUpgradeAlert() {
     >
       <div className="w-full">
         <div className="text-sm font-medium leading-5">
-          🎉 邀请活动已升级，详细规则请查看
+          {copy.upgradeAlertPrefix}
           <Link
-            href={copy.inviterPlanHref}
+            href={inviterPlanHref}
             className="text-[rgb(74,171,240)] no-underline transition-colors duration-300 hover:text-[#b17dff]"
           >
             {copy.inviterPlanLabel}
           </Link>
-          ！
+          {copy.upgradeAlertSuffix}
         </div>
       </div>
     </div>

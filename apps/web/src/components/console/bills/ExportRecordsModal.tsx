@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useId } from "react";
-import { copy, exportRecordHeaders } from "./content";
+import { useEffect, useId, useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import {
+  getBillsUiCopy,
+  getExportRecordHeaders,
+} from "./bills-ui-copy";
 import { CloseIcon, EmptySimpleIcon, InfoCircleIcon } from "./icons";
 
 const antFont =
@@ -13,6 +17,12 @@ interface ExportRecordsModalProps {
 }
 
 export function ExportRecordsModal({ open, onClose }: ExportRecordsModalProps) {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getBillsUiCopy(targetLocale), [targetLocale]);
+  const exportRecordHeaders = useMemo(
+    () => getExportRecordHeaders(targetLocale),
+    [targetLocale],
+  );
   const titleId = useId();
 
   useEffect(() => {
@@ -93,10 +103,7 @@ export function ExportRecordsModal({ open, onClose }: ExportRecordsModalProps) {
                 </thead>
                 <tbody>
                   <tr>
-                    <td
-                      colSpan={exportRecordHeaders.length}
-                      className="p-4"
-                    >
+                    <td colSpan={exportRecordHeaders.length} className="p-4">
                       <div className="flex flex-col items-center justify-center gap-2 py-10 text-[#94A3B8]">
                         <EmptySimpleIcon />
                         <p className="m-0 text-sm leading-[22px]">

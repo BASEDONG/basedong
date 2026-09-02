@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import type { ApiKeysUiCopy } from "./account-ak-ui-copy";
 import { CloseCircleIcon, CloseIcon } from "./icons";
 
 const antFont =
@@ -8,6 +9,7 @@ const antFont =
 
 interface EditKeyModalProps {
   open: boolean;
+  copy: ApiKeysUiCopy;
   initialDescription: string;
   onClose: () => void;
   onSave: (description: string) => void;
@@ -15,6 +17,7 @@ interface EditKeyModalProps {
 
 export function EditKeyModal({
   open,
+  copy,
   initialDescription,
   onClose,
   onSave,
@@ -78,7 +81,7 @@ export function EditKeyModal({
                 id={titleId}
                 className="m-0 text-base font-semibold leading-6 text-[rgb(30,41,59)]"
               >
-                编辑密钥
+                {copy.editModal.title}
               </h2>
             </div>
 
@@ -87,7 +90,7 @@ export function EditKeyModal({
                 htmlFor={inputId}
                 className="mb-2 inline-flex text-sm leading-[22px] text-[rgb(30,41,59)] after:ml-0.5 after:mr-2 after:content-[':']"
               >
-                密钥描述
+                {copy.editModal.label}
               </label>
               <div
                 className={`inline-flex h-8 w-full items-center rounded-md border bg-white px-[11px] py-1 transition-[border-color,box-shadow] ${
@@ -110,7 +113,7 @@ export function EditKeyModal({
                       onSave(value.trim());
                     }
                   }}
-                  placeholder="请输入描述信息"
+                  placeholder={copy.editModal.placeholder}
                   aria-describedby={helpId}
                   className="h-[22px] w-full border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(30,41,59)] outline-none placeholder:text-[rgb(148,163,184)]"
                 />
@@ -133,7 +136,7 @@ export function EditKeyModal({
                 id={helpId}
                 className="min-h-2 text-sm leading-[22px] text-[rgb(100,116,139)]"
               >
-                关于密钥用途等的补充说明
+                {copy.editModal.help}
               </div>
             </div>
 
@@ -143,14 +146,14 @@ export function EditKeyModal({
                 onClick={onClose}
                 className="inline-flex h-8 cursor-pointer items-center justify-center rounded-md border border-[rgb(203,213,225)] bg-white px-[15px] text-sm leading-[22px] text-[rgb(30,41,59)] shadow-[0_2px_0_rgba(0,0,0,0.02)] transition-colors hover:border-[rgb(74,171,240)] hover:text-[rgb(74,171,240)]"
               >
-                取 消
+                {copy.editModal.cancel}
               </button>
               <button
                 type="button"
                 onClick={() => onSave(value.trim())}
                 className="ml-2 inline-flex h-8 cursor-pointer items-center justify-center rounded-md border border-transparent bg-[rgb(74,171,240)] px-[15px] text-sm leading-[22px] text-white shadow-[0_2px_0_0_rgba(74,171,240,0.06)] transition-[background] duration-200 ease-[cubic-bezier(0.645,0.045,0.355,1)] hover:bg-[#5b21e6]"
               >
-                保 存
+                {copy.editModal.save}
               </button>
             </div>
           </div>

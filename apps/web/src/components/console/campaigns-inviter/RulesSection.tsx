@@ -1,6 +1,17 @@
-import { ASSET, rulesHtml } from "./content";
+"use client";
+
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { ASSET } from "./content";
+import { getCampaignsInviterUiCopy } from "./campaigns-inviter-ui-copy";
 
 export function RulesSection() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsInviterUiCopy(targetLocale),
+    [targetLocale],
+  );
+
   return (
     <div className="mt-12 rounded-[16px]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -17,7 +28,7 @@ export function RulesSection() {
           backgroundPosition: "center center",
           backgroundRepeat: "repeat",
         }}
-        dangerouslySetInnerHTML={{ __html: rulesHtml }}
+        dangerouslySetInnerHTML={{ __html: copy.rulesHtml }}
       />
     </div>
   );

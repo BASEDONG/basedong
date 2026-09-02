@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import type { PlaygroundUiCopy } from "../shared/playground-ui-copy";
 import {
   PARAM_DEFS,
   defaultParamValues,
@@ -11,7 +12,10 @@ import { ChevronDownIcon, CompareModelsIcon, InfoCircleIcon } from "./icons";
 import { ParamSliderField } from "./ParamSliderField";
 import { AnimatedDropdown } from "./AnimatedDropdown";
 
+type ThinkingMode = "off" | "on";
+
 interface ChatConfigPanelProps {
+  copy: PlaygroundUiCopy;
   model: string;
   modelOptions: string[];
   onModelChange: (model: string) => void;
@@ -21,16 +25,19 @@ const selectClass =
   "flex h-8 w-full cursor-pointer items-center justify-between truncate rounded-[6px] border border-slate-300 bg-white/60 px-[11px] text-left text-sm leading-[22px] text-slate-800 transition-all duration-200 sf-chat-ease-ant hover:border-[rgb(74,171,240)]";
 
 export function ChatConfigPanel({
+  copy,
   model,
   modelOptions,
   onModelChange,
 }: ChatConfigPanelProps) {
   const [params, setParams] = useState<ParamValues>(defaultParamValues);
-  const [thinking, setThinking] = useState<"关闭" | "开启">("关闭");
+  const [thinking, setThinking] = useState<ThinkingMode>("off");
   const [modelOpen, setModelOpen] = useState(false);
   const [thinkingOpen, setThinkingOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const options = modelOptions.length > 0 ? modelOptions : [];
+  const thinkingLabel =
+    thinking === "on" ? copy.thinkingOn : copy.thinkingOff;
 
   useEffect(() => {
     if (!modelOpen && !thinkingOpen) return;
@@ -66,7 +73,8 @@ export function ChatConfigPanel({
               )}
             >
               <span className="truncate">
-                {model || (options.length === 0 ? "暂无可用模型" : "选择模型")}
+                {model ||
+                  (options.length === 0 ? copy.noModels : copy.selectModel)}
               </span>
               <ChevronDownIcon
                 className={cn(
@@ -81,7 +89,7 @@ export function ChatConfigPanel({
             >
               {options.length === 0 ? (
                 <li className="px-3 py-1.5 text-sm text-slate-400">
-                  请先在 Admin 配置 Channel
+                  {copy.configureChannel}
                 </li>
               ) : null}
               {options.map((opt) => (
@@ -122,7 +130,7 @@ export function ChatConfigPanel({
             <div className="flex h-6 w-full items-center">
               <div className="flex gap-1">
                 <span className="truncate text-sm leading-[22px] text-slate-700">
-                  Enable Thinking
+                  {copy.enableThinking}
                 </span>
                 <InfoCircleIcon className="relative top-[-4px] left-[-2px] size-3 cursor-pointer text-xs text-slate-400" />
               </div>
@@ -140,7 +148,7 @@ export function ChatConfigPanel({
                     "border-[rgb(74,171,240)] shadow-[0_0_0_2px_rgba(74,171,240,0.1)]",
                 )}
               >
-                <span>{thinking}</span>
+                <span>{thinkingLabel}</span>
                 <ChevronDownIcon
                   className={cn(
                     "size-3 text-slate-400 transition-transform duration-200 sf-chat-ease-ant",
@@ -152,21 +160,26 @@ export function ChatConfigPanel({
                 open={thinkingOpen}
                 className="absolute z-20 mt-1 w-full overflow-hidden rounded-[6px] border border-slate-200 bg-white py-1 shadow-md"
               >
-                {(["关闭", "开启"] as const).map((opt) => (
-                  <li key={opt}>
+                {(
+                  [
+                    { key: "off" as const, label: copy.thinkingOff },
+                    { key: "on" as const, label: copy.thinkingOn },
+                  ] as const
+                ).map((opt) => (
+                  <li key={opt.key}>
                     <button
                       type="button"
                       className={cn(
                         "flex w-full px-3 py-1.5 text-left text-sm transition-colors duration-150 sf-chat-ease-out hover:bg-slate-50",
-                        opt === thinking &&
+                        opt.key === thinking &&
                           "bg-[var(--sf-cloud-primary-10)] text-[rgb(74,171,240)]",
                       )}
                       onClick={() => {
-                        setThinking(opt);
+                        setThinking(opt.key);
                         setThinkingOpen(false);
                       }}
                     >
-                      {opt}
+                      {opt.label}
                     </button>
                   </li>
                 ))}
@@ -182,7 +195,7 @@ export function ChatConfigPanel({
           className="inline-flex h-8 w-[140px] items-center justify-center gap-2 rounded-[6px] border border-transparent bg-[#f3e8ff] px-[15px] text-sm leading-[21px] text-[#6b21a8] shadow-[0_2px_0_0_rgba(74,171,240,0.06)] transition-all duration-200 sf-chat-ease-ant hover:opacity-90 active:opacity-80"
         >
           <CompareModelsIcon />
-          添加对比模型
+          {copy.addCompareModel}
         </button>
       </div>
     </div>
