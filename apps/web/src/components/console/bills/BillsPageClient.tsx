@@ -9,6 +9,7 @@ import {
   type UsageLog,
   type UsageStat,
 } from "@/lib/backend/client";
+import { localizeBackendError } from "@/lib/backend/localize-error";
 import { ConsoleShell } from "../shared/ConsoleShell";
 import { getBillsUiCopy } from "./bills-ui-copy";
 import { BillsAmountSummary } from "./BillsAmountSummary";
@@ -78,11 +79,11 @@ export function BillsPageClient() {
       setRows([]);
       setTotal(0);
       setStat({ quota: 0, rpm: 0, tpm: 0 });
-      setError(e instanceof Error ? e.message : copy.loadFailed);
+      setError(localizeBackendError(targetLocale, e, copy.loadFailed));
     } finally {
       setLoading(false);
     }
-  }, [copy.loadFailed, startDate, endDate]);
+  }, [copy.loadFailed, startDate, endDate, targetLocale]);
 
   useEffect(() => {
     void refresh();

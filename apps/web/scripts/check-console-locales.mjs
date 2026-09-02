@@ -236,6 +236,37 @@ if (dedicatedApply) {
   ok("console/dedicated-apply/dedicated-apply-ui-copy.ts (14 locales)");
 }
 
+const backendError = requireFile(
+  "src/components/console/shared/backend-error-ui-copy.ts",
+);
+if (backendError) {
+  requireMarkers("backend-error-ui-copy.ts", backendError);
+  for (const key of [
+    "getBackendErrorUiCopy",
+    "clientErrors",
+    "backendMessages",
+  ]) {
+    if (!backendError.includes(key)) {
+      fail(`backend-error-ui-copy.ts missing ${key}`);
+    }
+  }
+  ok("console/shared/backend-error-ui-copy.ts (14 locales)");
+}
+
+const localizeError = requireFile("src/lib/backend/localize-error.ts");
+if (localizeError) {
+  for (const key of [
+    "localizeBackendError",
+    "ClientErrorKey",
+    "BackendError",
+  ]) {
+    if (!localizeError.includes(key)) {
+      fail(`localize-error.ts missing ${key}`);
+    }
+  }
+  ok("lib/backend/localize-error.ts");
+}
+
 const meta = requireFile("src/lib/console-page-metadata.ts");
 if (meta) {
   for (const key of [

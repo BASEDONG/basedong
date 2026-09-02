@@ -3,16 +3,12 @@
 
 
 import { useCallback, useState } from "react";
-
+import { useLocale } from "@/components/shared/LocaleProvider";
 import {
-
-  BackendError,
-
   playgroundChat,
-
   type ChatMessage,
-
 } from "@/lib/backend/client";
+import { localizeBackendError } from "@/lib/backend/localize-error";
 
 import type { PlaygroundUiCopy } from "../shared/playground-ui-copy";
 
@@ -49,7 +45,7 @@ interface ChatWorkspaceProps {
 
 
 export function ChatWorkspace({ copy, model }: ChatWorkspaceProps) {
-
+  const { targetLocale } = useLocale();
   const [input, setInput] = useState("");
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -142,9 +138,7 @@ export function ChatWorkspace({ copy, model }: ChatWorkspaceProps) {
 
       } catch (e) {
 
-        const msg =
-
-          e instanceof BackendError ? e.message : copy.requestFailed;
+        const msg = localizeBackendError(targetLocale, e, copy.requestFailed);
 
         setError(msg);
 
@@ -172,7 +166,7 @@ export function ChatWorkspace({ copy, model }: ChatWorkspaceProps) {
 
     },
 
-    [copy, input, messages, model, sending],
+    [copy, input, messages, model, sending, targetLocale],
 
   );
 

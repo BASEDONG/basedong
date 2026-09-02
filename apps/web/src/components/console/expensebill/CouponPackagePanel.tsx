@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
-import { BackendError, redeemCode } from "@/lib/backend/client";
+import { redeemCode } from "@/lib/backend/client";
+import { localizeBackendError } from "@/lib/backend/localize-error";
 import { ASSET, type SegmentFilter } from "./content";
 import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { PlusIcon } from "./icons";
@@ -20,6 +22,7 @@ export function CouponPackagePanel({
   onFilterChange,
   onRedeemed,
 }: CouponPackagePanelProps) {
+  const { targetLocale } = useLocale();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -37,11 +40,7 @@ export function CouponPackagePanel({
       setCode("");
       onRedeemed?.(added);
     } catch (err) {
-      setError(
-        err instanceof BackendError
-          ? err.message || copy.redeemFailed
-          : copy.redeemFailed,
-      );
+      setError(localizeBackendError(targetLocale, err, copy.redeemFailed));
     } finally {
       setBusy(false);
     }

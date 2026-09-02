@@ -1,5 +1,8 @@
+import type { ClientErrorKey } from "@/components/console/shared/backend-error-ui-copy";
 import { assertApiBase } from "./config";
 import { clearAccessToken, getAccessToken, setAccessToken } from "./session";
+
+export type { ClientErrorKey };
 
 export type BackendUser = {
   id?: number;
@@ -21,9 +24,12 @@ async function parseEnvelope<T>(res: Response): Promise<ApiEnvelope<T>> {
 }
 
 export class BackendError extends Error {
-  constructor(message: string) {
+  readonly clientKey?: ClientErrorKey;
+
+  constructor(message: string, clientKey?: ClientErrorKey) {
     super(message);
     this.name = "BackendError";
+    this.clientKey = clientKey;
   }
 }
 
@@ -60,29 +66,77 @@ type LoginData = {
   user?: BackendUser;
 };
 
+/** Public Backend flags used by Auth (from GET /api/status). */
+export type PublicAuthStatus = {
+  email_verification?: boolean;
+  turnstile_check?: boolean;
+  turnstile_site_key?: string;
+};
+
+function withTurnstileQuery(path: string, turnstile?: string): string {
+  if (!turnstile) return path;
+  const sep = path.includes("?") ? "&" : "?";
+  return `${path}${sep}turnstile=${encodeURIComponent(turnstile)}`;
+}
+
+export async function getPublicAuthStatus(): Promise<PublicAuthStatus> {
+  return backendFetch<PublicAuthStatus>("/api/status", { method: "GET" });
+}
+
+export async function sendEmailVerification(
+  email: string,
+  turnstile?: string,
+): Promise<void> {
+  const q = new URLSearchParams({ email });
+  if (turnstile) q.set("turnstile", turnstile);
+  await backendFetch<unknown>(`/api/verification?${q.toString()}`, {
+    method: "GET",
+  });
+}
+
 export async function login(
   username: string,
   password: string,
+  turnstile?: string,
 ): Promise<LoginData> {
-  const data = await backendFetch<LoginData>("/api/user/login", {
-    method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
+  const data = await backendFetch<LoginData>(
+    withTurnstileQuery("/api/user/login", turnstile),
+    {
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    },
+  );
   if (!data?.access_token) {
-    throw new BackendError("Login response missing access_token");
+    throw new BackendError("Login response missing access_token", "loginMissingToken");
   }
   setAccessToken(data.access_token);
   return data;
 }
 
-export async function register(
-  username: string,
-  password: string,
-): Promise<void> {
-  await backendFetch<unknown>("/api/user/register", {
-    method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
+export type RegisterInput = {
+  username: string;
+  password: string;
+  email?: string;
+  verificationCode?: string;
+  turnstile?: string;
+};
+
+export async function register(input: RegisterInput): Promise<void> {
+  const body: Record<string, string> = {
+    username: input.username,
+    password: input.password,
+  };
+  if (input.email) body.email = input.email;
+  if (input.verificationCode) {
+    body.verification_code = input.verificationCode;
+  }
+  await backendFetch<unknown>(
+    withTurnstileQuery("/api/user/register", input.turnstile),
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    },
+  );
 }
 
 export async function logout(): Promise<void> {
@@ -148,7 +202,7 @@ export async function fetchApiKeySecret(id: number): Promise<string> {
     method: "POST",
   });
   if (!data?.key) {
-    throw new BackendError("Missing API Key secret in response");
+    throw new BackendError("Missing API Key secret in response", "missingApiKeySecret");
   }
   return data.key;
 }
@@ -185,14 +239,14 @@ export async function deleteApiKey(id: number): Promise<void> {
 export async function redeemCode(key: string): Promise<number> {
   const trimmed = key.trim();
   if (!trimmed) {
-    throw new BackendError("兑换码不能为空");
+    throw new BackendError("兑换码不能为空", "redeemCodeEmpty");
   }
   const data = await backendFetch<number>("/api/user/topup", {
     method: "POST",
     body: JSON.stringify({ key: trimmed }),
   });
   if (typeof data !== "number") {
-    throw new BackendError("兑换响应缺少额度增量");
+    throw new BackendError("兑换响应缺少额度增量", "redeemMissingQuotaDelta");
   }
   return data;
 }
@@ -252,7 +306,10 @@ export async function requestEpayPay(
         : json.message && json.message !== "success"
           ? json.message
           : `HTTP ${res.status}`;
-    throw new BackendError(detail || "拉起支付失败");
+    throw new BackendError(
+      detail || "拉起支付失败",
+      detail ? undefined : "paymentStartFailed",
+    );
   }
   return { url: json.url, params: json.data };
 }
@@ -322,6 +379,12 @@ export type PricingItem = {
   owner_by?: string;
   enable_groups?: string[];
   supported_endpoint_types?: string[];
+  /** 0 = ratio (per-token), 1 = fixed per-call price */
+  quota_type?: number;
+  model_ratio?: number;
+  completion_ratio?: number;
+  model_price?: number;
+  cache_ratio?: number | null;
 };
 
 export type PricingVendor = {
@@ -333,6 +396,7 @@ export type PricingVendor = {
 export type PricingCatalog = {
   items: PricingItem[];
   vendors: PricingVendor[];
+  group_ratio?: Record<string, number>;
 };
 
 /** Public/auth pricing catalog used by model plaza. */
@@ -351,6 +415,7 @@ export async function getPricingCatalog(): Promise<PricingCatalog> {
     message?: string;
     data?: PricingItem[];
     vendors?: PricingVendor[];
+    group_ratio?: Record<string, number>;
   };
   if (!res.ok || !json.success) {
     throw new BackendError(json.message || `HTTP ${res.status}`);
@@ -358,6 +423,10 @@ export async function getPricingCatalog(): Promise<PricingCatalog> {
   return {
     items: Array.isArray(json.data) ? json.data : [],
     vendors: Array.isArray(json.vendors) ? json.vendors : [],
+    group_ratio:
+      json.group_ratio && typeof json.group_ratio === "object"
+        ? json.group_ratio
+        : undefined,
   };
 }
 
@@ -385,7 +454,7 @@ export async function playgroundChat(args: {
   const headers = new Headers({ "Content-Type": "application/json" });
   const token = getAccessToken();
   if (!token) {
-    throw new BackendError("未登录，请先登录后再使用在线体验");
+    throw new BackendError("未登录，请先登录后再使用在线体验", "playgroundNotLoggedIn");
   }
   headers.set("Authorization", `Bearer ${token}`);
 
@@ -426,7 +495,7 @@ export async function playgroundChat(args: {
 
   const content = json.choices?.[0]?.message?.content;
   if (typeof content !== "string") {
-    throw new BackendError("模型未返回有效内容");
+    throw new BackendError("模型未返回有效内容", "playgroundEmptyContent");
   }
   return { content };
 }
