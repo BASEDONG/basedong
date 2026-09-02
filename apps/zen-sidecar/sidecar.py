@@ -13,14 +13,20 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PORT = int(os.environ.get("PORT", "8080"))
 SIDECAR_KEY = os.environ.get("SIDECAR_KEY", "basedong-sidecar-dev-credential")
-UPSTREAM = os.environ.get("UPSTREAM", "https://opencode.ai/zen/v1").rstrip("/")
+UPSTREAM = os.environ.get("UPSTREAM", "https://opencode.ai/zen").rstrip("/")
 ALLOWLIST = {s.strip() for s in os.environ.get("ALLOWLIST", "big-pickle").split(",") if s.strip()}
 RESPONSES_MODELS = {
     s.strip() for s in os.environ.get("RESPONSES_MODELS", "").split(",") if s.strip()
 }
 PICK_ORDER = [s.strip() for s in os.environ.get("PICK_ORDER", "").split(",") if s.strip()]
 SYNC_INTERVAL_SEC = float(os.environ.get("SYNC_INTERVAL_SEC", "300"))
-MAX_ATTEMPTS = min(20, max(1, int(os.environ.get("MAX_ATTEMPTS", "10"))))
+# Per-model retries on 429/5xx/transport errors, then rotate to the next Free Pool member.
+# Prefer PER_MODEL_ATTEMPTS; MAX_ATTEMPTS kept as a legacy alias for overlays/probes.
+_per_model_raw = os.environ.get("PER_MODEL_ATTEMPTS")
+if _per_model_raw is None or _per_model_raw == "":
+    _per_model_raw = os.environ.get("MAX_ATTEMPTS", "20")
+PER_MODEL_ATTEMPTS = min(50, max(1, int(_per_model_raw)))
+MAX_ATTEMPTS = PER_MODEL_ATTEMPTS  # legacy name used in logs / older docs
 
 _lock = threading.Lock()
 _pool: list[str] = []
@@ -390,46 +396,70 @@ class Handler(BaseHTTPRequestHandler):
                 {"error": {"message": "Free Pool empty", "type": "server_error", "free_pool": pool}},
             )
 
-        tried: list[str] = []
+        tried: list[str] = []  # unique model order (header-compatible)
+        total_attempts = 0
         last_status = 0
         last_text = b""
-        budget = min(MAX_ATTEMPTS, len(candidates))
+        last_model = ""
 
-        for model in candidates[:budget]:
-            if model in tried:
-                continue
+        for model in candidates:
             tried.append(model)
-            try:
-                status, headers, text = call_upstream(model, body, stream)
-            except Exception as e:  # noqa: BLE001
-                last_status = 502
-                last_text = str(e).encode("utf-8")
-                continue
-            last_status = status
-            last_text = text
-
-            if _protocol_error_type(text) == "protocol_conversion_error":
-                self._write_response(status, text, model, tried, uses_responses(model), stream=False)
-                return
-
-            if 400 <= status < 500 and status != 429:
-                self._write_response(status, text, model, tried, uses_responses(model), stream=False, ctype=headers.get("Content-Type"))
-                return
-
-            if is_retryable(status):
-                continue
-
-            ctype = headers.get("Content-Type", "application/json")
-            out = text
-            if not stream:
+            last_model = model
+            for _attempt in range(PER_MODEL_ATTEMPTS):
+                total_attempts += 1
+                headers: dict[str, str] = {}
                 try:
-                    j = json.loads(text.decode("utf-8"))
-                    j["model"] = model
-                    out = json.dumps(j).encode("utf-8")
-                except Exception:
-                    out = text
-            self._write_response(status, out, model, tried, uses_responses(model), stream=stream, ctype=ctype)
-            return
+                    status, headers, text = call_upstream(model, body, stream)
+                except Exception as e:  # noqa: BLE001
+                    status = 502
+                    text = str(e).encode("utf-8")
+                    headers = {}
+                last_status = status
+                last_text = text
+
+                if _protocol_error_type(text) == "protocol_conversion_error":
+                    self._write_response(
+                        status, text, model, tried, uses_responses(model), stream=False, attempts=total_attempts
+                    )
+                    return
+
+                if 400 <= status < 500 and status != 429:
+                    self._write_response(
+                        status,
+                        text,
+                        model,
+                        tried,
+                        uses_responses(model),
+                        stream=False,
+                        ctype=headers.get("Content-Type"),
+                        attempts=total_attempts,
+                    )
+                    return
+
+                if is_retryable(status):
+                    continue
+
+                ctype = headers.get("Content-Type", "application/json")
+                out = text
+                if not stream:
+                    try:
+                        j = json.loads(text.decode("utf-8"))
+                        j["model"] = model
+                        out = json.dumps(j).encode("utf-8")
+                    except Exception:
+                        out = text
+                self._write_response(
+                    status,
+                    out,
+                    model,
+                    tried,
+                    uses_responses(model),
+                    stream=stream,
+                    ctype=ctype,
+                    attempts=total_attempts,
+                )
+                return
+            # same-model budget exhausted on retryable errors → next Free Pool member
 
         detail = last_text[:500].decode("utf-8", errors="replace")
         self._json(
@@ -441,7 +471,11 @@ class Handler(BaseHTTPRequestHandler):
                     "detail": detail,
                 }
             },
-            {"X-Basedong-Retry-Tried": ",".join(tried), "X-Basedong-Upstream-Model": tried[-1] if tried else ""},
+            {
+                "X-Basedong-Retry-Tried": ",".join(tried),
+                "X-Basedong-Upstream-Model": last_model,
+                "X-Basedong-Retry-Attempts": str(total_attempts),
+            },
         )
 
     def _write_response(
@@ -453,11 +487,13 @@ class Handler(BaseHTTPRequestHandler):
         responses: bool,
         stream: bool,
         ctype: str | None = None,
+        attempts: int = 0,
     ) -> None:
         self.send_response(status)
         self.send_header("Content-Type", ctype or ("text/event-stream" if stream else "application/json"))
         self.send_header("X-Basedong-Upstream-Model", model)
         self.send_header("X-Basedong-Retry-Tried", ",".join(tried))
+        self.send_header("X-Basedong-Retry-Attempts", str(attempts))
         self.send_header("X-Basedong-Free-Pool", ",".join(current_pool()))
         if responses:
             self.send_header("X-Basedong-Southbound", "responses")
@@ -481,7 +517,7 @@ def _loop_sync() -> None:
 if __name__ == "__main__":
     print(
         f"zen-sidecar on :{PORT} upstream={UPSTREAM} allowlist={sorted(ALLOWLIST)} "
-        f"max_attempts={MAX_ATTEMPTS} sync_interval={SYNC_INTERVAL_SEC}s",
+        f"per_model_attempts={PER_MODEL_ATTEMPTS} sync_interval={SYNC_INTERVAL_SEC}s",
         flush=True,
     )
     sync_free_pool()

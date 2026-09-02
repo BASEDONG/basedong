@@ -32,10 +32,11 @@ services:
     environment:
       - PORT=8080
       - SIDECAR_KEY=basedong-sidecar-dev-credential
-      - UPSTREAM=https://opencode.ai/zen/v1
+      # Sidecar appends /v1/... paths; base must be https://opencode.ai/zen (not .../zen/v1).
+      - UPSTREAM=https://opencode.ai/zen
       - ALLOWLIST=big-pickle
       - SYNC_INTERVAL_SEC=300
-      - MAX_ATTEMPTS=10
+      - PER_MODEL_ATTEMPTS=20
     healthcheck:
       test:
         [

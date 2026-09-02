@@ -5,4 +5,5 @@ services:
   zen-sidecar:
     environment:
       - PICK_ORDER=fail-free,ok-free
-      - MAX_ATTEMPTS=5
+      # Keep mock probe fast: fail-free returns 429, then rotate to ok-free.
+      - PER_MODEL_ATTEMPTS=2

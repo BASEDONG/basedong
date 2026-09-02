@@ -13,7 +13,16 @@ func CORS() gin.HandlerFunc {
 	config.AllowOriginFunc = func(origin string) bool { return true }
 	config.AllowCredentials = true
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"}
-	config.AllowHeaders = []string{"*"}
+	// Credentialed browsers reject Allow-Headers: *; list headers the Web SPA sends.
+	config.AllowHeaders = []string{
+		"Authorization",
+		"Content-Type",
+		"New-API-User",
+		"Cache-Control",
+		"X-Requested-With",
+		"Accept",
+		"Origin",
+	}
 	return cors.New(config)
 }
 

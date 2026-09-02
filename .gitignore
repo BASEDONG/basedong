@@ -42,6 +42,7 @@ Thumbs.db
 # Scratch / local tooling
 .tmp-logo/
 apps/zen-sidecar/.probe-tmp-*/
+apps/zen-sidecar/scripts/bench-out/
 
 # Backend (apps/api) — Go / new-api fork
 apps/api/upload/
