@@ -1,44 +1,70 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
 import {
-  DEFAULT_LANGUAGE_CODE,
-  MARKETING_LANGUAGES,
-  type MarketingLanguage,
+  SITE_LANGUAGES,
+  type SiteLanguage,
 } from "@/lib/languages";
+import type { TargetLocale } from "@/lib/locale";
+import { isTranslatedLocale } from "@/lib/locale";
+import {
+  pathnameWithoutLocale,
+  withLocalePrefix,
+} from "@/lib/locale-path";
+import { getLocaleUiCopy } from "@/lib/locale-ui-copy";
+import {
+  persistPreferred,
+  useLocale,
+} from "@/components/shared/LocaleProvider";
+import { getChromeCopy } from "@/components/marketing/shared/chrome-copy";
 import { cn } from "@/lib/utils";
 
-const scrollAreaClass =
-  "flex w-max max-h-64 flex-col gap-[6px] overflow-y-auto overscroll-y-contain px-[6px] py-[20px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden";
+const listClass = "flex w-max flex-col gap-[6px] px-[6px] py-[20px]";
 
 function LanguageOption({
   item,
   selected,
+  hint,
   onSelect,
 }: {
-  item: MarketingLanguage;
+  item: SiteLanguage;
   selected: boolean;
-  onSelect: (code: string) => void;
+  hint: string;
+  onSelect: (code: TargetLocale) => void;
 }) {
   return (
     <button
       type="button"
       onClick={() => onSelect(item.code)}
       className={cn(
-        "block whitespace-nowrap rounded-[20px] px-[28px] py-[8px] text-left text-[14px] leading-none text-slate-800 transition-colors hover:bg-[#EEF6FE]",
+        "block w-full whitespace-nowrap rounded-[20px] px-[28px] py-[8px] text-left text-[14px] leading-none text-slate-800 transition-colors hover:bg-[#EEF6FE]",
         selected && "rounded-lg bg-[#4AABF0]/10 font-medium text-[#4AABF0]",
       )}
     >
       <span dir="auto">{item.nativeLabel}</span>
+      {item.consoleOnly ? (
+        <span
+          className="mt-1 block text-[11px] font-normal leading-snug text-slate-500"
+          dir="auto"
+        >
+          {hint}
+        </span>
+      ) : null}
     </button>
   );
 }
 
 export function MarketingLanguageSwitcher({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
-  const [lang, setLang] = useState(DEFAULT_LANGUAGE_CODE);
   const rootRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { locale, preferredLocale, setPreferredLocale } = useLocale();
+  const chrome = getChromeCopy(locale);
+  const uiCopy = getLocaleUiCopy(preferredLocale);
+  const selected = preferredLocale || locale;
 
   useEffect(() => {
     if (!open) return;
@@ -65,16 +91,25 @@ export function MarketingLanguageSwitcher({ className }: { className?: string })
     setOpen((prev) => !prev);
   }
 
-  function handleSelect(code: string) {
-    setLang(code);
+  function handleSelect(code: TargetLocale) {
+    setPreferredLocale(code);
+    persistPreferred(code);
     setOpen(false);
+
+    const bare = pathnameWithoutLocale(pathname);
+    const next = isTranslatedLocale(code)
+      ? withLocalePrefix(bare, code)
+      : withLocalePrefix(bare, locale);
+    if (next !== pathname) {
+      router.push(next);
+    }
   }
 
   return (
     <div className={cn("relative", className)} ref={rootRef}>
       <button
         type="button"
-        aria-label="切换语言"
+        aria-label={chrome.switchLanguage}
         aria-expanded={open}
         aria-haspopup="listbox"
         onClick={handleOpenToggle}
@@ -96,12 +131,17 @@ export function MarketingLanguageSwitcher({ className }: { className?: string })
         aria-hidden={!open}
       >
         <div className="w-max min-w-[124px] rounded-[16px] bg-white shadow-xl">
-          <div className={scrollAreaClass} role="listbox" aria-label="语言列表">
-            {MARKETING_LANGUAGES.map((item) => (
+          <div
+            className={listClass}
+            role="listbox"
+            aria-label={chrome.languageList}
+          >
+            {SITE_LANGUAGES.map((item) => (
               <LanguageOption
                 key={item.code}
                 item={item}
-                selected={lang === item.code}
+                selected={selected === item.code}
+                hint={uiCopy.consoleLocaleSwitcherHint}
                 onSelect={handleSelect}
               />
             ))}
@@ -111,3 +151,6 @@ export function MarketingLanguageSwitcher({ className }: { className?: string })
     </div>
   );
 }
+
+/** @deprecated import SITE_LANGUAGES from @/lib/languages */
+export { SITE_LANGUAGES as MARKETING_LANGUAGES } from "@/lib/languages";
