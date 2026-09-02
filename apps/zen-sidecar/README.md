@@ -45,6 +45,21 @@ bash apps/zen-sidecar/scripts/probe-responses-southbound.sh # #14 (+ zen-respons
 bash apps/zen-sidecar/scripts/probe-catalog-sync.sh         # #15 (+ zen-catalog.yml)
 ```
 
+Per-model retry (local mock, no Docker):
+
+```bash
+bash apps/zen-sidecar/scripts/check-per-model-retry.sh
+```
+
+Live `model=auto` capacity bench (Sidecar already up; outputs under `/tmp` + gitignored `scripts/bench-out/`):
+
+```bash
+bash apps/zen-sidecar/scripts/start-auto-bench.sh
+BENCH_DIR=/tmp/zen-bench-auto bash apps/zen-sidecar/scripts/auto-bench-status.sh
+bash apps/zen-sidecar/scripts/wait-auto-bench.sh
+# or: python3 apps/zen-sidecar/scripts/bench-live-capacity.py
+```
+
 Legacy PoC reference: [`config.poc.json`](./config.poc.json) (opencode2api; superseded by `sidecar.py`).
 
 ## Operator & customer docs (#18)
