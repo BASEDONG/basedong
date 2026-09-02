@@ -2,10 +2,12 @@
 
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { ASSET, copy, type RechargeMethod } from "./content";
+import { ASSET, type RechargeMethod } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { CheckCircleIcon } from "./icons";
 
 interface RechargeMethodTabsProps {
+  copy: ExpenseBillUiCopy;
   method: RechargeMethod;
   onChange: (m: RechargeMethod) => void;
   warningEnabled?: boolean;
@@ -13,6 +15,7 @@ interface RechargeMethodTabsProps {
 }
 
 export function RechargeMethodTabs({
+  copy,
   method,
   onChange,
   warningEnabled = true,

@@ -12,6 +12,9 @@ interface BillsSelectProps {
   options: readonly string[];
   placeholder: string;
   onChange: (value: string | null) => void;
+  /** When set, display labels[value] while keeping value as the stored key. */
+  labels?: Record<string, string>;
+  emptyText?: string;
   className?: string;
   widthClass?: string;
   radiusClass?: string;
@@ -21,11 +24,21 @@ interface BillsSelectProps {
   searchable?: boolean;
 }
 
+function displayLabel(
+  value: string | null,
+  labels?: Record<string, string>,
+): string | null {
+  if (!value) return null;
+  return labels?.[value] ?? value;
+}
+
 export function BillsSelect({
   value,
   options,
   placeholder,
   onChange,
+  labels,
+  emptyText = "暂无数据",
   className,
   widthClass = "w-[210.6px]",
   radiusClass = "rounded-[8px]",
@@ -106,7 +119,7 @@ export function BillsSelect({
             ) : null}
             {value && !query ? (
               <span className="pointer-events-none absolute left-0 truncate">
-                {value}
+                {displayLabel(value, labels)}
               </span>
             ) : null}
             <input
@@ -132,7 +145,7 @@ export function BillsSelect({
           <span
             className={cn("min-w-0 flex-1 truncate", !value && "text-[#94A3B8]")}
           >
-            {value ?? placeholder}
+            {displayLabel(value, labels) ?? placeholder}
           </span>
         )}
         <ChevronDownIcon
@@ -151,7 +164,7 @@ export function BillsSelect({
         >
           {filtered.length === 0 ? (
             <li className="px-3 py-6 text-center text-sm text-[#94A3B8]">
-              暂无数据
+              {emptyText}
             </li>
           ) : (
             filtered.map((opt) => {
@@ -172,7 +185,7 @@ export function BillsSelect({
                       setOpen(false);
                     }}
                   >
-                    {opt}
+                    {labels?.[opt] ?? opt}
                   </button>
                 </li>
               );

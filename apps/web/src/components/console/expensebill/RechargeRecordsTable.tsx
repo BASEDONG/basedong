@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { listTopUps, type TopUpRecord } from "@/lib/backend/client";
-import { copy, recordHeaders } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { EmptyDataIcon, SyncIcon } from "./icons";
 
 function formatTime(ts: number): string {
@@ -12,19 +12,23 @@ function formatTime(ts: number): string {
   return d.toLocaleString("zh-CN", { hour12: false });
 }
 
-function statusLabel(status: string): string {
+function statusLabel(copy: ExpenseBillUiCopy, status: string): string {
   if (status === "pending") return copy.statusPending;
   if (status === "success") return copy.statusSuccess;
   return copy.statusOther;
 }
 
-function channelLabel(method?: string): string {
+function channelLabel(copy: ExpenseBillUiCopy, method?: string): string {
   if (method === "alipay") return copy.alipay;
   if (method === "wxpay") return copy.wechatPay;
   return method || "—";
 }
 
-export function RechargeRecordsTable() {
+interface RechargeRecordsTableProps {
+  copy: ExpenseBillUiCopy;
+}
+
+export function RechargeRecordsTable({ copy }: RechargeRecordsTableProps) {
   const [rows, setRows] = useState<TopUpRecord[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -66,16 +70,16 @@ export function RechargeRecordsTable() {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-left">
                 <th className="px-2 py-3 font-semibold">
-                  <span className="pl-4">{recordHeaders[0]}</span>
+                  <span className="pl-4">{copy.recordHeaders[0]}</span>
                 </th>
-                <th className="px-2 py-3 font-semibold">{recordHeaders[1]}</th>
-                <th className="px-2 py-3 font-semibold">{recordHeaders[2]}</th>
-                <th className="px-2 py-3 font-semibold">{recordHeaders[3]}</th>
+                <th className="px-2 py-3 font-semibold">{copy.recordHeaders[1]}</th>
+                <th className="px-2 py-3 font-semibold">{copy.recordHeaders[2]}</th>
+                <th className="px-2 py-3 font-semibold">{copy.recordHeaders[3]}</th>
                 <th className="px-2 py-3 pr-6 text-right font-semibold">
-                  {recordHeaders[4]}
+                  {copy.recordHeaders[4]}
                 </th>
                 <th className="px-2 py-3 pl-4 font-semibold">
-                  {recordHeaders[5]}
+                  {copy.recordHeaders[5]}
                 </th>
               </tr>
             </thead>
@@ -104,9 +108,9 @@ export function RechargeRecordsTable() {
                     </td>
                     <td className="px-2 py-3">{formatTime(row.create_time)}</td>
                     <td className="px-2 py-3">
-                      {channelLabel(row.payment_method)}
+                      {channelLabel(copy, row.payment_method)}
                     </td>
-                    <td className="px-2 py-3">{statusLabel(row.status)}</td>
+                    <td className="px-2 py-3">{statusLabel(copy, row.status)}</td>
                     <td className="px-2 py-3 pr-6 text-right">
                       ¥ {Number(row.money).toFixed(2)}
                     </td>

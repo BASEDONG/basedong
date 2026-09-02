@@ -3,16 +3,19 @@
 import { useState, type FormEvent } from "react";
 import { cn } from "@/lib/utils";
 import { BackendError, redeemCode } from "@/lib/backend/client";
-import { ASSET, copy, type SegmentFilter } from "./content";
+import { ASSET, type SegmentFilter } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { PlusIcon } from "./icons";
 
 interface CouponPackagePanelProps {
+  copy: ExpenseBillUiCopy;
   filter: SegmentFilter;
   onFilterChange: (f: SegmentFilter) => void;
   onRedeemed?: (quotaAdded: number) => void;
 }
 
 export function CouponPackagePanel({
+  copy,
   filter,
   onFilterChange,
   onRedeemed,

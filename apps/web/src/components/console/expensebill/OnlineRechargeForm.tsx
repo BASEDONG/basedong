@@ -15,12 +15,14 @@ import {
   requestEpayPay,
   submitPaymentForm,
 } from "@/lib/backend/client";
-import { ASSET, amountPresets, copy, formatYuan } from "./content";
+import { ASSET, amountPresets, formatYuan } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
 import { DownIcon } from "./icons";
 
 type PayMethod = "alipay" | "wechat";
 
 interface OnlineRechargeFormProps {
+  copy: ExpenseBillUiCopy;
   amount: number | "other";
   customAmount: number;
   onAmountChange: (v: number | "other") => void;
@@ -68,6 +70,7 @@ function toEpayMethod(method: PayMethod): string {
 }
 
 export function OnlineRechargeForm({
+  copy,
   amount,
   customAmount,
   onAmountChange,

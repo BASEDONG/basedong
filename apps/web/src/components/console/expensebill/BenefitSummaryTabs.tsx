@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { copy, type BenefitTab } from "./content";
+import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
+import type { BenefitTab } from "./content";
 import {
   BalanceCoinIcon,
   CouponTicketIcon,
@@ -9,6 +10,7 @@ import {
 } from "./icons";
 
 interface BenefitSummaryTabsProps {
+  copy: ExpenseBillUiCopy;
   active: BenefitTab;
   onChange: (tab: BenefitTab) => void;
   /** Live 额度 from Backend getSelf; null while loading. */
@@ -25,6 +27,7 @@ function ActiveTopBar() {
 }
 
 export function BenefitSummaryTabs({
+  copy,
   active,
   onChange,
   quota,

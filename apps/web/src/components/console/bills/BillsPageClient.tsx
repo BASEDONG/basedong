@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import {
   getUsageSelfStat,
   listUsageLogs,
@@ -9,14 +10,14 @@ import {
   type UsageStat,
 } from "@/lib/backend/client";
 import { ConsoleShell } from "../shared/ConsoleShell";
+import { getBillsUiCopy } from "./bills-ui-copy";
 import { BillsAmountSummary } from "./BillsAmountSummary";
 import { BillsDataTable } from "./BillsDataTable";
 import { BillsFilterBar } from "./BillsFilterBar";
 import { BillsToolbar } from "./BillsToolbar";
 import {
-  copy,
+  DEFAULT_ALLOCATION_DIMENSION,
   formatDateISO,
-  pageTitle,
   type PeriodType,
   type ViewMode,
 } from "./content";
@@ -30,6 +31,8 @@ function dayEndUnix(isoDate: string): number {
 }
 
 export function BillsPageClient() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getBillsUiCopy(targetLocale), [targetLocale]);
   const today = formatDateISO(new Date());
   const [collapsed, setCollapsed] = useState(false);
   const [period, setPeriod] = useState<PeriodType>("day");
@@ -39,8 +42,9 @@ export function BillsPageClient() {
   const [dimensions, setDimensions] = useState<string[]>([]);
   const [billingItems, setBillingItems] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("detail");
-  const [allocationDimension, setAllocationDimension] =
-    useState<string>("模型服务视图");
+  const [allocationDimension, setAllocationDimension] = useState<string>(
+    DEFAULT_ALLOCATION_DIMENSION,
+  );
   const [rows, setRows] = useState<UsageLog[]>([]);
   const [total, setTotal] = useState(0);
   const [stat, setStat] = useState<UsageStat>({ quota: 0, rpm: 0, tpm: 0 });
@@ -74,11 +78,11 @@ export function BillsPageClient() {
       setRows([]);
       setTotal(0);
       setStat({ quota: 0, rpm: 0, tpm: 0 });
-      setError(e instanceof Error ? e.message : "加载用量失败");
+      setError(e instanceof Error ? e.message : copy.loadFailed);
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate]);
+  }, [copy.loadFailed, startDate, endDate]);
 
   useEffect(() => {
     void refresh();
@@ -89,7 +93,7 @@ export function BillsPageClient() {
       collapsed={collapsed}
       onToggleCollapse={() => setCollapsed((v) => !v)}
       activeKey="bills"
-      title={pageTitle}
+      title={copy.pageTitle}
       notificationCount={0}
       textTone="black"
       mainClassName="z-50 min-h-0 flex-1 overflow-y-auto px-5 pb-2.5 pt-2 text-black"
@@ -97,6 +101,8 @@ export function BillsPageClient() {
       <div className="flex w-full min-w-[1000px] flex-col">
         <p className="mb-3 text-sm text-slate-500">{copy.usageHint}</p>
         <BillsFilterBar
+          copy={copy}
+          locale={targetLocale}
           period={period}
           onPeriodChange={setPeriod}
           startDate={startDate}
@@ -111,6 +117,7 @@ export function BillsPageClient() {
           onBillingItemsChange={setBillingItems}
         />
         <BillsAmountSummary
+          copy={copy}
           stat={stat}
           loading={loading}
           onRefresh={() => void refresh()}
@@ -121,6 +128,7 @@ export function BillsPageClient() {
           </p>
         ) : null}
         <BillsToolbar
+          copy={copy}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           allocationDimension={allocationDimension}
@@ -129,6 +137,7 @@ export function BillsPageClient() {
           onExport={() => undefined}
         />
         <BillsDataTable
+          copy={copy}
           viewMode={viewMode}
           rows={rows}
           total={total}

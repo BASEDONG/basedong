@@ -1,21 +1,26 @@
-import { ASSET, copy } from "./content";
+import { ASSET } from "./content";
+import type { InvoiceUiCopy } from "./invoice-ui-copy";
 
-export function InvoiceRecordsEmpty() {
+interface InvoiceRecordsEmptyProps {
+  copy: InvoiceUiCopy;
+}
+
+export function InvoiceRecordsEmpty({ copy }: InvoiceRecordsEmptyProps) {
   return (
-    <>
-      <h2 className="mt-6 text-lg font-semibold text-slate-800">
+    <div className="mt-6">
+      <div className="mb-4 text-base font-medium text-slate-800">
         {copy.recordsTitle}
-      </h2>
-      <div className="mt-[10%] flex flex-1 items-start justify-center">
+      </div>
+      <div className="flex flex-col items-center justify-center py-16">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={ASSET.empty}
           alt=""
-          width={320}
-          height={320}
-          className="size-[320px] object-fill"
+          width={240}
+          height={240}
+          className="mb-4 h-[240px] w-[240px] object-contain"
         />
       </div>
-    </>
+    </div>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { copy, formatDateISO } from "./content";
+import type { BillsUiCopy } from "./bills-ui-copy";
+import { formatDateISO } from "./content";
 import { CalendarIcon, SwapRightIcon } from "./icons";
 
 const antFont =
@@ -11,6 +12,7 @@ const antFont =
 const WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"] as const;
 
 interface BillsRangePickerProps {
+  copy: BillsUiCopy;
   startDate: string;
   endDate: string;
   onStartDateChange: (v: string) => void;
@@ -219,6 +221,7 @@ function MonthPanel({
 }
 
 export function BillsRangePicker({
+  copy,
   startDate,
   endDate,
   onStartDateChange,

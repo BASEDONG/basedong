@@ -1,14 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { ConsoleShell } from "../shared/ConsoleShell";
+import { getInvoiceUiCopy } from "./invoice-ui-copy";
 import { ApplyInvoiceButton } from "./ApplyInvoiceButton";
 import { ApplyInvoiceDrawer } from "./ApplyInvoiceDrawer";
-import { isInvoiceBusinessHours, pageTitle } from "./content";
+import { isInvoiceBusinessHours } from "./content";
 import { InvoiceNoticeAlert } from "./InvoiceNoticeAlert";
 import { InvoiceRecordsEmpty } from "./InvoiceRecordsEmpty";
 
 export function InvoicePageClient() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getInvoiceUiCopy(targetLocale), [targetLocale]);
   const [collapsed, setCollapsed] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [canApply, setCanApply] = useState(false);
@@ -24,25 +28,26 @@ export function InvoicePageClient() {
   const openDrawer = useCallback(() => {
     if (!isInvoiceBusinessHours()) {
       setCanApply(false);
-      setToast(copyOutsideHoursToast);
+      setToast(copy.outsideHoursToast);
       window.setTimeout(() => setToast(null), 3000);
       return;
     }
     setDrawerOpen(true);
-  }, []);
+  }, [copy.outsideHoursToast]);
 
   return (
     <ConsoleShell
       collapsed={collapsed}
       onToggleCollapse={() => setCollapsed((v) => !v)}
       activeKey="invoice"
-      title={pageTitle}
+      title={copy.pageTitle}
       notificationCount={0}
       textTone="black"
       mainClassName="z-50 min-h-0 flex-1 overflow-y-auto px-5 pb-2.5 pt-2 text-black"
       overlay={
         <>
           <ApplyInvoiceDrawer
+            copy={copy}
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
           />
@@ -58,18 +63,19 @@ export function InvoicePageClient() {
         <div className="full flex flex-col overflow-hidden">
           <div className="w-full overflow-hidden">
             <div className="flex justify-between">
-              <ApplyInvoiceButton canApply={canApply} onApply={openDrawer} />
+              <ApplyInvoiceButton
+                copy={copy}
+                canApply={canApply}
+                onApply={openDrawer}
+              />
             </div>
             <div className="mt-3">
-              <InvoiceNoticeAlert />
+              <InvoiceNoticeAlert copy={copy} />
             </div>
           </div>
-          <InvoiceRecordsEmpty />
+          <InvoiceRecordsEmpty copy={copy} />
         </div>
       </div>
     </ConsoleShell>
   );
 }
-
-const copyOutsideHoursToast =
-  "当前不在可开票时段，请在工作日 10:00~19:00 申请发票";

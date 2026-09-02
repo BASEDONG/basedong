@@ -2,15 +2,8 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import {
-  copy,
-  drawerCopy,
-  feeTypeOptions,
-  formatYuan,
-  invoiceTypeOptions,
-  mockAmounts,
-  titleTaxOptions,
-} from "./content";
+import type { InvoiceUiCopy } from "./invoice-ui-copy";
+import { formatYuan, mockAmounts } from "./content";
 
 const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
@@ -18,6 +11,7 @@ const antFont =
 const DIVIDER_LINE = "rgba(13, 63, 130, 0.12)";
 
 interface ApplyInvoiceDrawerProps {
+  copy: InvoiceUiCopy;
   open: boolean;
   onClose: () => void;
 }
@@ -216,7 +210,15 @@ function SelectField({
   );
 }
 
-export function ApplyInvoiceDrawer({ open, onClose }: ApplyInvoiceDrawerProps) {
+export function ApplyInvoiceDrawer({
+  copy,
+  open,
+  onClose,
+}: ApplyInvoiceDrawerProps) {
+  const drawerCopy = copy.drawer;
+  const feeTypeOptions = copy.feeTypeOptions;
+  const titleTaxOptions = copy.titleTaxOptions;
+  const invoiceTypeOptions = copy.invoiceTypeOptions;
   const titleId = useId();
   const [visible, setVisible] = useState(false);
   const [entered, setEntered] = useState(false);
@@ -375,7 +377,7 @@ export function ApplyInvoiceDrawer({ open, onClose }: ApplyInvoiceDrawerProps) {
                     rel="noopener noreferrer"
                     className="text-[rgb(108,40,246)] hover:text-[#b17dff]"
                   >
-                    {drawerCopy.registerHere}
+                    {copy.registerHere}
                   </a>
                 </>
               }

@@ -1,13 +1,15 @@
 "use client";
 
 import type { UsageLog } from "@/lib/backend/client";
-import { ASSET, copy, detailHeaders, type ViewMode } from "./content";
+import type { BillsUiCopy } from "./bills-ui-copy";
+import { ASSET, type ViewMode } from "./content";
 import { cn } from "@/lib/utils";
 
 const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
 
 interface BillsDataTableProps {
+  copy: BillsUiCopy;
   viewMode: ViewMode;
   rows: UsageLog[];
   total: number;
@@ -22,6 +24,7 @@ function formatTime(ts: number): string {
 }
 
 export function BillsDataTable({
+  copy,
   viewMode,
   rows,
   total,
@@ -35,7 +38,7 @@ export function BillsDataTable({
     );
   }
 
-  const headers = detailHeaders;
+  const headers = copy.detailHeaders;
   const empty = !loading && rows.length === 0;
 
   return (

@@ -115,18 +115,52 @@ if (accountAuth) {
   ok("console/account-authentication/account-authentication-ui-copy.ts (14 locales)");
 }
 
+const bills = requireFile("src/components/console/bills/bills-ui-copy.ts");
+if (bills) {
+  requireMarkers("bills-ui-copy.ts", bills);
+  for (const key of ["getBillsUiCopy", "pageTitle", "detailHeaders", "loadFailed"]) {
+    if (!bills.includes(key)) fail(`bills-ui-copy.ts missing ${key}`);
+  }
+  ok("console/bills/bills-ui-copy.ts (14 locales)");
+}
+
+const expensebill = requireFile(
+  "src/components/console/expensebill/expensebill-ui-copy.ts",
+);
+if (expensebill) {
+  requireMarkers("expensebill-ui-copy.ts", expensebill);
+  for (const key of ["getExpenseBillUiCopy", "pageTitle", "recordHeaders", "confirmPay"]) {
+    if (!expensebill.includes(key)) {
+      fail(`expensebill-ui-copy.ts missing ${key}`);
+    }
+  }
+  ok("console/expensebill/expensebill-ui-copy.ts (14 locales)");
+}
+
+const invoice = requireFile("src/components/console/invoice/invoice-ui-copy.ts");
+if (invoice) {
+  requireMarkers("invoice-ui-copy.ts", invoice);
+  for (const key of ["getInvoiceUiCopy", "pageTitle", "noticeLines", "drawer"]) {
+    if (!invoice.includes(key)) fail(`invoice-ui-copy.ts missing ${key}`);
+  }
+  ok("console/invoice/invoice-ui-copy.ts (14 locales)");
+}
+
 const meta = requireFile("src/lib/console-page-metadata.ts");
 if (meta) {
   for (const key of [
     "getConsoleModelsPageMetadata",
     "getConsoleAccountAkPageMetadata",
     "getConsoleAccountAuthPageMetadata",
+    "getConsoleBillsPageMetadata",
+    "getConsoleExpenseBillPageMetadata",
+    "getConsoleInvoicePageMetadata",
   ]) {
     if (!meta.includes(key)) {
       fail(`console-page-metadata.ts missing ${key}`);
     }
   }
-  ok("console-page-metadata.ts (models + account)");
+  ok("console-page-metadata.ts (models + account + billing)");
 }
 
 if (failed) {

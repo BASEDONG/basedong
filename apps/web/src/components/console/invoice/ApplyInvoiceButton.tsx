@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { copy } from "./content";
+import type { InvoiceUiCopy } from "./invoice-ui-copy";
+import { formatYuan, mockAmounts } from "./content";
 
 interface ApplyInvoiceButtonProps {
+  copy: InvoiceUiCopy;
   canApply?: boolean;
   onApply?: () => void;
 }
 
 export function ApplyInvoiceButton({
+  copy,
   canApply = false,
   onApply,
 }: ApplyInvoiceButtonProps) {
