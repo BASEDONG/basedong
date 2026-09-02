@@ -16,4 +16,4 @@ Customer Web (`apps/web`) ships **Console** (`/me/*`) in all **Target Locale Set
 - `src/lib/locale.ts` and `src/lib/languages.ts` expand toward the Target set; `pt-BR` (not `pt`); unified `es`.
 - Language switcher lists Target locales; Console Locales show a switcher hint; Marketing shows a persistent banner when a Console Locale is active.
 - `npm run check:console-locales` validates Console catalog parity across Target locales (alongside existing `check:locales` for Marketing + Auth Translated Locales).
-- ADR 0005 remains authoritative for Marketing + Auth Translated Locale mechanics; Graduation of each Console Locale is a follow-on increment, not automatic.
+- ADR 0005 remains authoritative for Marketing + Auth Translated Locale mechanics until **Graduation**. **ADR 0007** completes Marketing Graduation: Target Locale Set = Translated Locale set; `CONSOLE_LOCALES` empty; Console Locale Marketing fallback UX removed. This ADR’s Console i18n decisions (bare `/me/*`, Preferred Locale, agent-authored catalogs) remain in force.
