@@ -25,8 +25,16 @@ An upstream provider connection (credentials + routing weight/priority + model m
 _Avoid_: provider account, upstream key (implementation detail)
 
 **用户**:
-A customer account that can sign in, hold 额度, and create API Keys. Auth/register flows follow new-api's User/Session model, surfaced through Web.
-_Avoid_: account (ambiguous), member
+A customer account that can sign in, hold 额度, and create API Keys. Auth/register flows follow new-api's User/Session model, surfaced through Web. A 用户 is created only after 邮箱验证码 succeeds; there is no logged-in-but-unverified customer state.
+_Avoid_: account (ambiguous), member, pending user, unverified user
+
+**邮箱验证码**:
+A one-time code sent to the registrant’s email that proves mailbox control before a 用户 is created. Any deliverable address may register (including disposable domains); domain allowlisting is not part of the product policy.
+_Avoid_: 验证码 alone when SMS or 人机验证 could be meant; OTP as a UI label unless matching Backend copy
+
+**人机验证**:
+A bot-resistance check (Cloudflare Turnstile in Backend) required on open registration-related endpoints alongside 邮箱验证码.
+_Avoid_: captcha as the product term when 人机验证 is meant; equating it with 邮箱验证码
 
 **管理员**:
 An operator who uses the stock new-api Admin UI (no basedong brand skin) to manage Channels, users, 额度, and models — not the Web Console.
