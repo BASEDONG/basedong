@@ -9,7 +9,7 @@ import {
   NEWS_PAGE_SIZE,
   NEWS_TOTAL_PAGES,
 } from "./content-base";
-import { en, fr, ja, ru, vi, zhCN, zhTW } from "./content-locales";
+import { en, fr, ja, ru, vi, zhCN, zhTW, ko, de, es, ptBR, ar, hi, id } from "./content-locales";
 import type {
   NewsArticle,
   NewsCategory,
@@ -83,6 +83,13 @@ const NEWS_STRINGS: Partial<Record<TranslatedLocale, NewsStrings>> & {
   ru,
   ja,
   vi,
+  ko: ko,
+  de: de,
+  es: es,
+  "pt-BR": ptBR,
+  ar: ar,
+  hi: hi,
+  id: id,
 };
 
 export function getNewsContent(locale: string): NewsPageContent {

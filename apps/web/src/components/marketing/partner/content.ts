@@ -9,7 +9,7 @@ import {
   PARTNER_CASE_IMAGES,
   PARTNERSHIP_MODE_BASE,
 } from "./content-base";
-import { en, fr, ja, ru, vi, zhCN, zhTW } from "./content-locales";
+import { en, fr, ja, ru, vi, zhCN, zhTW, ko, de, es, ptBR, ar, hi, id } from "./content-locales";
 import type { PartnerContent, PartnerStrings } from "./content-types";
 
 export type {
@@ -62,6 +62,13 @@ const PARTNER_STRINGS: Partial<Record<TranslatedLocale, PartnerStrings>> & {
   ru,
   ja,
   vi,
+  ko: ko,
+  de: de,
+  es: es,
+  "pt-BR": ptBR,
+  ar: ar,
+  hi: hi,
+  id: id,
 };
 
 export function getPartnerContent(locale: string): PartnerContent {

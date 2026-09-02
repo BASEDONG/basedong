@@ -6,7 +6,7 @@ import {
   heroBackgroundBase,
   TIMELINE_ITEM_BASE,
 } from "./content-base";
-import { en, fr, ja, ru, vi, zhCN, zhTW } from "./content-locales";
+import { en, fr, ja, ru, vi, zhCN, zhTW, ko, de, es, ptBR, ar, hi, id } from "./content-locales";
 import type { AboutContent, AboutStrings } from "./content-types";
 
 export type { AboutContent, AboutStrings } from "./content-types";
@@ -48,7 +48,14 @@ const ABOUT_STRINGS: Partial<Record<TranslatedLocale, AboutStrings>> & {
   fr,
   ru,
   ja,
-  vi,
+  vi,
+  ko: ko,
+  de: de,
+  es: es,
+  "pt-BR": ptBR,
+  ar: ar,
+  hi: hi,
+  id: id,
 };
 
 export function getAboutContent(locale: string): AboutContent {

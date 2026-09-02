@@ -5,16 +5,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { getTalkContent, resolveTalkArticles } from "./content";
 import type { TalkCategory } from "./content-types";
+import { FILTERABLE_TALK_CATEGORIES } from "./content-types";
 import { TalkHero } from "./TalkHero";
 import { TalkListSection } from "./TalkListSection";
 import { TalkSubmitCta } from "./TalkSubmitCta";
 
-const FILTERABLE: TalkCategory[] = [
-  "技术实践",
-  "平台活动",
-  "用户故事",
-  "用户测评",
-];
+const FILTERABLE: TalkCategory[] = [...FILTERABLE_TALK_CATEGORIES];
 
 function parseTags(raw: string | null): string[] {
   if (!raw) return [];

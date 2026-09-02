@@ -29,7 +29,7 @@ export function BrandLogo({
   variant = "color",
   className,
   priority,
-  alt = "八色鸫 basedong",
+  alt = "basedong",
 }: BrandLogoProps) {
   const dims = SIZES[size];
   const src = variant === "white" ? BRAND.logoWhite : BRAND.logo;

@@ -9,7 +9,7 @@ import {
   STANDARD_MODEL_BASE,
   WHY_CARD_BASE,
 } from "./content-base";
-import { en, fr, ja, ru, vi, zhCN, zhTW } from "./content-locales";
+import { en, fr, ja, ru, vi, zhCN, zhTW, ko, de, es, ptBR, ar, hi, id } from "./content-locales";
 import type { ReservedContent, ReservedStrings } from "./content-types";
 
 export type {
@@ -88,6 +88,13 @@ const RESERVED_STRINGS: Partial<Record<TranslatedLocale, ReservedStrings>> & {
   ru,
   ja,
   vi,
+  ko: ko,
+  de: de,
+  es: es,
+  "pt-BR": ptBR,
+  ar: ar,
+  hi: hi,
+  id: id,
 };
 
 export function getReservedContent(locale: string): ReservedContent {

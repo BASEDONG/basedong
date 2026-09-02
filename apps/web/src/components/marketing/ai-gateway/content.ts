@@ -1,11 +1,11 @@
-﻿import type { TranslatedLocale } from "@/lib/locale";
+import type { TranslatedLocale } from "@/lib/locale";
 import { pickCatalog } from "@/lib/pick-catalog";
 import {
   ADVANTAGE_CARD_BASE,
   SCENARIO_BASE,
   TESTIMONIAL_BASE,
 } from "./content-base";
-import { en, fr, ja, ru, vi, zhCN, zhTW } from "./content-locales";
+import { en, fr, ja, ru, vi, zhCN, zhTW, ko, de, es, ptBR, ar, hi, id } from "./content-locales";
 import type { GatewayContent, GatewayStrings } from "./content-types";
 
 export type {
@@ -55,6 +55,13 @@ const GATEWAY_STRINGS: Partial<Record<TranslatedLocale, GatewayStrings>> & {
   ru,
   ja,
   vi,
+  ko: ko,
+  de: de,
+  es: es,
+  "pt-BR": ptBR,
+  ar: ar,
+  hi: hi,
+  id: id,
 };
 
 export function getGatewayContent(locale: string): GatewayContent {

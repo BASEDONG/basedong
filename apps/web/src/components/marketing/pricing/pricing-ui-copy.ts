@@ -303,6 +303,279 @@ const vi: PricingUiCopy = {
     "So sánh chi phí input, output và cache-hit khi chọn mô hình production. Giá từ danh mục Backend basedong.",
 };
 
+const ko: PricingUiCopy = {
+  logoAlt: "요금",
+  titleBefore: "모델 선택,",
+  titleHighlight: "먼저 가격부터",
+  titleAfter: "",
+  subtitle:
+    "입력·출력·캐시 히트 비용을 주요 벤더와 한 화면에서 비교하세요.",
+  searchPlaceholder: "모델 이름 / DisplayName / modelId 검색",
+  search: "검색",
+  features: [
+    "실시간 가격 동기화",
+    "사용 가능한 모델만 표시",
+    "벤더별 빠른 탐색",
+  ],
+  categoryLabels: {
+    全部: "전체",
+    对话: "대화",
+    生图: "이미지",
+    语音: "음성",
+    视频: "동영상",
+  },
+  chatTitle: "대화 모델",
+  imageTitle: "이미지 모델",
+  audioTitle: "음성 모델",
+  videoTitle: "동영상 모델",
+  chatHeaders: ["벤더", "모델", "입력", "출력", "캐시"],
+  mediaHeaders: ["벤더", "모델", "출력 가격"],
+  loading: "모델 카탈로그 로딩 중…",
+  empty:
+    "등록된 모델이 없습니다. Backend에서 Channel과 모델 카탈로그를 설정하면 가격이 표시됩니다.",
+  emptyCategory: "이 카테고리에 모델이 없습니다.",
+  error: "모델 카탈로그 서비스에 연결할 수 없습니다. 나중에 다시 시도해 주세요.",
+  free: "무료",
+  expandMore: (n) => `${n}개 모델 더 보기`,
+  pageTitle: "요금 | basedong",
+  pageDescription:
+    "프로덕션 모델 선택을 위한 가격 페이지. 입력·출력·캐시 히트 비용 비교. basedong Backend 카탈로그 기준.",
+};
+
+const de: PricingUiCopy = {
+  logoAlt: "Preise",
+  titleBefore: "Modell wählen?",
+  titleHighlight: "Mit Preisen beginnen",
+  titleAfter: "",
+  subtitle:
+    "Vergleichen Sie Input-, Output- und Cache-Hit-Kosten führender Anbieter auf einen Blick.",
+  searchPlaceholder: "Modellname / DisplayName / modelId suchen",
+  search: "Suchen",
+  features: [
+    "Live-Preissynchronisation",
+    "Nur verfügbare Modelle",
+    "Schnell nach Anbieter filtern",
+  ],
+  categoryLabels: {
+    全部: "Alle",
+    对话: "Chat",
+    生图: "Bild",
+    语音: "Audio",
+    视频: "Video",
+  },
+  chatTitle: "Chat-Modelle",
+  imageTitle: "Bildmodelle",
+  audioTitle: "Audiomodelle",
+  videoTitle: "Videomodelle",
+  chatHeaders: ["Anbieter", "Modell", "Input", "Output", "Cache"],
+  mediaHeaders: ["Anbieter", "Modell", "Output-Preis"],
+  loading: "Modellkatalog wird geladen…",
+  empty:
+    "Noch keine Modelle gelistet. Nach Konfiguration von Channels und Katalog im Backend erscheinen hier Preise.",
+  emptyCategory: "Keine Modelle in dieser Kategorie.",
+  error: "Modellkatalog nicht erreichbar. Bitte später erneut versuchen.",
+  free: "Kostenlos",
+  expandMore: (n) => `${n} weitere Modelle anzeigen`,
+  pageTitle: "Preise | basedong",
+  pageDescription:
+    "Input-, Output- und Cache-Hit-Kosten für die Produktionsmodellauswahl. Preise aus dem basedong Backend-Katalog.",
+};
+
+const es: PricingUiCopy = {
+  logoAlt: "Precios",
+  titleBefore: "¿Elegir un modelo?",
+  titleHighlight: "Empieza por el precio",
+  titleAfter: "",
+  subtitle:
+    "Compara costos de entrada, salida y caché de los principales proveedores en una vista.",
+  searchPlaceholder: "Buscar nombre / DisplayName / modelId",
+  search: "Buscar",
+  features: [
+    "Sincronización de precios en vivo",
+    "Solo modelos disponibles",
+    "Salto rápido por proveedor",
+  ],
+  categoryLabels: {
+    全部: "Todos",
+    对话: "Chat",
+    生图: "Imagen",
+    语音: "Audio",
+    视频: "Video",
+  },
+  chatTitle: "Modelos de chat",
+  imageTitle: "Modelos de imagen",
+  audioTitle: "Modelos de audio",
+  videoTitle: "Modelos de video",
+  chatHeaders: ["Proveedor", "Modelo", "Entrada", "Salida", "Caché"],
+  mediaHeaders: ["Proveedor", "Modelo", "Precio de salida"],
+  loading: "Cargando catálogo de modelos…",
+  empty:
+    "Aún no hay modelos. Tras configurar Channels y el catálogo en Backend, los precios aparecerán aquí.",
+  emptyCategory: "No hay modelos en esta categoría.",
+  error: "No se pudo conectar al catálogo. Inténtelo más tarde.",
+  free: "Gratis",
+  expandMore: (n) => `Mostrar ${n} modelos más`,
+  pageTitle: "Precios | basedong",
+  pageDescription:
+    "Compara costos de entrada, salida y caché para selección de modelos en producción. Precios del catálogo Backend basedong.",
+};
+
+const ptBR: PricingUiCopy = {
+  logoAlt: "Preços",
+  titleBefore: "Escolhendo um modelo?",
+  titleHighlight: "Comece pelo preço",
+  titleAfter: "",
+  subtitle:
+    "Compare custos de entrada, saída e cache-hit dos principais provedores em uma tela.",
+  searchPlaceholder: "Buscar nome / DisplayName / modelId",
+  search: "Buscar",
+  features: [
+    "Sincronização de preços em tempo real",
+    "Somente modelos disponíveis",
+    "Ir rápido por provedor",
+  ],
+  categoryLabels: {
+    全部: "Todos",
+    对话: "Chat",
+    生图: "Imagem",
+    语音: "Áudio",
+    视频: "Vídeo",
+  },
+  chatTitle: "Modelos de chat",
+  imageTitle: "Modelos de imagem",
+  audioTitle: "Modelos de áudio",
+  videoTitle: "Modelos de vídeo",
+  chatHeaders: ["Provedor", "Modelo", "Entrada", "Saída", "Cache"],
+  mediaHeaders: ["Provedor", "Modelo", "Preço de saída"],
+  loading: "Carregando catálogo de modelos…",
+  empty:
+    "Nenhum modelo listado ainda. Após configurar Channels e catálogo no Backend, os preços aparecerão aqui.",
+  emptyCategory: "Nenhum modelo nesta categoria.",
+  error: "Não foi possível acessar o catálogo. Tente novamente mais tarde.",
+  free: "Grátis",
+  expandMore: (n) => `Mostrar mais ${n} modelos`,
+  pageTitle: "Preços | basedong",
+  pageDescription:
+    "Compare custos de entrada, saída e cache-hit para seleção de modelos em produção. Preços do catálogo Backend basedong.",
+};
+
+const ar: PricingUiCopy = {
+  logoAlt: "الأسعار",
+  titleBefore: "اختيار نموذج؟",
+  titleHighlight: "ابدأ بالأسعار",
+  titleAfter: "",
+  subtitle:
+    "قارن تكاليف الإدخال والإخراج وضربات الذاكرة المؤقتة عبر المزودين الرئيسيين في شاشة واحدة.",
+  searchPlaceholder: "بحث اسم النموذج / DisplayName / modelId",
+  search: "بحث",
+  features: [
+    "مزامنة الأسعار مباشرة",
+    "النماذج المتاحة فقط",
+    "انتقال سريع حسب المزود",
+  ],
+  categoryLabels: {
+    全部: "الكل",
+    对话: "محادثة",
+    生图: "صورة",
+    语音: "صوت",
+    视频: "فيديو",
+  },
+  chatTitle: "نماذج المحادثة",
+  imageTitle: "نماذج الصور",
+  audioTitle: "نماذج الصوت",
+  videoTitle: "نماذج الفيديو",
+  chatHeaders: ["المزود", "النموذج", "إدخال", "إخراج", "ذاكرة مؤقتة"],
+  mediaHeaders: ["المزود", "النموذج", "سعر الإخراج"],
+  loading: "جارٍ تحميل قائمة النماذج…",
+  empty:
+    "لا توجد نماذج بعد. بعد إعداد Channels والقائمة في Backend، ستظهر الأسعار هنا.",
+  emptyCategory: "لا توجد نماذج في هذه الفئة.",
+  error: "تعذّر الاتصال بخدمة القائمة. يرجى المحاولة لاحقًا.",
+  free: "مجاني",
+  expandMore: (n) => `عرض ${n} نماذج إضافية`,
+  pageTitle: "الأسعار | basedong",
+  pageDescription:
+    "قارن تكاليف الإدخال والإخراج وضربات الذاكرة المؤقتة لاختيار النماذج في الإنتاج. الأسعار من قائمة Backend basedong.",
+};
+
+const hi: PricingUiCopy = {
+  logoAlt: "मूल्य",
+  titleBefore: "मॉडल चुन रहे हैं?",
+  titleHighlight: "पहले मूल्य देखें",
+  titleAfter: "",
+  subtitle:
+    "एक स्क्रीन पर प्रमुख विक्रेताओं के input, output और cache-hit लागत की तुलना करें।",
+  searchPlaceholder: "मॉडल नाम / DisplayName / modelId खोजें",
+  search: "खोजें",
+  features: [
+    "लाइव मूल्य सिंक",
+    "केवल उपलब्ध मॉडल",
+    "विक्रेता के अनुसार तेज़ नेविगेशन",
+  ],
+  categoryLabels: {
+    全部: "सभी",
+    对话: "चैट",
+    生图: "छवि",
+    语音: "ऑडियो",
+    视频: "वीडियो",
+  },
+  chatTitle: "चैट मॉडल",
+  imageTitle: "छवि मॉडल",
+  audioTitle: "ऑडियो मॉडल",
+  videoTitle: "वीडियो मॉडल",
+  chatHeaders: ["विक्रेता", "मॉडल", "इनपुट", "आउटपुट", "कैश"],
+  mediaHeaders: ["विक्रेता", "मॉडल", "आउटपुट मूल्य"],
+  loading: "मॉडल कैटलॉग लोड हो रहा है…",
+  empty:
+    "अभी कोई मॉडल सूचीबद्ध नहीं। Backend में Channel और कैटलॉग कॉन्फ़िगर करने के बाद यहाँ मूल्य दिखेंगे।",
+  emptyCategory: "इस श्रेणी में कोई मॉडल नहीं।",
+  error: "मॉडल कैटलॉग सेवा तक पहुँच नहीं सकी। बाद में पुनः प्रयास करें।",
+  free: "मुफ़्त",
+  expandMore: (n) => `${n} और मॉडल दिखाएँ`,
+  pageTitle: "मूल्य | basedong",
+  pageDescription:
+    "प्रोडक्शन मॉडल चयन के लिए input, output और cache-hit लागत की तुलना। basedong Backend कैटलॉग से मूल्य।",
+};
+
+const id: PricingUiCopy = {
+  logoAlt: "Harga",
+  titleBefore: "Memilih model?",
+  titleHighlight: "Mulai dari harga",
+  titleAfter: "",
+  subtitle:
+    "Bandingkan biaya input, output, dan cache-hit dari vendor terkemuka dalam satu layar.",
+  searchPlaceholder: "Cari nama model / DisplayName / modelId",
+  search: "Cari",
+  features: [
+    "Sinkronisasi harga langsung",
+    "Hanya model tersedia",
+    "Lompat cepat per vendor",
+  ],
+  categoryLabels: {
+    全部: "Semua",
+    对话: "Chat",
+    生图: "Gambar",
+    语音: "Audio",
+    视频: "Video",
+  },
+  chatTitle: "Model chat",
+  imageTitle: "Model gambar",
+  audioTitle: "Model audio",
+  videoTitle: "Model video",
+  chatHeaders: ["Vendor", "Model", "Input", "Output", "Cache"],
+  mediaHeaders: ["Vendor", "Model", "Harga output"],
+  loading: "Memuat katalog model…",
+  empty:
+    "Belum ada model. Setelah admin mengonfigurasi Channel dan katalog di Backend, harga akan muncul di sini.",
+  emptyCategory: "Tidak ada model dalam kategori ini.",
+  error: "Tidak dapat terhubung ke layanan katalog. Coba lagi nanti.",
+  free: "Gratis",
+  expandMore: (n) => `Tampilkan ${n} model lagi`,
+  pageTitle: "Harga | basedong",
+  pageDescription:
+    "Bandingkan biaya input, output, dan cache-hit untuk pemilihan model produksi. Harga dari katalog Backend basedong.",
+};
+
 const catalogs: Record<TranslatedLocale, PricingUiCopy> = {
   "zh-CN": zhCN,
   en,
@@ -311,6 +584,13 @@ const catalogs: Record<TranslatedLocale, PricingUiCopy> = {
   ru,
   ja,
   vi,
+  ko,
+  de,
+  es,
+  "pt-BR": ptBR,
+  ar,
+  hi,
+  id,
 };
 
 export function getPricingUiCopy(locale: string): PricingUiCopy {

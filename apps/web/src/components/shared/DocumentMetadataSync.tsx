@@ -30,8 +30,7 @@ export function DocumentMetadataSync() {
       : catalogLocale(localeFromPathname(pathname));
 
     document.documentElement.lang = locale;
-    document.documentElement.dir =
-      isConsole && isRtlLocale(locale) ? "rtl" : "ltr";
+    document.documentElement.dir = isRtlLocale(locale) ? "rtl" : "ltr";
 
     const meta = isConsole
       ? resolveConsoleDocumentMetadata(bare, locale)

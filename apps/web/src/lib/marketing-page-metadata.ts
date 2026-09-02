@@ -47,6 +47,41 @@ const HOME: PageMetaCatalog = {
     description:
       "Dịch vụ model AI hiệu năng cao, chi phí hợp lý để đội ngũ tập trung vào sản phẩm.",
   },
+  ko: {
+    title: "basedong — 100+ 주요 모델을 하나의 API로",
+    description:
+      "고성능·저비용 AI 모델 서비스로 개발팀이 제품 구축에 집중할 수 있습니다.",
+  },
+  de: {
+    title: "basedong — Eine API für 100+ führende Modelle",
+    description:
+      "Leistungsstarke, kosteneffiziente KI-Modellservices, damit Teams sich auf Produkte konzentieren können.",
+  },
+  es: {
+    title: "basedong — Una API para más de 100 modelos líderes",
+    description:
+      "Servicios de modelos IA de alto rendimiento y bajo costo para que los equipos se enfoquen en el producto.",
+  },
+  "pt-BR": {
+    title: "basedong — Uma API para mais de 100 modelos líderes",
+    description:
+      "Serviços de modelos IA de alto desempenho e baixo custo para equipes focarem no produto.",
+  },
+  ar: {
+    title: "basedong — واجهة API واحدة لأكثر من 100 نموذج رائد",
+    description:
+      "خدمات نماذج ذكاء اصطناعي عالية الأداء ومنخفضة التكلفة حتى تركز الفرق على بناء المنتجات.",
+  },
+  hi: {
+    title: "basedong — 100+ प्रमुख मॉडल के लिए एक API",
+    description:
+      "उच्च प्रदर्शन, किफ़ायती AI मॉडल सेवाएँ ताकि टीमें उत्पाद निर्माण पर ध्यान दे सकें।",
+  },
+  id: {
+    title: "basedong — Satu API untuk 100+ model terkemuka",
+    description:
+      "Layanan model AI berkinerja tinggi dan hemat biaya agar tim fokus membangun produk.",
+  },
 };
 
 const ABOUT: PageMetaCatalog = {
@@ -84,6 +119,41 @@ const ABOUT: PageMetaCatalog = {
     title: "Giới thiệu | basedong",
     description:
       "Dịch vụ model AI hiệu năng cao, chi phí hợp lý — AI cho mọi người.",
+  },
+  ko: {
+    title: "회사 소개 | basedong",
+    description:
+      "고성능·저비용 다품종 AI 모델 서비스 — 모두를 위한 AI.",
+  },
+  de: {
+    title: "Über uns | basedong",
+    description:
+      "Effiziente, erschwingliche KI-Modellservices — KI für alle.",
+  },
+  es: {
+    title: "Acerca de | basedong",
+    description:
+      "Servicios de modelos IA eficientes y asequibles — IA para todos.",
+  },
+  "pt-BR": {
+    title: "Sobre | basedong",
+    description:
+      "Serviços de modelos IA eficientes e acessíveis — IA para todos.",
+  },
+  ar: {
+    title: "حول | basedong",
+    description:
+      "خدمات نماذج ذكاء اصطناعي فعّالة ومنخفضة التكلفة — ذكاء اصطناعي للجميع.",
+  },
+  hi: {
+    title: "परिचय | basedong",
+    description:
+      "कुशल, किफ़ायती बहु-श्रेणी AI मॉडल सेवाएँ — सभी के लिए AI।",
+  },
+  id: {
+    title: "Tentang | basedong",
+    description:
+      "Layanan model AI efisien dan terjangkau — AI untuk semua orang.",
   },
 };
 
@@ -123,6 +193,41 @@ const BRAND: PageMetaCatalog = {
     description:
       "Sứ mệnh, giá trị, quan hệ thương hiệu và hướng dẫn sử dụng — AI cho mọi người.",
   },
+  ko: {
+    title: "브랜드 | basedong",
+    description:
+      "미션, 가치, 브랜드 관계 및 사용 가이드라인 — 모두를 위한 AI.",
+  },
+  de: {
+    title: "Marke | basedong",
+    description:
+      "Mission, Werte, Markenbeziehungen und Nutzungsrichtlinien — KI für alle.",
+  },
+  es: {
+    title: "Marca | basedong",
+    description:
+      "Misión, valores, relaciones de marca y pautas de uso — IA para todos.",
+  },
+  "pt-BR": {
+    title: "Marca | basedong",
+    description:
+      "Missão, valores, relações de marca e diretrizes de uso — IA para todos.",
+  },
+  ar: {
+    title: "العلامة | basedong",
+    description:
+      "المهمة والقيم وعلاقات العلامة وإرشادات الاستخدام — ذكاء اصطناعي للجميع.",
+  },
+  hi: {
+    title: "ब्रांड | basedong",
+    description:
+      "मिशन, मूल्य, ब्रांड संबंध और उपयोग दिशानिर्देश — सभी के लिए AI।",
+  },
+  id: {
+    title: "Merek | basedong",
+    description:
+      "Misi, nilai, hubungan merek, dan panduan penggunaan — AI untuk semua orang.",
+  },
 };
 
 const DEVELOPER_TALK: PageMetaCatalog = {
@@ -153,6 +258,34 @@ const DEVELOPER_TALK: PageMetaCatalog = {
   vi: {
     title: "Developer Talk | basedong",
     description: "Thực hành và góc nhìn thật từ developer",
+  },
+  ko: {
+    title: "개발자 이야기 | basedong",
+    description: "개발자의 실제 실천과 인사이트",
+  },
+  de: {
+    title: "Developer Talk | basedong",
+    description: "Praxis und Einblicke von Entwicklern",
+  },
+  es: {
+    title: "Developer Talk | basedong",
+    description: "Prácticas e ideas reales de desarrolladores",
+  },
+  "pt-BR": {
+    title: "Developer Talk | basedong",
+    description: "Práticas e insights reais de desenvolvedores",
+  },
+  ar: {
+    title: "قصص المطورين | basedong",
+    description: "ممارسات ورؤى حقيقية من المطورين",
+  },
+  hi: {
+    title: "डेवलपर टॉक | basedong",
+    description: "डेवलपरों से वास्तविक अभ्यास और अंतर्दृष्टि",
+  },
+  id: {
+    title: "Cerita Developer | basedong",
+    description: "Praktik dan wawasan nyata dari developer",
   },
 };
 
@@ -192,6 +325,41 @@ const NEWS: PageMetaCatalog = {
     description:
       "Tin công ty, model mới, đối tác, case study và sự kiện.",
   },
+  ko: {
+    title: "뉴스, 제품 및 이벤트 | basedong",
+    description:
+      "기업 소식, 신규 모델, 파트너십, 고객 사례 및 이벤트.",
+  },
+  de: {
+    title: "Neuigkeiten, Produkte & Events | basedong",
+    description:
+      "Unternehmensupdates, neue Modelle, Partnerschaften, Kundenstorys und Events.",
+  },
+  es: {
+    title: "Noticias, productos y eventos | basedong",
+    description:
+      "Actualizaciones corporativas, nuevos modelos, alianzas, casos de clientes y eventos.",
+  },
+  "pt-BR": {
+    title: "Notícias, produtos e eventos | basedong",
+    description:
+      "Atualizações da empresa, novos modelos, parcerias, cases de clientes e eventos.",
+  },
+  ar: {
+    title: "الأخبار والمنتجات والفعاليات | basedong",
+    description:
+      "تحديثات الشركة ونماذج جديدة وشراكات وقصص عملاء وفعاليات.",
+  },
+  hi: {
+    title: "समाचार, उत्पाद और कार्यक्रम | basedong",
+    description:
+      "कंपनी अपडेट, नए मॉडल, साझेदारी, ग्राहक कहानियाँ और कार्यक्रम।",
+  },
+  id: {
+    title: "Berita, produk & acara | basedong",
+    description:
+      "Pembaruan perusahaan, model baru, kemitraan, kisah pelanggan, dan acara.",
+  },
 };
 
 const PARTNER: PageMetaCatalog = {
@@ -229,6 +397,41 @@ const PARTNER: PageMetaCatalog = {
     title: "Hệ sinh thái đối tác | basedong",
     description:
       "API LLM ổn định — kết nối vendor model và ứng dụng trong hệ sinh thái AI toàn cầu.",
+  },
+  ko: {
+    title: "파트너 생태계 | basedong",
+    description:
+      "개방적이고 안정적인 LLM API로 모델 벤더와 앱을 연결 — 글로벌 AI 생태계를 함께 구축.",
+  },
+  de: {
+    title: "Partner-Ökosystem | basedong",
+    description:
+      "Offene, stabile LLM-APIs — verbinden Modellanbieter und Apps in einem globalen KI-Ökosystem.",
+  },
+  es: {
+    title: "Ecosistema de socios | basedong",
+    description:
+      "APIs LLM abiertas y estables — conectando proveedores de modelos y apps en un ecosistema global de IA.",
+  },
+  "pt-BR": {
+    title: "Ecossistema de parceiros | basedong",
+    description:
+      "APIs LLM abertas e estáveis — conectando fornecedores de modelos e apps em um ecossistema global de IA.",
+  },
+  ar: {
+    title: "نظام الشركاء | basedong",
+    description:
+      "واجهات LLM مفتوحة ومستقرة — ربط موردي النماذج والتطبيقات في نظام ذكاء اصطناعي عالمي.",
+  },
+  hi: {
+    title: "पार्टनर इकोसिस्टम | basedong",
+    description:
+      "खुले, स्थिर LLM API — मॉडल विक्रेताओं और ऐप्स को वैश्विक AI इकोसिस्टम में जोड़ना।",
+  },
+  id: {
+    title: "Ekosistem mitra | basedong",
+    description:
+      "API LLM terbuka dan stabil — menghubungkan vendor model dan aplikasi dalam ekosistem AI global.",
   },
 };
 
@@ -268,6 +471,41 @@ const MODELS: PageMetaCatalog = {
     description:
       "Model AI bạn cần, tập trung một chỗ. API thống nhất, 3 dòng tích hợp — từ Backend basedong.",
   },
+  ko: {
+    title: "모델 | basedong",
+    description:
+      "필요한 AI 모델을 한곳에서. 통합 API, 3줄로 연동 — basedong Backend 카탈로그.",
+  },
+  de: {
+    title: "Modelle | basedong",
+    description:
+      "Die AI-Modelle, die Sie brauchen, an einem Ort. Einheitliche API, drei Zeilen Integration — Katalog aus basedong Backend.",
+  },
+  es: {
+    title: "Modelos | basedong",
+    description:
+      "Los modelos IA que necesitas, en un solo lugar. API unificada, tres líneas para integrar — catálogo de basedong Backend.",
+  },
+  "pt-BR": {
+    title: "Modelos | basedong",
+    description:
+      "Os modelos IA que você precisa, em um só lugar. API unificada, três linhas para integrar — catálogo do Backend basedong.",
+  },
+  ar: {
+    title: "النماذج | basedong",
+    description:
+      "نماذج الذكاء الاصطناعي التي تحتاجها في مكان واحد. API موحدة، ثلاث أسطر للتكامل — من قائمة Backend basedong.",
+  },
+  hi: {
+    title: "मॉडल | basedong",
+    description:
+      "आपके ज़रूरी AI मॉडल, एक ही स्थान पर। एकीकृत API, तीन पंक्तियों में इंटीग्रेशन — basedong Backend कैटलॉग।",
+  },
+  id: {
+    title: "Model | basedong",
+    description:
+      "Model AI yang Anda butuhkan, di satu tempat. API terpadu, tiga baris integrasi — katalog dari Backend basedong.",
+  },
 };
 
 const AI_GATEWAY: PageMetaCatalog = {
@@ -306,6 +544,41 @@ const AI_GATEWAY: PageMetaCatalog = {
     description:
       "Truy cập đa vendor, quản trị API, định tuyến thông minh và kiểm soát chi phí.",
   },
+  ko: {
+    title: "LLM 서비스 게이트웨이 | basedong",
+    description:
+      "멀티 벤더 모델 접속, API 거버넌스, 스마트 라우팅, 비용 관리를 통합 — 더 간단한 LLM 운영.",
+  },
+  de: {
+    title: "LLM-Service-Gateway | basedong",
+    description:
+      "Einheitlicher Multi-Vendor-Modellzugang, API-Governance, Smart Routing und Kostenkontrolle — einfachere LLM-Ops.",
+  },
+  es: {
+    title: "Gateway de servicios LLM | basedong",
+    description:
+      "Acceso multi-proveedor unificado, gobernanza API, enrutamiento inteligente y control de costos — operaciones LLM más simples.",
+  },
+  "pt-BR": {
+    title: "Gateway de serviços LLM | basedong",
+    description:
+      "Acesso multi-vendor unificado, governança de API, roteamento inteligente e controle de custos — ops LLM mais simples.",
+  },
+  ar: {
+    title: "بوابة خدمات LLM | basedong",
+    description:
+      "وصول موحد متعدد الموردين، حوكمة API، توجيه ذكي، ومراقبة التكلفة — عمليات LLM أبسط.",
+  },
+  hi: {
+    title: "LLM सेवा गेटवे | basedong",
+    description:
+      "एकीकृत मल्टी-वेंडर मॉडल एक्सेस, API गवर्नेंस, स्मार्ट रूटिंग और लागत नियंत्रण — सरल LLM ऑप्स।",
+  },
+  id: {
+    title: "Gateway layanan LLM | basedong",
+    description:
+      "Akses model multi-vendor terpadu, tata kelola API, routing cerdas, dan kontrol biaya — ops LLM lebih sederhana.",
+  },
 };
 
 const TOKEN_FACTORY: PageMetaCatalog = {
@@ -341,6 +614,41 @@ const TOKEN_FACTORY: PageMetaCatalog = {
     title: "Nền tảng vận hành compute AI | basedong",
     description:
       "Biến GPU thành năng suất Token bền vững — tương thích phần cứng phổ biến.",
+  },
+  ko: {
+    title: "AI 연산 운영 플랫폼 | basedong",
+    description:
+      "주류 GPU와 호환 — 자체 연산을 지속 가능한 Token 생산력으로 전환.",
+  },
+  de: {
+    title: "AI-Compute-Betriebsplattform | basedong",
+    description:
+      "Verwandeln Sie GPU-Kapazität in nachhaltige Token-Produktion — kompatibel mit Mainstream-Hardware.",
+  },
+  es: {
+    title: "Plataforma de operaciones de cómputo IA | basedong",
+    description:
+      "Convierte tu capacidad GPU en producción Token sostenida — compatible con hardware mainstream.",
+  },
+  "pt-BR": {
+    title: "Plataforma de operações de computação IA | basedong",
+    description:
+      "Transforme sua capacidade GPU em produção Token sustentável — compatível com hardware mainstream.",
+  },
+  ar: {
+    title: "منصة عمليات الحوسبة للذكاء الاصطناعي | basedong",
+    description:
+      "حوّل قدرة GPU إلى إنتاج Token مستدام — متوافق مع الأجهزة الشائعة.",
+  },
+  hi: {
+    title: "AI कंप्यूट ऑपरेशंस प्लेटफ़ॉर्म | basedong",
+    description:
+      "अपनी GPU क्षमता को स्थायी Token आउटपुट में बदलें — मुख्यधारा हार्डवेयर के साथ संगत।",
+  },
+  id: {
+    title: "Platform operasi komputasi AI | basedong",
+    description:
+      "Ubah kapasitas GPU menjadi output Token berkelanjutan — kompatibel dengan perangkat keras mainstream.",
   },
 };
 
@@ -379,6 +687,41 @@ const ENTERPRISE: PageMetaCatalog = {
     title: "Nền tảng MaaS doanh nghiệp | basedong",
     description:
       "MaaS LLM doanh nghiệp — compute, fine-tune, triển khai inference và kịch bản end-to-end.",
+  },
+  ko: {
+    title: "엔터프라이즈 MaaS 플랫폼 | basedong",
+    description:
+      "엔터프라이즈 LLM MaaS — 통합 연산, 파인튜닝, 추론 배포, 시나리오 전달을 end-to-end로.",
+  },
+  de: {
+    title: "Enterprise-MaaS-Plattform | basedong",
+    description:
+      "Enterprise LLM MaaS — einheitliche Compute, Fine-Tuning, Inferenz-Deployment und Szenarien end-to-end.",
+  },
+  es: {
+    title: "Plataforma MaaS empresarial | basedong",
+    description:
+      "MaaS LLM empresarial — cómputo unificado, fine-tuning, despliegue de inferencia y escenarios de extremo a extremo.",
+  },
+  "pt-BR": {
+    title: "Plataforma MaaS empresarial | basedong",
+    description:
+      "MaaS LLM empresarial — computação unificada, fine-tuning, implantação de inferência e cenários ponta a ponta.",
+  },
+  ar: {
+    title: "منصة MaaS للمؤسسات | basedong",
+    description:
+      "MaaS LLM للمؤسسات — حوسبة موحدة، ضبط دقيق، نشر الاستدلال، وتسليم السيناريوهات من طرف إلى طرف.",
+  },
+  hi: {
+    title: "एंटरप्राइज MaaS प्लेटफ़ॉर्म | basedong",
+    description:
+      "एंटरप्राइज LLM MaaS — एकीकृत कंप्यूट, fine-tuning, inference तैनाती और end-to-end परिदृश्य।",
+  },
+  id: {
+    title: "Platform MaaS enterprise | basedong",
+    description:
+      "MaaS LLM enterprise — komputasi terpadu, fine-tuning, deployment inferensi, dan skenario end-to-end.",
   },
 };
 

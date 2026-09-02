@@ -61,8 +61,6 @@ export type AuthCopy = {
   authFailed: string;
   keepLogin: string;
   statusLoadFailed: string;
-  /** Shown on login when Preferred Locale is a Console Locale. */
-  consoleOnlyHint: string;
 };
 
 const zhCN: AuthCopy = {
@@ -99,8 +97,6 @@ const zhCN: AuthCopy = {
   authFailed: "登录失败，请检查用户名/邮箱和密码",
   keepLogin: "30天内保持登录",
   statusLoadFailed: "无法加载登录配置，请刷新重试",
-  consoleOnlyHint:
-    "此语言目前仅支持控制台；官网内容暂以简体中文显示。",
 };
 
 const en: AuthCopy = {
@@ -137,8 +133,6 @@ const en: AuthCopy = {
   authFailed: "Login failed — check your username/email and password",
   keepLogin: "Stay signed in for 30 days",
   statusLoadFailed: "Could not load login settings — refresh and try again",
-  consoleOnlyHint:
-    "This language is available in the Console only; the public site is shown in Simplified Chinese for now.",
 };
 
 const zhTW: AuthCopy = {
@@ -175,8 +169,6 @@ const zhTW: AuthCopy = {
   authFailed: "登入失敗，請檢查使用者名稱／電子郵件和密碼",
   keepLogin: "30 天內保持登入",
   statusLoadFailed: "無法載入登入設定，請重新整理後再試",
-  consoleOnlyHint:
-    "此語言目前僅支援控制台；官網內容暫以簡體中文顯示。",
 };
 
 const fr: AuthCopy = {
@@ -215,8 +207,6 @@ const fr: AuthCopy = {
   keepLogin: "Rester connecté 30 jours",
   statusLoadFailed:
     "Impossible de charger la configuration — actualisez et réessayez",
-  consoleOnlyHint:
-    "Cette langue n'est disponible que dans la console ; le site public s'affiche en chinois simplifié pour l'instant.",
 };
 
 const ru: AuthCopy = {
@@ -253,8 +243,6 @@ const ru: AuthCopy = {
   authFailed: "Ошибка входа — проверьте имя/email и пароль",
   keepLogin: "Оставаться в системе 30 дней",
   statusLoadFailed: "Не удалось загрузить настройки — обновите страницу",
-  consoleOnlyHint:
-    "Этот язык доступен только в консоли; публичный сайт пока отображается на упрощённом китайском.",
 };
 
 const ja: AuthCopy = {
@@ -291,8 +279,6 @@ const ja: AuthCopy = {
   authFailed: "ログインに失敗しました。ユーザー名／メールとパスワードを確認してください",
   keepLogin: "30 日間ログインを保持",
   statusLoadFailed: "ログイン設定を読み込めません。更新して再試行してください",
-  consoleOnlyHint:
-    "この言語はコンソールのみ対応です。公開サイトは当面简体中文で表示されます。",
 };
 
 const vi: AuthCopy = {
@@ -329,8 +315,6 @@ const vi: AuthCopy = {
   authFailed: "Đăng nhập thất bại — kiểm tra tên/email và mật khẩu",
   keepLogin: "Duy trì đăng nhập 30 ngày",
   statusLoadFailed: "Không tải được cấu hình đăng nhập — làm mới và thử lại",
-  consoleOnlyHint:
-    "Ngôn ngữ này hiện chỉ có trên Console; trang công khai tạm hiển thị bằng tiếng Trung giản thể.",
 };
 
 const ko: AuthCopy = {
@@ -367,8 +351,6 @@ const ko: AuthCopy = {
   authFailed: "로그인에 실패했습니다. 사용자 이름/이메일과 비밀번호를 확인해 주세요",
   keepLogin: "30일 동안 로그인 유지",
   statusLoadFailed: "로그인 설정을 불러올 수 없습니다. 새로고침 후 다시 시도해 주세요",
-  consoleOnlyHint:
-    "이 언어는 콘솔에서만 사용할 수 있습니다. 공개 사이트는 현재 간체 중국어로 표시됩니다.",
 };
 
 const de: AuthCopy = {
@@ -405,8 +387,6 @@ const de: AuthCopy = {
   authFailed: "Anmeldung fehlgeschlagen — Benutzername/E-Mail und Passwort prüfen",
   keepLogin: "30 Tage angemeldet bleiben",
   statusLoadFailed: "Anmeldeeinstellungen konnten nicht geladen werden",
-  consoleOnlyHint:
-    "Diese Sprache ist derzeit nur in der Konsole verfügbar; die öffentliche Website wird vorläufig auf Vereinfachtem Chinesisch angezeigt.",
 };
 
 const es: AuthCopy = {
@@ -443,8 +423,6 @@ const es: AuthCopy = {
   authFailed: "Error de inicio de sesión — revise usuario/correo y contraseña",
   keepLogin: "Mantener sesión 30 días",
   statusLoadFailed: "No se pudo cargar la configuración — actualice e intente de nuevo",
-  consoleOnlyHint:
-    "Este idioma solo está disponible en la consola; el sitio público se muestra en chino simplificado por ahora.",
 };
 
 const ptBR: AuthCopy = {
@@ -481,8 +459,6 @@ const ptBR: AuthCopy = {
   authFailed: "Falha no login — verifique usuário/e-mail e senha",
   keepLogin: "Manter login por 30 dias",
   statusLoadFailed: "Não foi possível carregar as configurações — atualize e tente novamente",
-  consoleOnlyHint:
-    "Este idioma está disponível apenas no console; o site público é exibido em chinês simplificado por enquanto.",
 };
 
 const ar: AuthCopy = {
@@ -519,8 +495,6 @@ const ar: AuthCopy = {
   authFailed: "فشل تسجيل الدخول — تحقق من الاسم/البريد وكلمة المرور",
   keepLogin: "البقاء مسجّلًا 30 يومًا",
   statusLoadFailed: "تعذّر تحميل إعدادات الدخول — حدّث الصفحة",
-  consoleOnlyHint:
-    "هذه اللغة متاحة في لوحة التحكم فقط؛ يُعرض الموقع العام بالصينية المبسطة مؤقتًا.",
 };
 
 const hi: AuthCopy = {
@@ -557,8 +531,6 @@ const hi: AuthCopy = {
   authFailed: "लॉगिन विफल — उपयोगकर्ता/ईमेल और पासवर्ड जाँचें",
   keepLogin: "30 दिनों तक लॉग इन रखें",
   statusLoadFailed: "लॉगिन सेटिंग लोड नहीं हो सकी — पृष्ठ refresh करें",
-  consoleOnlyHint:
-    "यह भाषा अभी केवल कंसोल में उपलब्ध है; सार्वजनिक साइट फिलहाल सरलीकृत चीनी में दिखाई देती है।",
 };
 
 const id: AuthCopy = {
@@ -595,8 +567,6 @@ const id: AuthCopy = {
   authFailed: "Gagal masuk — periksa nama/email dan kata sandi",
   keepLogin: "Tetap masuk selama 30 hari",
   statusLoadFailed: "Tidak dapat memuat pengaturan masuk — muat ulang halaman",
-  consoleOnlyHint:
-    "Bahasa ini saat ini hanya tersedia di Console; situs publik ditampilkan dalam Bahasa Tionghoa Sederhana untuk sementara.",
 };
 
 const AUTH_COPY: Record<TargetLocale, AuthCopy> = {

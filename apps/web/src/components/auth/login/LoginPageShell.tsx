@@ -1,12 +1,10 @@
-﻿import { MarketingLanguageSwitcher } from "@/components/marketing/shared/MarketingLanguageSwitcher";
-import { ConsoleLocaleBanner } from "@/components/marketing/shared/ConsoleLocaleBanner";
+import { MarketingLanguageSwitcher } from "@/components/marketing/shared/MarketingLanguageSwitcher";
 import { LoginBanner } from "./LoginBanner";
 import { LoginFormPanel } from "./LoginFormPanel";
 
 export function LoginPageShell() {
   return (
     <div className="sf-account-login relative flex h-full min-h-dvh w-full flex-col overflow-hidden bg-white text-black">
-      <ConsoleLocaleBanner />
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         <div className="absolute right-6 top-6 z-10">
           <MarketingLanguageSwitcher />

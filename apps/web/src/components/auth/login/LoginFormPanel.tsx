@@ -19,7 +19,6 @@ import {
   sendEmailVerification,
 } from "@/lib/backend/client";
 import { useLocale } from "@/components/shared/LocaleProvider";
-import { isConsoleLocale } from "@/lib/locale";
 import { APP_ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import {
@@ -103,9 +102,8 @@ function validateRegisterPassword(
 
 export function LoginFormPanel() {
   const router = useRouter();
-  const { targetLocale, preferredLocale } = useLocale();
+  const { targetLocale } = useLocale();
   const COPY = getAuthCopy(targetLocale);
-  const showConsoleOnlyHint = isConsoleLocale(preferredLocale);
   const [agree, setAgree] = useState(false);
   const [keepLogin, setKeepLogin] = useState(true);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -311,19 +309,11 @@ export function LoginFormPanel() {
         size="hero"
         className="mx-auto mb-8 block xl:hidden"
         priority
+        alt={COPY.brandName}
       />
       <h2 className="mb-8 text-center text-3xl font-normal leading-10 text-[var(--sf-ink)]">
         {COPY.title}
       </h2>
-
-      {showConsoleOnlyHint ? (
-        <p
-          className="mb-6 rounded-lg border border-amber-200/80 bg-amber-50 px-3 py-2.5 text-center text-sm leading-relaxed text-amber-950"
-          dir="auto"
-        >
-          {COPY.consoleOnlyHint}
-        </p>
-      ) : null}
 
       <form className="text-base" onSubmit={onSubmit} noValidate>
         <div className="relative mb-4 flex w-fit gap-4 text-base">
