@@ -1,4 +1,4 @@
-﻿import type { TranslatedLocale } from "@/lib/locale";
+import type { TranslatedLocale } from "@/lib/locale";
 import { pickCatalog } from "@/lib/pick-catalog";
 import {
   FEATURE_CARD_BASE,

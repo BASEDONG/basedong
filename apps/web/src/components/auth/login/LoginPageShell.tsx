@@ -1,4 +1,4 @@
-﻿import { MarketingLanguageSwitcher } from "@/components/marketing/shared/MarketingLanguageSwitcher";
+import { MarketingLanguageSwitcher } from "@/components/marketing/shared/MarketingLanguageSwitcher";
 import { LoginBanner } from "./LoginBanner";
 import { LoginFormPanel } from "./LoginFormPanel";
 
