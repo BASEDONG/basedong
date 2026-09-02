@@ -1,13 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { ConsoleShell } from "../shared/ConsoleShell";
-import { navActiveKey, pageTitle } from "./content";
+import { navActiveKey } from "./content";
+import { getCampaignsRealNameUiCopy } from "./campaigns-real-name-ui-copy";
 import { HeroBanner } from "./HeroBanner";
 import { RulesSection } from "./RulesSection";
 import { StepCards } from "./StepCards";
 
 export function RealNamePageClient() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsRealNameUiCopy(targetLocale),
+    [targetLocale],
+  );
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -15,7 +22,7 @@ export function RealNamePageClient() {
       collapsed={collapsed}
       onToggleCollapse={() => setCollapsed((v) => !v)}
       activeKey={navActiveKey}
-      title={pageTitle}
+      title={copy.pageTitle}
       textTone="black"
       mainClassName="z-50 overflow-y-auto px-5 pb-2.5 pt-2"
     >

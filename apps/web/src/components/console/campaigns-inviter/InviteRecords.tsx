@@ -1,6 +1,11 @@
-import { ASSET, recordsColumns } from "./content";
+"use client";
 
-function EmptyIllustration() {
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { ASSET } from "./content";
+import { getCampaignsInviterUiCopy } from "./campaigns-inviter-ui-copy";
+
+function EmptyIllustration({ title }: { title: string }) {
   return (
     <svg
       width="64"
@@ -8,7 +13,7 @@ function EmptyIllustration() {
       viewBox="0 0 64 41"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <title>暂无数据</title>
+      <title>{title}</title>
       <g transform="translate(0 1)" fill="none" fillRule="evenodd">
         <ellipse fill="#f8fafc" cx="32" cy="33" rx="32" ry="7" />
         <g fillRule="nonzero" stroke="#e2e8f0">
@@ -24,6 +29,12 @@ function EmptyIllustration() {
 }
 
 export function InviteRecords() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsInviterUiCopy(targetLocale),
+    [targetLocale],
+  );
+
   return (
     <div className="mt-12">
       <div className="mb-4 px-4 font-semibold">
@@ -34,10 +45,7 @@ export function InviteRecords() {
           className="mx-auto mb-[20px] h-[56px]"
         />
         <div className="flex justify-end">
-          <div>
-            累计已完成 <span className="text-red-600">0</span> 次有效推荐，共获得{" "}
-            <span className="text-red-600">0</span> 元代金券
-          </div>
+          <div>{copy.recordsSummary(0, 0)}</div>
         </div>
       </div>
 
@@ -45,16 +53,16 @@ export function InviteRecords() {
         <table className="w-full table-auto text-left text-sm">
           <thead>
             <tr>
-              {recordsColumns.map((col, i) => (
+              {copy.recordsColumns.map((col, i) => (
                 <th
                   key={col}
                   scope="col"
                   className="whitespace-nowrap bg-slate-50 px-4 py-4 text-sm font-semibold leading-[22px] text-slate-800"
                 >
-                  {i === recordsColumns.length - 1 ? (
+                  {i === copy.recordsColumns.length - 1 ? (
                     <span>
                       {col}{" "}
-                      <span className="ml-2" title="有效认证说明">
+                      <span className="ml-2" title={copy.validAuthTooltip}>
                         ℹ️
                       </span>
                     </span>
@@ -69,9 +77,9 @@ export function InviteRecords() {
             <tr>
               <td colSpan={4} className="px-4 py-12">
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <EmptyIllustration />
+                  <EmptyIllustration title={copy.recordsEmpty} />
                   <div className="text-sm leading-[22px] text-slate-500">
-                    暂无数据
+                    {copy.recordsEmpty}
                   </div>
                 </div>
               </td>

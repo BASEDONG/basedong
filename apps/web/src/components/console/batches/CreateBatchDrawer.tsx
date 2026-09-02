@@ -1,14 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import {
-  completionNotes,
-  defaultPriceRows,
-  modelOptions,
-  priceDisclaimer,
-  uploadDatasetLabel,
-  type PriceUnit,
-} from "./content";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { modelOptions, type PriceUnit } from "./content";
+import { getBatchesUiCopy, getDefaultPriceRows } from "./batches-ui-copy";
 
 interface CreateBatchDrawerProps {
   open: boolean;
@@ -130,29 +125,17 @@ function formatPrice(perK: number, unit: PriceUnit): string {
   return value.toFixed(6);
 }
 
-function priceRowsForModel(modelValue: string) {
-  if (modelValue.includes("DeepSeek-V4-Pro")) return defaultPriceRows;
+function priceRowsForModel(modelValue: string, locale: string) {
   const idBase = modelValue.toLowerCase();
-  return [
-    {
-      feature: "缓存命中 tokens",
-      pricePerK: 0,
-      meterId: `${idBase}.batch.cached-input-tokens`,
-    },
-    {
-      feature: "输入 tokens",
-      pricePerK: 0.006,
-      meterId: `${idBase}.batch.input-tokens`,
-    },
-    {
-      feature: "输出 tokens",
-      pricePerK: 0.012,
-      meterId: `${idBase}.batch.output-tokens`,
-    },
-  ];
+  return getDefaultPriceRows(locale).map((row) => ({
+    ...row,
+    meterId: `${idBase}.${row.meterId}`,
+  }));
 }
 
 export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getBatchesUiCopy(targetLocale), [targetLocale]);
   const titleId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
@@ -222,14 +205,14 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
 
   const modelLabel =
     modelOptions.find((m) => m.value === model)?.label ?? model;
-  const rows = priceRowsForModel(model);
+  const rows = priceRowsForModel(model, targetLocale);
   const alternateUnit: PriceUnit = unit === "K" ? "M" : "K";
 
   return (
     <div className="sf-cloud-console pointer-events-none fixed inset-0 z-[1000]">
       <button
         type="button"
-        aria-label="关闭遮罩"
+        aria-label={copy.closeOverlay}
         className={`pointer-events-auto absolute inset-0 border-0 bg-[rgba(2,6,23,0.45)] transition-opacity duration-200 ${
           entered ? "opacity-100" : "opacity-0"
         }`}
@@ -246,7 +229,7 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
         <div className="flex h-14 shrink-0 items-center px-6">
           <button
             type="button"
-            aria-label="关闭"
+            aria-label={copy.close}
             onClick={onClose}
             className="mr-2 flex size-6 cursor-pointer items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
           >
@@ -256,7 +239,7 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
             id={titleId}
             className="text-base font-semibold leading-6 text-slate-800"
           >
-            新建批量推理任务
+            {copy.drawerTitle}
           </h2>
         </div>
 
@@ -274,28 +257,28 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
               onClose();
             }}
           >
-            <Field label="任务名称" required htmlFor="batch-name">
+            <Field label={copy.taskName} required htmlFor="batch-name">
               <input
                 id="batch-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="任务名称"
+                placeholder={copy.taskNamePlaceholder}
                 required
                 className="h-8 w-full rounded-md border border-slate-300 bg-white px-[11px] text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-[rgb(74,171,240)]"
               />
             </Field>
 
-            <Field label="任务描述" htmlFor="batch-desc">
+            <Field label={copy.taskDesc} htmlFor="batch-desc">
               <input
                 id="batch-desc"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="任务描述"
+                placeholder={copy.taskDescPlaceholder}
                 className="h-8 w-full rounded-md border border-slate-300 bg-white px-[11px] text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-[rgb(74,171,240)]"
               />
             </Field>
 
-            <Field label="输入文件" required>
+            <Field label={copy.inputFile} required>
               <div className="relative" ref={fileSelectRef}>
                 <button
                   type="button"
@@ -321,7 +304,7 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
                     {files.length === 0 ? (
                       <div className="flex flex-col items-center px-3 py-3 text-slate-400">
                         <EmptyBoxIcon />
-                        <div className="mt-1 text-sm">暂无数据</div>
+                        <div className="mt-1 text-sm">{copy.noData}</div>
                       </div>
                     ) : (
                       <ul className="max-h-48 overflow-y-auto py-1">
@@ -353,7 +336,7 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <PlusIcon />
-                      {uploadDatasetLabel}
+                      {copy.uploadDataset}
                     </button>
                     <input
                       ref={fileInputRef}
@@ -379,11 +362,11 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
                 ) : null}
               </div>
               {fileError ? (
-                <div className="mt-1 text-sm text-[#ff4d4f]">请选择输入文件</div>
+                <div className="mt-1 text-sm text-[#ff4d4f]">{copy.selectInputFile}</div>
               ) : null}
             </Field>
 
-            <Field label="任务模型" required className="mb-5">
+            <Field label={copy.taskModel} required className="mb-5">
               <div className="relative max-w-full" ref={modelSelectRef}>
                 <button
                   type="button"
@@ -426,17 +409,17 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
               <div className="overflow-hidden rounded-md border border-slate-200">
                 <div className="flex border-b border-slate-200 bg-slate-50 text-sm text-slate-700">
                   <div className="w-[140px] shrink-0 px-3 py-2 font-medium">
-                    功能
+                    {copy.feature}
                   </div>
                   <div className="flex min-w-0 flex-1 items-center justify-between px-3 py-2 font-medium">
-                    <span>价格</span>
+                    <span>{copy.price}</span>
                     <button
                       type="button"
                       onClick={() => setUnit(alternateUnit)}
                       className="inline-flex cursor-pointer items-center gap-1 font-normal text-[rgb(74,171,240)]"
                     >
                       <SwapIcon />
-                      {alternateUnit} Tokens
+                      {alternateUnit} {copy.tokens}
                     </button>
                   </div>
                 </div>
@@ -458,12 +441,12 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
                             {formatPrice(row.pricePerK, unit)}
                           </span>
                           <span className="ml-2 text-[10px] font-normal text-slate-400">
-                            / {unit} Tokens
+                            / {unit} {copy.tokens}
                           </span>
                         </div>
                         <button
                           type="button"
-                          aria-label="复制"
+                          aria-label={copy.copy}
                           className="mt-1 flex max-w-full items-center gap-1 truncate text-[10px] text-slate-400 hover:text-[rgb(74,171,240)]"
                           onClick={() => {
                             void navigator.clipboard?.writeText(row.meterId);
@@ -477,12 +460,12 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
                   </div>
                 ))}
               </div>
-              <div className="mt-2 text-sm text-slate-500">{priceDisclaimer}</div>
+              <div className="mt-2 text-sm text-slate-500">{copy.priceDisclaimer}</div>
             </div>
 
             <div className="mb-1 flex items-center justify-between gap-3">
               <div className="text-sm leading-[22px] text-slate-800">
-                完成时间窗口
+                {copy.completionWindow}
               </div>
               <div className="flex w-[115px] items-stretch">
                 <input
@@ -494,13 +477,13 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
                   className="h-8 w-16 rounded-l-md border border-r-0 border-slate-300 bg-white px-[11px] text-sm outline-none focus:z-10 focus:border-[rgb(74,171,240)]"
                 />
                 <span className="inline-flex h-8 flex-1 items-center justify-center rounded-r-md border border-slate-300 bg-slate-50 text-sm text-slate-600">
-                  小时
+                  {copy.hours}
                 </span>
               </div>
             </div>
 
             <div className="mb-3 flex flex-col gap-1 rounded-md bg-slate-50 px-2 py-1 text-slate-500">
-              {completionNotes.map((note, i) => (
+              {copy.completionNotes.map((note, i) => (
                 <p key={note} className="m-0 text-sm leading-[22px]">
                   {i + 1}. {note}
                 </p>
@@ -512,7 +495,7 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
                 type="submit"
                 className="inline-flex h-10 min-w-[184px] cursor-pointer items-center justify-center rounded-[8px] border border-transparent bg-[rgb(74,171,240)] px-[15px] text-base text-white shadow-[0_2px_0_0_rgba(74,171,240,0.06)] transition hover:bg-[#5b21e6]"
               >
-                新建批量推理任务
+                {copy.createTask}
               </button>
             </div>
           </form>

@@ -9,6 +9,11 @@ import { getInvoiceUiCopy } from "@/components/console/invoice/invoice-ui-copy";
 import { getAuthUiCopy } from "@/components/console/account-authentication/account-authentication-ui-copy";
 import { getModelsUiCopy } from "@/components/console/models/models-ui-copy";
 import { getPlaygroundUiCopy } from "@/components/console/shared/playground-ui-copy";
+import { getBatchesUiCopy } from "@/components/console/batches/batches-ui-copy";
+import { getInvitationUiCopy } from "@/components/console/invitation/invitation-ui-copy";
+import { getCampaignsInviterUiCopy } from "@/components/console/campaigns-inviter/campaigns-inviter-ui-copy";
+import { getCampaignsRealNameUiCopy } from "@/components/console/campaigns-real-name/campaigns-real-name-ui-copy";
+import { getDedicatedApplyUiCopy } from "@/components/console/dedicated-apply/dedicated-apply-ui-copy";
 
 type PageMeta = { title: string; description: string };
 
@@ -271,6 +276,138 @@ export function getConsolePlaygroundTtsPageMetadata(locale: string): PageMeta {
   return playgroundMeta(locale, "tts");
 }
 
+const BATCHES_DESCRIPTIONS: Record<TargetLocale, string> = {
+  "zh-CN": "创建与管理批量推理任务。",
+  en: "Create and manage batch inference jobs.",
+  "zh-TW": "建立與管理批量推理任務。",
+  ja: "バッチ推論ジョブの作成と管理。",
+  fr: "Créez et gérez des jobs d'inférence par lot.",
+  ru: "Создание и управление пакетными задачами.",
+  vi: "Tạo và quản lý job suy luận hàng loạt.",
+  ko: "배치 추론 작업 생성 및 관리.",
+  de: "Batch-Inferenzjobs erstellen und verwalten.",
+  es: "Cree y administre trabajos de inferencia por lotes.",
+  "pt-BR": "Crie e gerencie jobs de inferência em lote.",
+  ar: "إنشاء وإدارة مهام الاستنتاج الدفعي.",
+  hi: "बैच इन्फ़रेंस जॉब बनाएँ और प्रबंधित करें।",
+  id: "Buat dan kelola job inferensi batch.",
+};
+
+const INVITATION_DESCRIPTIONS: Record<TargetLocale, string> = {
+  "zh-CN": "查看邀请记录与推荐奖励。",
+  en: "View referral records and ambassador rewards.",
+  "zh-TW": "查看邀請記錄與推薦獎勵。",
+  ja: "紹介履歴と報酬を確認。",
+  fr: "Consultez vos parrainages et récompenses.",
+  ru: "Просмотр приглашений и наград.",
+  vi: "Xem lịch sử giới thiệu và phần thưởng.",
+  ko: "추천 기록 및 보상 확인.",
+  de: "Empfehlungsverlauf und Prämien anzeigen.",
+  es: "Consulte referidos y recompensas.",
+  "pt-BR": "Veja indicações e recompensas.",
+  ar: "عرض سجل الإحالات والمكافآت.",
+  hi: "रेफ़रल रिकॉर्ड और पुरस्कार देखें।",
+  id: "Lihat riwayat undangan dan hadiah.",
+};
+
+const INVITER_DESCRIPTIONS: Record<TargetLocale, string> = {
+  "zh-CN": "推荐官计划：邀请好友获得代金券。",
+  en: "Referral Ambassador Program: invite friends for vouchers.",
+  "zh-TW": "推薦官計畫：邀請好友獲得代金券。",
+  ja: "紹介アンバサダー：友達を招待してクーポンを獲得。",
+  fr: "Programme ambassadeur : invitez des amis pour des bons.",
+  ru: "Программа рефералов: приглашайте друзей за купоны.",
+  vi: "Chương trình giới thiệu: mời bạn bè nhận voucher.",
+  ko: "추천 앰배서더: 친구 초대로 쿠폰 획득.",
+  de: "Empfehlungsprogramm: Freunde einladen für Gutscheine.",
+  es: "Programa de embajadores: invite amigos por cupones.",
+  "pt-BR": "Programa embaixador: indique amigos por vouchers.",
+  ar: "برنامج السفراء: ادعُ الأصدقاء للحصول على قسائم.",
+  hi: "रेफ़रल एंबेसडर: वाउचर के लिए मित्रों को आमंत्रित करें।",
+  id: "Program duta: undang teman untuk voucher.",
+};
+
+const REAL_NAME_DESCRIPTIONS: Record<TargetLocale, string> = {
+  "zh-CN": "完成实名认证，领取认证专享代金券。",
+  en: "Complete identity verification to claim your reward voucher.",
+  "zh-TW": "完成實名認證，領取認證專享代金券。",
+  ja: "本人確認完了で認証特典クーポンを受け取り。",
+  fr: "Vérification d'identité pour obtenir un bon exclusif.",
+  ru: "Верификация личности для получения купона.",
+  vi: "Xác minh danh tính để nhận voucher đặc quyền.",
+  ko: "본인 인증 후 전용 쿠폰 수령.",
+  de: "Identitätsprüfung für exklusiven Gutschein.",
+  es: "Verificación de identidad para cupón exclusivo.",
+  "pt-BR": "Verificação de identidade para voucher exclusivo.",
+  ar: "التحقق من الهوية للحصول على قسيمة حصرية.",
+  hi: "पहचान सत्यापन पर विशेष वाउचर प्राप्त करें।",
+  id: "Verifikasi identitas untuk voucher eksklusif.",
+};
+
+const DEDICATED_APPLY_DESCRIPTIONS: Record<TargetLocale, string> = {
+  "zh-CN": "申请弹性 GPU 云函数公测。",
+  en: "Apply for Elastic GPU cloud functions beta access.",
+  "zh-TW": "申請彈性 GPU 雲函數公測。",
+  ja: "Elastic GPU クラウド関数ベータへ申請。",
+  fr: "Demander l'accès bêta aux fonctions GPU élastiques.",
+  ru: "Заявка на бета-доступ к Elastic GPU.",
+  vi: "Đăng ký beta GPU cloud functions linh hoạt.",
+  ko: "Elastic GPU 클라우드 함수 베타 신청.",
+  de: "Beta-Zugang für Elastic GPU Cloud Functions beantragen.",
+  es: "Solicitar acceso beta a funciones GPU elásticas.",
+  "pt-BR": "Solicitar acesso beta a funções GPU elásticas.",
+  ar: "التقدم لوصول تجريبي لوظائف GPU السحابية.",
+  hi: "Elastic GPU क्लाउड फ़ंक्शन बीटा के लिए आवेदन करें।",
+  id: "Ajukan akses beta GPU cloud functions elastis.",
+};
+
+export function getConsoleBatchesPageMetadata(locale: string): PageMeta {
+  const copy = getBatchesUiCopy(locale);
+  const chrome = getConsoleChromeCopy(locale);
+  return {
+    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
+    description: pickTargetCatalog(locale, BATCHES_DESCRIPTIONS),
+  };
+}
+
+export function getConsoleInvitationPageMetadata(locale: string): PageMeta {
+  const copy = getInvitationUiCopy(locale);
+  const chrome = getConsoleChromeCopy(locale);
+  return {
+    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
+    description: pickTargetCatalog(locale, INVITATION_DESCRIPTIONS),
+  };
+}
+
+export function getConsoleCampaignInviterPageMetadata(locale: string): PageMeta {
+  const copy = getCampaignsInviterUiCopy(locale);
+  const chrome = getConsoleChromeCopy(locale);
+  return {
+    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
+    description: pickTargetCatalog(locale, INVITER_DESCRIPTIONS),
+  };
+}
+
+export function getConsoleCampaignRealNamePageMetadata(
+  locale: string,
+): PageMeta {
+  const copy = getCampaignsRealNameUiCopy(locale);
+  const chrome = getConsoleChromeCopy(locale);
+  return {
+    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
+    description: pickTargetCatalog(locale, REAL_NAME_DESCRIPTIONS),
+  };
+}
+
+export function getConsoleDedicatedApplyPageMetadata(locale: string): PageMeta {
+  const copy = getDedicatedApplyUiCopy(locale);
+  const chrome = getConsoleChromeCopy(locale);
+  return {
+    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
+    description: pickTargetCatalog(locale, DEDICATED_APPLY_DESCRIPTIONS),
+  };
+}
+
 const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
   [APP_ROUTES.consoleModels]: getConsoleModelsPageMetadata,
   [APP_ROUTES.consoleAccountAk]: getConsoleAccountAkPageMetadata,
@@ -282,6 +419,11 @@ const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
   [APP_ROUTES.consolePlaygroundImage]: getConsolePlaygroundImagePageMetadata,
   [APP_ROUTES.consolePlaygroundVideo]: getConsolePlaygroundVideoPageMetadata,
   [APP_ROUTES.consolePlaygroundTts]: getConsolePlaygroundTtsPageMetadata,
+  [APP_ROUTES.consoleBatches]: getConsoleBatchesPageMetadata,
+  [APP_ROUTES.consoleInvitation]: getConsoleInvitationPageMetadata,
+  [APP_ROUTES.consoleCampaignInviter]: getConsoleCampaignInviterPageMetadata,
+  [APP_ROUTES.consoleCampaignRealName]: getConsoleCampaignRealNamePageMetadata,
+  [APP_ROUTES.consoleDedicatedApply]: getConsoleDedicatedApplyPageMetadata,
 };
 
 export function resolveConsoleDocumentMetadata(

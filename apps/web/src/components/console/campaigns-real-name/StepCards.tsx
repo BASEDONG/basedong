@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { ASSET, stepCards } from "./content";
+import { useMemo, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { Card } from "@/components/ui/card";
+import { ASSET } from "./content";
+import { getCampaignsRealNameUiCopy } from "./campaigns-real-name-ui-copy";
 
 export function StepCards() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(
+    () => getCampaignsRealNameUiCopy(targetLocale),
+    [targetLocale],
+  );
   const [claimed, setClaimed] = useState(false);
-  const { left, right } = stepCards;
+  const { left, right } = copy.stepCards;
 
   return (
     <div className="flex gap-6">
-      <div
-        className="flex h-[240px] w-1/2 items-center justify-between gap-6 rounded-[8px] border border-slate-200 px-8 py-8"
+      <Card
+        variant="surface"
+        className="h-[240px] w-1/2 flex-row items-center justify-between gap-6 rounded-lg border-slate-200 px-8 py-8"
         style={{
           backgroundImage: `url(${ASSET.cardBg})`,
           backgroundSize: "cover",
@@ -18,13 +27,16 @@ export function StepCards() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="flex w-full items-center justify-between rounded-[8px] border border-white bg-[rgba(255,255,255,0.3)] px-8 py-6">
+        <Card
+          variant="ghost"
+          className="w-full flex-row items-center justify-between rounded-lg border-white bg-[rgba(255,255,255,0.3)] px-8 py-6"
+        >
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-1 text-xl font-bold text-primary">
               {left.title}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={left.icon}
+                src={ASSET.authIcon}
                 alt="auth-icon"
                 className="inline-block size-8 h-[22px] w-[26px]"
               />
@@ -36,13 +48,14 @@ export function StepCards() {
           </div>
           <div className="w-[128px] shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={left.icon} alt="auth-icon" />
+            <img src={ASSET.authIcon} alt="auth-icon" />
           </div>
-        </div>
-      </div>
+        </Card>
+      </Card>
 
-      <div
-        className="flex h-[240px] w-1/2 items-center justify-between gap-6 rounded-[8px] border border-slate-200 px-8 py-6"
+      <Card
+        variant="surface"
+        className="h-[240px] w-1/2 flex-row items-center justify-between gap-6 rounded-lg border-slate-200 px-8 py-6"
         style={{
           backgroundImage: `url(${ASSET.cardBg})`,
           backgroundSize: "cover",
@@ -50,13 +63,16 @@ export function StepCards() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="flex w-full items-center justify-between rounded-[8px] border border-white bg-[rgba(255,255,255,0.3)] px-8 py-6">
+        <Card
+          variant="ghost"
+          className="w-full flex-row items-center justify-between rounded-lg border-white bg-[rgba(255,255,255,0.3)] px-8 py-6"
+        >
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-1 text-xl font-bold text-primary">
               {right.title}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={right.icon}
+                src={ASSET.ticketIcon}
                 alt="auth-icon"
                 className="inline-block size-8 h-[22px] w-[26px]"
               />
@@ -75,10 +91,10 @@ export function StepCards() {
           </div>
           <div className="w-[128px] shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={right.icon} alt="auth-icon" />
+            <img src={ASSET.ticketIcon} alt="auth-icon" />
           </div>
-        </div>
-      </div>
+        </Card>
+      </Card>
     </div>
   );
 }

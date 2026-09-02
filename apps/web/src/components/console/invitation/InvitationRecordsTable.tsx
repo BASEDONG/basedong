@@ -1,6 +1,10 @@
-import { copy, tableColumns } from "./content";
+"use client";
 
-function EmptyIllustration() {
+import { useMemo } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { getInvitationUiCopy } from "./invitation-ui-copy";
+
+function EmptyIllustration({ title }: { title: string }) {
   return (
     <svg
       width="64"
@@ -9,7 +13,7 @@ function EmptyIllustration() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
     >
-      <title>暂无数据</title>
+      <title>{title}</title>
       <g transform="translate(0 1)" fill="none" fillRule="evenodd">
         <ellipse fill="#f8fafc" cx="32" cy="33" rx="32" ry="7" />
         <g fillRule="nonzero" stroke="#e2e8f0">
@@ -28,6 +32,9 @@ const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
 
 export function InvitationRecordsTable() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getInvitationUiCopy(targetLocale), [targetLocale]);
+
   return (
     <div className="ant-table-wrapper w-full max-w-full" style={{ fontFamily: antFont }}>
       <div className="ant-table ant-table-empty overflow-hidden rounded-t-[8px] bg-white text-[#1E293B]">
@@ -39,7 +46,7 @@ export function InvitationRecordsTable() {
               </colgroup>
               <thead className="ant-table-thead">
                 <tr>
-                  {tableColumns.map((col, i) => (
+                  {copy.tableColumns.map((col, i) => (
                     <th
                       key={col}
                       scope="col"
@@ -48,7 +55,7 @@ export function InvitationRecordsTable() {
                         borderRadius:
                           i === 0
                             ? "8px 0 0 0"
-                            : i === tableColumns.length - 1
+                            : i === copy.tableColumns.length - 1
                               ? "0 8px 0 0"
                               : undefined,
                       }}
@@ -61,12 +68,12 @@ export function InvitationRecordsTable() {
               <tbody className="ant-table-tbody">
                 <tr className="ant-table-placeholder">
                   <td
-                    colSpan={tableColumns.length}
+                    colSpan={copy.tableColumns.length}
                     className="ant-table-cell border-b border-[#E2E8F0] p-4 text-[#94A3B8]"
                   >
                     <div className="ant-empty ant-empty-normal mx-2 my-8 block text-center text-[#64748B]">
                       <div className="ant-empty-image mb-2">
-                        <EmptyIllustration />
+                        <EmptyIllustration title={copy.empty} />
                       </div>
                       <div className="ant-empty-description text-sm leading-[22px]">
                         {copy.empty}

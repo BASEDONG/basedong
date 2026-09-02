@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { ConsoleShell } from "../shared/ConsoleShell";
 import { BatchesEmptyState } from "./BatchesEmptyState";
 import { BatchesToolbar } from "./BatchesToolbar";
-import { pageTitle } from "./content";
+import { getBatchesUiCopy } from "./batches-ui-copy";
 import { CreateBatchDrawer } from "./CreateBatchDrawer";
 
 export function BatchesPageClient() {
+  const { targetLocale } = useLocale();
+  const copy = useMemo(() => getBatchesUiCopy(targetLocale), [targetLocale]);
   const [collapsed, setCollapsed] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -16,7 +19,7 @@ export function BatchesPageClient() {
       collapsed={collapsed}
       onToggleCollapse={() => setCollapsed((v) => !v)}
       activeKey="batches"
-      title={pageTitle}
+      title={copy.pageTitle}
       mainClassName="z-50 flex min-h-0 flex-1 flex-col overflow-hidden px-5 pb-2.5 pt-2"
       overlay={
         <CreateBatchDrawer

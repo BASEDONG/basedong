@@ -42,6 +42,7 @@ export const APP_ROUTES = {
   consoleAccountAuthentication: "/me/account/authentication",
   consoleDedicatedApply: "/me/dedicated/apply",
   consoleCampaignInviter: "/me/campaigns/inviter",
+  consoleCampaignRealName: "/me/campaigns/real-name",
   consolePlaygroundChat: "/me/playground/chat",
   consolePlaygroundImage: "/me/playground/image",
   consolePlaygroundTts: "/me/playground/text-to-speech",
