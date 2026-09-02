@@ -2,7 +2,7 @@
 import { TtsPageClient } from "@/components/console/playground-text-to-speech/TtsPageClient";
 
 export const metadata: Metadata = {
-  title: "硅基流动 SiliconFlow",
+  title: "语音 - 八色鸫",
 };
 
 export default function PlaygroundTextToSpeechPage() {

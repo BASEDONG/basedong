@@ -3,6 +3,7 @@ import type { TalkCategory } from "./content-types";
 
 interface TalkCategoryFilterProps {
   categories: TalkCategory[];
+  categoryLabels: Record<TalkCategory, string>;
   selected: string[];
   onToggle: (category: TalkCategory) => void;
   onClear: () => void;
@@ -10,6 +11,7 @@ interface TalkCategoryFilterProps {
 
 export function TalkCategoryFilter({
   categories,
+  categoryLabels,
   selected,
   onToggle,
   onClear,
@@ -35,7 +37,7 @@ export function TalkCategoryFilter({
                   : "border-[#CAD2DD] bg-white text-[#617084] hover:border-[#4AABF0] hover:text-[#4AABF0]",
               )}
             >
-              {category}
+              {categoryLabels[category]}
             </button>
           );
         })}

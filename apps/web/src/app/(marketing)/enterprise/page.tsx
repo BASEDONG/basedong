@@ -5,12 +5,12 @@ import { EnterpriseHero } from "@/components/marketing/enterprise/EnterpriseHero
 import { EnterpriseTestimonialsSection } from "@/components/marketing/enterprise/EnterpriseTestimonialsSection";
 import { ProductAdvantagesSection } from "@/components/marketing/enterprise/ProductAdvantagesSection";
 import { ProductIntroSection } from "@/components/marketing/enterprise/ProductIntroSection";
+import { getMarketingPageMetadata } from "@/lib/marketing-page-metadata";
+import { staticPageMetadata } from "@/lib/static-page-metadata";
 
-export const metadata: Metadata = {
-  title: "八色鸫企业级MaaS平台",
-  description:
-    "面向企业的大模型 MaaS 能力平台，贯通算力统一调度、模型训练微调、推理服务部署与业务场景落地，提供端到端闭环能力。",
-};
+export const metadata: Metadata = staticPageMetadata((locale) =>
+  getMarketingPageMetadata("enterprise", locale),
+);
 
 export default function EnterprisePage() {
   return (

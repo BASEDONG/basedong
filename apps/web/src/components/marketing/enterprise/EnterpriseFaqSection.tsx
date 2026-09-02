@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDownIcon } from "@/components/marketing/shared/icons";
+import { ChevronDown } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
-import { faqItems } from "./content";
+import { getEnterpriseContent } from "./content";
+import type { FaqCopy } from "./content-types";
+import { getEnterpriseUiCopy } from "./enterprise-ui-copy";
 
 function FaqColumn({
   items,
   startIndex,
 }: {
-  items: typeof faqItems;
+  items: FaqCopy[];
   startIndex: number;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(
@@ -22,10 +26,7 @@ function FaqColumn({
         const globalIndex = startIndex + index;
         const isOpen = openIndex === globalIndex;
         return (
-          <div
-            key={item.question}
-            className="rounded-[12px] border border-[#eceef3] bg-white"
-          >
+          <Card key={item.question} variant="surface">
             <button
               type="button"
               onClick={() => setOpenIndex(isOpen ? null : globalIndex)}
@@ -34,7 +35,7 @@ function FaqColumn({
               <span className="text-[16px] font-semibold leading-7 text-[#161722]">
                 {item.question}
               </span>
-              <ChevronDownIcon
+              <ChevronDown
                 className={cn(
                   "mt-1 h-5 w-5 shrink-0 text-[#57627f] transition-transform",
                   isOpen && "rotate-180",
@@ -42,7 +43,7 @@ function FaqColumn({
               />
             </button>
             {isOpen ? (
-              <div className="border-t border-[#eceef3] px-5 pb-4 pt-3">
+              <div className="border-t border-[var(--sf-card-border)] px-5 pb-4 pt-3">
                 {item.answer.split("\n").map((line) =>
                   line.trim() ? (
                     <p
@@ -55,7 +56,7 @@ function FaqColumn({
                 )}
               </div>
             ) : null}
-          </div>
+          </Card>
         );
       })}
     </div>
@@ -63,13 +64,16 @@ function FaqColumn({
 }
 
 export function EnterpriseFaqSection() {
+  const { locale } = useLocale();
+  const { faqTitle } = getEnterpriseUiCopy(locale);
+  const { faqItems } = getEnterpriseContent(locale);
   const leftItems = faqItems.slice(0, 5);
   const rightItems = faqItems.slice(5);
 
   return (
     <section className="mb-[110px] w-full">
       <h3 className="mb-12 px-3.5 text-center text-[32px] font-bold md:mb-16 md:text-[48px]">
-        常见问题
+        {faqTitle}
       </h3>
       <div className="flex flex-col items-center justify-center gap-8 px-3.5 lg:flex-row lg:gap-[80px]">
         <FaqColumn items={leftItems} startIndex={0} />

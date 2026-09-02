@@ -1,4 +1,5 @@
 ﻿import type { ModelCardData } from "./content-types";
+import { APP_ROUTES } from "@/lib/routes";
 
 export interface PriceRow {
   label: string;
@@ -29,9 +30,16 @@ const CAPABILITY_MAP: { match: RegExp | string; label: string }[] = [
   { match: /^Tools$/i, label: "🛠️ 工具调用" },
   { match: /^Prefix$/i, label: "✍🏻 前缀续写" },
   { match: /^FIM$/i, label: "🧩 FIM" },
-  { match: /视觉|多模态/i, label: "👁️ 视觉" },
+  { match: /视觉|多模态/, label: "👁️ 视觉" },
   { match: /^Coder$/i, label: "💻 代码" },
+  { match: /代码/, label: "💻 代码" },
   { match: /推理/, label: "🧠 推理" },
+  { match: /旗舰/, label: "⭐ 旗舰" },
+  { match: /轻量|低延迟/, label: "⚡ 轻量" },
+  { match: /聊天/, label: "💬 聊天" },
+  { match: /代理/, label: "🤖 代理" },
+  { match: /图像|生成/, label: "🖼️ 图像" },
+  { match: /文本/, label: "📝 文本" },
 ];
 
 function parseContext(tags: string[]): string {
@@ -49,58 +57,9 @@ function parseContext(tags: string[]): string {
   return label;
 }
 
-function buildTokenId(title: string, kind: string): string {
-  const base = title.toLowerCase().replace(/\s+/g, "");
-  return `${base}.online.${kind}`;
-}
-
-function defaultPrices(title: string, typeTags: string[]): PriceRow[] {
-  if (typeTags.includes("生图") || typeTags.includes("视频")) {
-    return [
-      {
-        label: "按次计费",
-        price: "0.040000",
-        unit: "/ 次",
-        tokenId: buildTokenId(title, "request"),
-      },
-    ];
-  }
-  if (typeTags.includes("语音")) {
-    return [
-      {
-        label: "输入音频",
-        price: "0.000700",
-        unit: "/ K Tokens",
-        tokenId: buildTokenId(title, "input-audio-tokens"),
-      },
-      {
-        label: "输出音频",
-        price: "0.001400",
-        unit: "/ K Tokens",
-        tokenId: buildTokenId(title, "output-audio-tokens"),
-      },
-    ];
-  }
-  return [
-    {
-      label: "缓存命中 tokens",
-      price: "0.000100",
-      unit: "/ K Tokens",
-      tokenId: buildTokenId(title, "cached-input-tokens"),
-    },
-    {
-      label: "输入 tokens",
-      price: "0.005000",
-      unit: "/ K Tokens",
-      tokenId: buildTokenId(title, "input-tokens"),
-    },
-    {
-      label: "输出 tokens",
-      price: "0.020000",
-      unit: "/ K Tokens",
-      tokenId: buildTokenId(title, "output-tokens"),
-    },
-  ];
+/** Pricing deferred — rows left empty until rates are finalized. */
+function defaultPrices(_title: string, _typeTags: string[]): PriceRow[] {
+  return [];
 }
 
 const DEFAULT_RATE_LIMITS: RateLimitRow[] = [
@@ -116,37 +75,37 @@ const DEFAULT_RATE_LIMITS: RateLimitRow[] = [
 function getExperienceHref(model: ModelCardData): string | null {
   const q = `model=${encodeURIComponent(model.title)}`;
   if (model.typeTags.includes("对话")) {
-    return `/me/modelsme/playground/chat?${q}`;
+    return `${APP_ROUTES.consolePlaygroundChat}?${q}`;
   }
   if (model.typeTags.includes("生图")) {
-    return `/me/modelsme/playground/image?${q}`;
+    return `${APP_ROUTES.consolePlaygroundImage}?${q}`;
   }
   if (model.typeTags.includes("视频")) {
-    return `/me/modelsme/playground/video?${q}`;
+    return `${APP_ROUTES.consolePlaygroundVideo}?${q}`;
   }
   if (model.typeTags.includes("语音")) {
-    return `/me/modelsme/playground/audio?${q}`;
+    return `${APP_ROUTES.consolePlaygroundTts}?${q}`;
   }
   return null;
 }
 
 function getApiDocsHref(model: ModelCardData): string {
   if (model.typeTags.includes("生图")) {
-    return "https://api-docs.siliconflow.cn/docs/api/images-generations-post";
+    return "/docs/api/ai-model/images/openai/post-v1-images-generations";
   }
   if (model.typeTags.includes("视频")) {
-    return "https://api-docs.siliconflow.cn/docs/api/videos-generations-post";
+    return "/docs/api/ai-model/videos/sora/createvideo";
   }
   if (model.typeTags.includes("语音")) {
-    return "https://api-docs.siliconflow.cn/docs/api/audio-transcriptions-post";
+    return "/docs/api/ai-model/audio/openai/createspeech";
   }
   if (model.typeTags.includes("嵌入")) {
-    return "https://api-docs.siliconflow.cn/docs/api/embeddings-post";
+    return "/docs/api/ai-model/embeddings/createembedding";
   }
   if (model.typeTags.includes("重排序")) {
-    return "https://api-docs.siliconflow.cn/docs/api/rerank-post";
+    return "/docs/api/ai-model/rerank/creatererank";
   }
-  return "https://api-docs.siliconflow.cn/docs/api/chat-completions-post";
+  return "/docs/api/ai-model/chat/openai/createchatcompletion";
 }
 
 export function deriveModelDetail(model: ModelCardData): ModelDetailDerived {

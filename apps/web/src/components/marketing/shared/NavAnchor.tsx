@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { isInternalHref, resolveLocalHref } from "@/lib/routes";
+import { isInternalHref } from "@/lib/routes";
+import { useLocale } from "@/components/shared/LocaleProvider";
 
 type NavAnchorProps = {
   href: string;
@@ -9,7 +12,8 @@ type NavAnchorProps = {
 };
 
 export function NavAnchor({ href, className, children }: NavAnchorProps) {
-  const resolved = resolveLocalHref(href);
+  const { resolveHref } = useLocale();
+  const resolved = resolveHref(href);
 
   if (isInternalHref(resolved)) {
     return (

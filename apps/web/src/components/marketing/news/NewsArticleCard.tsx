@@ -1,16 +1,22 @@
 import type { NewsArticle } from "./content-types";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type NewsArticleCardProps = {
   article: NewsArticle;
+  categoryLabel: string;
 };
 
-export function NewsArticleCard({ article }: NewsArticleCardProps) {
+export function NewsArticleCard({
+  article,
+  categoryLabel,
+}: NewsArticleCardProps) {
   return (
-    <article
+    <Card
+      variant="surface"
+      interactive="outline"
       className={cn(
-        "relative h-[208px] w-full rounded-[8px] border border-slate-200 p-6 pl-[208px] transition-all",
-        "hover:border-[#4AABF0]",
+        "relative h-[208px] w-full rounded-lg border-slate-200 p-6 pl-[208px]",
         "max-[1024px]:block max-[1024px]:h-[114px] max-[1024px]:p-4 max-[1024px]:pl-[88px]",
       )}
     >
@@ -36,11 +42,11 @@ export function NewsArticleCard({ article }: NewsArticleCardProps) {
         </p>
         <div className="flex items-center gap-[11px]">
           <div className="rounded-[14px] border border-slate-500 px-3 py-1 text-sm text-slate-500">
-            {article.category}
+            {categoryLabel}
           </div>
           <div className="text-sm text-slate-500">{article.date}</div>
         </div>
       </section>
-    </article>
+    </Card>
   );
 }

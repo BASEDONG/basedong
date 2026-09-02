@@ -1,30 +1,12 @@
 "use client";
 
-import type { ComponentType } from "react";
 import { GatewayReveal } from "@/components/marketing/ai-gateway/GatewayReveal";
-import { partnershipModes } from "./content";
-import {
-  BroadcastIcon,
-  CodeIcon,
-  DatabaseIcon,
-  GraduationIcon,
-  LayersIcon,
-  UsersIcon,
-} from "./icons";
-import type { PartnershipMode } from "./content";
+import { MarketingIconBadge } from "@/components/marketing/shared/MarketingIconBadge";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { Card } from "@/components/ui/card";
+import { getPartnerContent } from "./content";
+import type { PartnershipMode } from "./content-types";
 import { PartnerSectionIntro } from "./PartnerSectionIntro";
-
-const modeIcons: Record<
-  PartnershipMode["icon"],
-  ComponentType<{ className?: string }>
-> = {
-  users: UsersIcon,
-  code: CodeIcon,
-  broadcast: BroadcastIcon,
-  layers: LayersIcon,
-  database: DatabaseIcon,
-  graduation: GraduationIcon,
-};
 
 function PartnershipCard({
   audience,
@@ -35,19 +17,20 @@ function PartnershipCard({
   methodLabel,
   method,
   incentives,
-}: PartnershipMode) {
-  const Icon = modeIcons[icon];
-
+  coreIncentiveLabel,
+}: PartnershipMode & { coreIncentiveLabel: string }) {
   return (
-    <article className="group relative h-[527px] min-h-[420px] overflow-hidden rounded-[14px] border border-[#E6D9FF] bg-white px-8 py-8 transition-all duration-300 hover:shadow-[0_14px_40px_rgba(74,171,240,0.12)]">
+    <Card
+      variant="feature"
+      interactive="lift"
+      className="relative h-[527px] min-h-[420px] rounded-[14px] border-[#E6D9FF] bg-white px-8 py-8"
+    >
       <div className="absolute left-8 right-8 top-0 h-1 rounded-full bg-[#4AABF0] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <div className="absolute inset-0 bg-[linear-gradient(225deg,rgba(74,171,240,0.12)_0%,rgba(255,255,255,0.96)_42%,rgba(255,255,255,1)_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div className="relative z-10">
         <div className="mb-[28px] flex items-center gap-[14px]">
-          <div className="flex h-[42px] w-[42px] items-center justify-center rounded-[12px] bg-[#EEF6FE] text-[#4AABF0]">
-            <Icon />
-          </div>
+          <MarketingIconBadge icon={icon} size="lg" bg="#EEF6FE" />
           <p className="text-[15px] font-bold text-[#4AABF0]">{audience}</p>
         </div>
 
@@ -63,7 +46,7 @@ function PartnershipCard({
             <p className="min-h-[72px] max-[960px]:min-h-0">{method}</p>
           </div>
           <div>
-            <p className="mb-1 font-bold text-[#111827]">核心激励</p>
+            <p className="mb-1 font-bold text-[#111827]">{coreIncentiveLabel}</p>
             <div className="space-y-2">
               {incentives.map((item) => (
                 <p key={item.label}>
@@ -75,29 +58,35 @@ function PartnershipCard({
           </div>
         </div>
       </div>
-    </article>
+    </Card>
   );
 }
 
 export function PartnershipModesSection() {
+  const { locale } = useLocale();
+  const content = getPartnerContent(locale);
+
   return (
     <div className="bg-white py-[110px]">
-      <div className="mx-auto max-w-[1440px] px-6 max-[1180px]:max-w-full max-[960px]:px-4">
+      <div className="sf-content">
         <section>
           <PartnerSectionIntro
-            label="PARTNERSHIP"
-            title="灵活多样的合作模式"
-            subtitle="面向不同类型的伙伴，提供多种合作路径。"
+            label={content.modesSectionLabel}
+            title={content.modesSectionTitle}
+            subtitle={content.modesSectionSubtitle}
           />
           <div className="mt-[40px] grid grid-cols-3 gap-[36px] max-[1280px]:grid-cols-2 max-[960px]:grid-cols-1">
-            {partnershipModes.map((mode, index) => (
+            {content.partnershipModes.map((mode, index) => (
               <GatewayReveal
                 key={mode.title}
                 variant="card"
                 delayMs={index * 60}
                 className="h-full"
               >
-                <PartnershipCard {...mode} />
+                <PartnershipCard
+                  {...mode}
+                  coreIncentiveLabel={content.coreIncentiveLabel}
+                />
               </GatewayReveal>
             ))}
           </div>

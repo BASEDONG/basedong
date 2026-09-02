@@ -1,13 +1,23 @@
 import type { TalkArticle } from "./content-types";
-import { ShareArrowIcon } from "./icons";
+import { ArrowRight } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface TalkFeaturedCardProps {
   article: TalkArticle;
+  featuredReadMore: string;
+  tagLabel: string;
 }
 
-export function TalkFeaturedCard({ article }: TalkFeaturedCardProps) {
+export function TalkFeaturedCard({
+  article,
+  featuredReadMore,
+  tagLabel,
+}: TalkFeaturedCardProps) {
   return (
-    <article className="relative grid min-h-[294px] grid-cols-[600px_1fr] gap-[30px] rounded-[12px] bg-white/70 p-[30px] shadow-[0_24px_80px_rgba(76,87,115,0.08)] backdrop-blur max-[1280px]:grid-cols-[1fr_1fr] max-[720px]:grid-cols-1 max-[720px]:p-[16px]">
+    <Card
+      variant="elevated"
+      className="relative grid min-h-[294px] grid-cols-[600px_1fr] gap-[30px] border-transparent bg-white/70 p-[30px] shadow-[0_24px_80px_rgba(76,87,115,0.08)] backdrop-blur max-[1280px]:grid-cols-[1fr_1fr] max-[720px]:grid-cols-1 max-[720px]:p-[16px]"
+    >
       <a
         href={article.href}
         className="absolute inset-0 z-10"
@@ -25,16 +35,16 @@ export function TalkFeaturedCard({ article }: TalkFeaturedCardProps) {
           {article.excerpt}
         </p>
         <div className="mt-[22px] flex flex-wrap items-center gap-[16px] text-[14px] text-[#718096]">
-          <span className="flex h-[30px] w-[76px] items-center justify-center rounded-full border border-slate-400 bg-white text-[14px] leading-none text-slate-500">
-            {article.tag}
+          <span className="flex h-[30px] min-w-[76px] items-center justify-center rounded-full border border-slate-400 bg-white px-3 text-[14px] leading-none text-slate-500">
+            {tagLabel}
           </span>
           <span>{article.date}</span>
         </div>
         <div className="mt-[18px] inline-flex items-center gap-[4px] text-[14px] font-semibold text-[#42526B]">
-          查看更多
-          <ShareArrowIcon className="h-[20px] w-[20px]" />
+          {featuredReadMore}
+          <ArrowRight className="h-5 w-5" aria-hidden />
         </div>
       </div>
-    </article>
+    </Card>
   );
 }

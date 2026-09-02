@@ -12,7 +12,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!getAccessToken()) {
-      router.replace(APP_ROUTES.loginEmail);
+      router.replace(APP_ROUTES.login);
       return;
     }
     setReady(true);

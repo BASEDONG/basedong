@@ -1,158 +1,174 @@
-import Image from "next/image";
+"use client";
+
 import {
-  ArrowLeftRight,
   Bot,
-  ChartNoAxesColumn,
-  Eye,
-  FileText,
-  Gauge,
-  Lock,
-  Network,
-  ShieldCheck,
-  Users,
-  WalletCards,
+  BookOpen,
+  Database,
+  GitBranch,
+  Image,
+  Layers,
+  MessageSquare,
   type LucideIcon,
 } from "lucide-react";
-import { gatewayFeatures, GW_ASSETS } from "./content";
-import { GatewayReveal } from "./GatewayReveal";
+import {
+  ArchAppsLayer,
+  ArchDividerLayer,
+  ArchSectionLayer,
+  type ArchTheme,
+} from "@/components/marketing/enterprise/EnterpriseArchLayers";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { Card } from "@/components/ui/card";
+import { getGatewayContent } from "./content";
+import type { GatewayArchLayer } from "./content-types";
+import { getGatewayUiCopy } from "./gateway-ui-copy";
 
-const featureIcons: LucideIcon[] = [
-  Network,
-  Gauge,
-  ArrowLeftRight,
-  ChartNoAxesColumn,
-  Eye,
-  FileText,
-  Lock,
-  WalletCards,
-  Users,
-  ShieldCheck,
+const ARCH_THEME: ArchTheme = {
+  accent: "#4AABF0",
+  secondary: "#02F6F7",
+};
+
+/** Index-aligned with apps-layer modules (Agent → 多模态 order in zh-CN source). */
+const APP_MODULE_ICONS: LucideIcon[] = [
+  Bot,
+  BookOpen,
+  MessageSquare,
+  GitBranch,
+  Layers,
+  Database,
+  Image,
 ];
 
-function ArchitectureArrow() {
+function tint(color: string, alpha: number) {
+  return `color-mix(in srgb, ${color} ${alpha}%, transparent)`;
+}
+
+function PrivateMaasPanel({
+  title,
+  modules,
+  theme,
+}: {
+  title: string;
+  modules: string[];
+  theme: ArchTheme;
+}) {
   return (
     <div
-      aria-hidden="true"
-      className="flex items-center justify-center gap-[30px] max-[1180px]:my-2 max-[1180px]:rotate-90"
+      className="flex h-full flex-col overflow-hidden rounded-xl border bg-white"
+      style={{ borderColor: tint(theme.accent, 50) }}
     >
-      <span className="gw-arch-arrow-left block h-0 w-0 border-y-[10px] border-y-transparent border-r-[18px] border-r-[#4AABF0]" />
-      <span className="gw-arch-arrow-right block h-0 w-0 border-y-[10px] border-y-transparent border-l-[18px] border-l-[#10D6E5]" />
+      <div
+        className="px-4 py-3.5 text-center text-[16px] font-semibold text-[#1E293B] md:text-[18px]"
+        style={{ backgroundColor: tint(theme.accent, 20) }}
+      >
+        {title}
+      </div>
+      <div className="grid flex-1 grid-cols-2 content-center gap-3 p-4 md:p-5">
+        {modules.map((label) => (
+          <div
+            key={label}
+            className="flex aspect-square max-h-[136px] w-full items-center justify-center justify-self-center rounded-lg border px-2.5 text-center text-[14px] font-medium leading-snug text-[#1E293B] md:max-h-[152px] md:text-[15px]"
+            style={{
+              borderColor: tint(theme.accent, 20),
+              backgroundColor: tint(theme.accent, 5),
+            }}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-export function ProductArchitectureSection() {
-  return (
-    <div className="w-full bg-white py-[160px] max-[1180px]:py-20">
-      <section className="w-full px-6">
-        <GatewayReveal variant="soft">
-          <p className="mx-auto max-w-[1260px] text-center text-[20px] font-medium leading-[1.65] text-slate-600 max-[1180px]:text-[16px]">
-            为企业提供统一的模型接入与调用管理能力，支持多模型接入、策略配置、安全防护与调用观测，
-          </p>
-        </GatewayReveal>
-        <GatewayReveal variant="soft" delayMs={60}>
-          <p className="mx-auto max-w-[1260px] text-center text-[20px] font-medium leading-[1.65] text-slate-600 max-[1180px]:text-[16px]">
-            <span className="font-semibold text-slate-700">
-              帮助企业更灵活、高效地使用大模型服务
-            </span>
-          </p>
-        </GatewayReveal>
-
-        <div className="relative mx-auto mt-[42px] flex min-h-[374px] w-full max-w-[1400px] items-center justify-between rounded-[22px] border border-[#DED2FF] bg-[#FBF9FF] px-[72px] py-12 shadow-[0_8px_22px_rgba(74,171,240,0.22)] max-[1180px]:flex-col max-[1180px]:px-9 max-[960px]:gap-7 max-[960px]:py-[42px]">
-          <GatewayReveal variant="card" delayMs={80} className="flex flex-col items-center max-[1180px]:w-full">
-            <h3 className="mb-[22px] text-[20px] font-bold text-[#4AABF0]">
-              AI 应用
-            </h3>
-            <div className="flex h-[250px] w-[132px] flex-col items-center justify-center rounded-[20px] border-2 border-[#DECFFF] bg-[#F5EEFF] max-[1180px]:w-full max-[960px]:h-[180px]">
-              <div className="flex h-[54px] w-[54px] items-center justify-center rounded-[14px] bg-[#7C4DFF] shadow-[0_10px_22px_rgba(124,77,255,0.28)]">
-                <Bot
-                  className="text-[26px] text-white"
-                  aria-hidden="true"
-                  strokeWidth={2}
-                />
+function renderArchLayer(layer: GatewayArchLayer, theme: ArchTheme) {
+  switch (layer.kind) {
+    case "apps":
+      return (
+        <ArchAppsLayer
+          key={layer.title}
+          title={layer.title}
+          modules={layer.modules}
+          theme={theme}
+          renderModule={(label, index) => {
+            const Icon = APP_MODULE_ICONS[index];
+            return (
+              <div className="flex items-center justify-center gap-2 rounded-lg border border-white/30 bg-white/40 px-3.5 py-3 text-[15px] font-medium text-[#1E293B]">
+                {Icon ? (
+                  <Icon
+                    className="size-5 shrink-0 text-[#4AABF0]"
+                    aria-hidden="true"
+                    strokeWidth={2}
+                  />
+                ) : null}
+                <span>{label}</span>
               </div>
-              <p className="mt-3 text-[18px] font-bold text-[#1E2230]">Agent</p>
-            </div>
-          </GatewayReveal>
-
-          <GatewayReveal variant="pop" delayMs={160}>
-            <ArchitectureArrow />
-          </GatewayReveal>
-
-          <GatewayReveal
-            variant="card"
-            delayMs={220}
-            className="w-[514px] rounded-[20px] border-2 border-[#DECFFF] bg-white/50 px-6 py-[26px] max-[1180px]:w-full"
-          >
-            <h3 className="mb-[18px] text-center text-[20px] font-bold text-[#4AABF0]">
-              大模型推理服务网关
-            </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {gatewayFeatures.map((feature, index) => {
-                const Icon = featureIcons[index] ?? Network;
-                return (
-                  <GatewayReveal
-                    key={feature}
-                    variant="pop"
-                    delayMs={260 + index * 35}
-                  >
-                    <div className="flex h-[46px] items-center gap-3 rounded-[12px] border border-[#E4E7EE] bg-[#F8FAFC] px-4 text-[16px] font-semibold text-[#2B2F3A]">
-                      <Icon
-                        className="size-4 shrink-0 text-[#7C4DFF]"
-                        aria-hidden="true"
-                        strokeWidth={2}
-                      />
-                      {feature}
-                    </div>
-                  </GatewayReveal>
-                );
-              })}
-            </div>
-          </GatewayReveal>
-
-          <GatewayReveal variant="pop" delayMs={300}>
-            <ArchitectureArrow />
-          </GatewayReveal>
-
-          <GatewayReveal
-            variant="card"
-            delayMs={360}
-            className="flex w-[260px] flex-col gap-[22px] max-[1180px]:w-full max-[1180px]:flex-row max-[720px]:flex-col"
-          >
-            <GatewayReveal variant="pop" delayMs={400} className="flex-1">
-              <div className="rounded-[14px] border border-[#E3E7EF] bg-white px-7 py-[22px] shadow-[0_8px_18px_rgba(15,23,42,0.06)]">
-                <h3 className="mb-[14px] text-center text-[20px] font-bold text-[#4AABF0]">
-                  第三方大模型推理服务
-                </h3>
-                <Image
-                  src={`${GW_ASSETS}/third-party-logos.svg`}
-                  alt="第三方大模型推理服务"
-                  width={178}
-                  height={96}
-                  unoptimized
-                  className="mx-auto h-auto w-[178px]"
-                />
-              </div>
-            </GatewayReveal>
-
-            <GatewayReveal variant="pop" delayMs={460} className="flex-1">
-              <div className="rounded-[14px] border border-[#E4D7FF] bg-[#F4EDFF] px-[18px] py-[18px]">
-                <h3 className="mb-3 text-center text-[20px] font-bold text-[#4AABF0]">
-                  私有 MaaS 平台
-                </h3>
-                <div className="space-y-[10px]">
-                  <div className="flex h-[46px] items-center justify-center rounded-[8px] bg-white text-[15px] font-semibold text-[#1E2230] shadow-[0_3px_10px_rgba(74,171,240,0.06)]">
-                    私有模型
-                  </div>
-                  <div className="flex h-[46px] items-center justify-center rounded-[8px] bg-white text-[15px] font-semibold text-[#1E2230] shadow-[0_3px_10px_rgba(74,171,240,0.06)]">
-                    微调模型
-                  </div>
-                </div>
-              </div>
-            </GatewayReveal>
-          </GatewayReveal>
+            );
+          }}
+        />
+      );
+    case "divider":
+      return (
+        <ArchDividerLayer
+          key={layer.title}
+          title={layer.title}
+          theme={theme}
+        />
+      );
+    case "section":
+      return (
+        <ArchSectionLayer
+          key={layer.title}
+          title={layer.title}
+          modules={layer.modules}
+          theme={theme}
+          columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+        />
+      );
+    case "parallel-vendors":
+      return (
+        <div
+          key={`${layer.left.title}-${layer.right.title}`}
+          className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[1.55fr_1fr]"
+        >
+          <ArchSectionLayer
+            title={layer.left.title}
+            modules={layer.left.vendors}
+            theme={theme}
+            columns="grid-cols-2 sm:grid-cols-4"
+          />
+          <PrivateMaasPanel
+            title={layer.right.title}
+            modules={layer.right.vendors}
+            theme={theme}
+          />
         </div>
-      </section>
-    </div>
+      );
+  }
+}
+
+export function ProductArchitectureSection() {
+  const { locale } = useLocale();
+  const ui = getGatewayUiCopy(locale);
+  const { archLayers } = getGatewayContent(locale);
+
+  return (
+    <section className="mb-[110px] w-full">
+      <h3 className="mb-2 px-3.5 text-center text-[32px] font-bold md:text-[48px]">
+        {ui.archSectionTitle}
+      </h3>
+      <p className="mx-auto mb-3 max-w-[1260px] px-9 text-center text-[18px] leading-[1.65] text-[#57627f] md:text-[20px]">
+        {ui.archIntroLine1}
+      </p>
+      <p className="mx-auto mb-12 max-w-[1260px] px-9 text-center text-[18px] font-semibold leading-[1.65] text-[#161722] md:mb-14 md:text-[20px]">
+        {ui.archIntroLine2}
+      </p>
+      <div className="sf-content">
+        <Card variant="surface" size="md" className="w-full">
+          <div className="space-y-4" role="img" aria-label={ui.archAria}>
+            {archLayers.map((layer) => renderArchLayer(layer, ARCH_THEME))}
+          </div>
+        </Card>
+      </div>
+    </section>
   );
 }

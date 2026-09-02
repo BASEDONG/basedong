@@ -12,6 +12,8 @@ export type SfGradientPalette = {
   /** Large watermark logo on the right, e.g. /assets/marketing/home/images/hero-logos/gpt-5-6.svg */
   logoSrc?: string;
   logoAlt?: string;
+  /** Illustration opacity; default ~0.22 watermark. Use ≥0.7 for a visible page hero art. */
+  logoOpacity?: number;
 };
 
 /** @deprecated Use SfGradientPalette */
@@ -54,7 +56,7 @@ export type SfIndustryItem = {
   background: SfGradientPalette;
 };
 
-export type WhyHighlightIllustrationVariant = "inference-speed" | "heterogeneous-chips";
+export type WhyHighlightIllustrationVariant = "cost-value" | "stability";
 export type FeatureCardIllustrationVariant = "stability" | "intelligence" | "security" | "scalability";
 
 export type SfTextPart = {

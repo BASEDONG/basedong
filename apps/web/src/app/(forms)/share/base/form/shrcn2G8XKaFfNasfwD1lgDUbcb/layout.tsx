@@ -8,7 +8,7 @@ const notoSansSc = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: "硅基流动 SiliconFlow - 商务需求反馈表",
+  title: "八色鸫 - 商务需求反馈表",
   icons: {
     icon: "/assets/forms/business/images/feishu.ico",
   },

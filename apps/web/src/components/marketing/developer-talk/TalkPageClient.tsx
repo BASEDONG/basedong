@@ -2,7 +2,8 @@
 
 import { useCallback, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { resolveTalkArticles, TALK_CONTENT } from "./content";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { getTalkContent, resolveTalkArticles } from "./content";
 import type { TalkCategory } from "./content-types";
 import { TalkHero } from "./TalkHero";
 import { TalkListSection } from "./TalkListSection";
@@ -26,6 +27,8 @@ function parseTags(raw: string | null): string[] {
 }
 
 export function TalkPageClient() {
+  const { locale } = useLocale();
+  const content = getTalkContent(locale);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -35,10 +38,10 @@ export function TalkPageClient() {
   );
 
   const articles = useMemo(
-    () => resolveTalkArticles(selected),
-    [selected],
+    () => resolveTalkArticles(selected, locale),
+    [selected, locale],
   );
-  const featured = articles[0] ?? TALK_CONTENT.articles[0];
+  const featured = articles[0] ?? content.articles[0]!;
 
   const syncTags = useCallback(
     (next: string[]) => {
@@ -68,24 +71,28 @@ export function TalkPageClient() {
   return (
     <>
       <TalkHero
-        title={TALK_CONTENT.pageTitle}
-        subtitle={TALK_CONTENT.pageSubtitle}
-        heroBg={TALK_CONTENT.heroBg}
-        shareLabel={TALK_CONTENT.shareCta.label}
-        shareHref={TALK_CONTENT.shareCta.href}
+        title={content.pageTitle}
+        subtitle={content.pageSubtitle}
+        shareLabel={content.shareCta.label}
+        shareHref={content.shareCta.href}
+        heroBackground={content.heroBackground}
         featured={featured}
+        featuredReadMore={content.featuredReadMore}
+        tagLabels={content.tagLabels}
       />
       <TalkListSection
         articles={articles}
-        categories={TALK_CONTENT.filterCategories}
+        categories={content.filterCategories}
+        categoryLabels={content.categoryLabels}
+        tagLabels={content.tagLabels}
         selected={selected}
         onToggle={onToggle}
         onClear={() => syncTags([])}
       />
       <TalkSubmitCta
-        title={TALK_CONTENT.submitCta.title}
-        label={TALK_CONTENT.submitCta.label}
-        href={TALK_CONTENT.submitCta.href}
+        title={content.submitCta.title}
+        label={content.submitCta.label}
+        href={content.submitCta.href}
       />
     </>
   );

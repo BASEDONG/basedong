@@ -1,6 +1,5 @@
 ﻿"use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import {
@@ -8,8 +7,9 @@ import {
   SearchIcon,
   XIcon,
 } from "@/components/docs/shared/icons";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 
-import { logoHref, logoSrc, pageMeta } from "./content";
+import { logoHref, pageMeta } from "./content";
 import { DocsSidebar } from "./DocsSidebar";
 
 export function DocsMobileHeader() {
@@ -34,13 +34,7 @@ export function DocsMobileHeader() {
           target="_blank"
           rel="noreferrer"
         >
-          <Image
-            src={logoSrc}
-            alt="八色鸫 basedong"
-            width={140}
-            height={30}
-            className="h-[30px] w-auto"
-          />
+          <BrandLogo size="nav" />
         </a>
         <div className="flex-1" />
         <button

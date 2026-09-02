@@ -1,32 +1,112 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
 import type { PricingCategoryId, PricingChip } from "./content-types";
-import { pricingData } from "./content";
+import { getPricingUiCopy } from "./pricing-ui-copy";
 import { PricingHero } from "./PricingHero";
 import { PricingTable } from "./PricingTable";
+import { PricingToolbar } from "./PricingToolbar";
 import { PricingVendorChips } from "./PricingVendorChips";
+import { getPricingCatalog } from "@/lib/backend/client";
+import {
+  PRICING_SECTION_KEYS,
+  pricingSectionHasModels,
+  pricingToMarketingSections,
+  type MarketingPricingView,
+} from "@/lib/backend/catalog";
 
-const SECTION_KEYS = ["对话", "生图", "语音", "视频"] as const;
+type LoadState = "loading" | "ready" | "empty" | "error";
 
 export function PricingPageClient() {
+  const { locale } = useLocale();
+  const ui = getPricingUiCopy(locale);
+  const emptySections = useMemo(
+    () =>
+      ({
+        对话: {
+          title: ui.chatTitle,
+          headers: [],
+          priceColumns: 3,
+          groups: [],
+        },
+        生图: {
+          title: ui.imageTitle,
+          headers: [],
+          priceColumns: 1,
+          groups: [],
+        },
+        语音: {
+          title: ui.audioTitle,
+          headers: [],
+          priceColumns: 1,
+          groups: [],
+        },
+        视频: {
+          title: ui.videoTitle,
+          headers: [],
+          priceColumns: 1,
+          groups: [],
+        },
+      }) satisfies MarketingPricingView["sections"],
+    [ui],
+  );
+
   const [category, setCategory] = useState<PricingCategoryId>("全部");
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
   const [activeVendor, setActiveVendor] = useState<string | null>(null);
 
+  const [view, setView] = useState<MarketingPricingView>({
+    chips: [],
+    sections: emptySections,
+  });
+  const [loadState, setLoadState] = useState<LoadState>("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const catalog = await getPricingCatalog();
+        if (cancelled) return;
+        if (catalog.items.length === 0) {
+          setView({ chips: [], sections: emptySections });
+          setLoadState("empty");
+          return;
+        }
+        setView(pricingToMarketingSections(catalog, locale));
+        setLoadState("ready");
+      } catch {
+        if (cancelled) return;
+        setView({ chips: [], sections: emptySections });
+        setLoadState("error");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [emptySections, locale]);
+
   const visibleSectionKeys = useMemo(() => {
-    if (category === "全部") return [...SECTION_KEYS];
-    return SECTION_KEYS.filter((k) => k === category);
-  }, [category]);
+    if (loadState !== "ready") return [];
+    const keys =
+      category === "全部"
+        ? [...PRICING_SECTION_KEYS]
+        : PRICING_SECTION_KEYS.filter((k) => k === category);
+    return keys.filter((k) =>
+      view.sections[k].groups.some((g) => g.models.length > 0),
+    );
+  }, [category, loadState, view]);
 
   const chips = useMemo(() => {
-    if (category === "全部") return pricingData.chips;
+    if (loadState !== "ready") return [];
+    if (category === "全部") return view.chips;
+    if (!pricingSectionHasModels(view.sections, category)) return view.chips;
     const vendors = new Set(
-      pricingData.sections[category].groups.map((g) => g.vendor),
+      view.sections[category].groups.map((g) => g.vendor),
     );
-    return pricingData.chips.filter((c) => vendors.has(c.name));
-  }, [category]);
+    return view.chips.filter((c) => vendors.has(c.name));
+  }, [category, loadState, view]);
 
   function onSelectChip(chip: PricingChip) {
     setActiveVendor(chip.name);
@@ -36,34 +116,61 @@ export function PricingPageClient() {
     }
   }
 
+  const statusMessage =
+    loadState === "loading"
+      ? ui.loading
+      : loadState === "empty"
+        ? ui.empty
+        : loadState === "error"
+          ? ui.error
+          : null;
+
   return (
     <>
-      <PricingHero
-        category={category}
-        searchInput={searchInput}
-        onCategoryChange={(c) => {
-          setCategory(c);
-          setActiveVendor(null);
-        }}
-        onSearchInputChange={setSearchInput}
-        onSearch={() => setQuery(searchInput.trim())}
-      />
+      <PricingHero />
 
-      <section className="relative mx-auto w-full max-w-[1440px] px-4 pb-[72px] 2xl:px-0">
-        <PricingVendorChips
-          chips={chips}
-          activeVendor={activeVendor}
-          onSelect={onSelectChip}
-        />
-        <div className="space-y-9 pt-7">
-          {visibleSectionKeys.map((key) => (
-            <PricingTable
-              key={key}
-              section={pricingData.sections[key]}
-              query={query}
+      <section className="sf-content relative pb-[72px]">
+        {statusMessage ? (
+          <p
+            className="mb-6 rounded-md border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600"
+            role="status"
+          >
+            {statusMessage}
+          </p>
+        ) : null}
+
+        {loadState === "ready" ? (
+          <>
+            <PricingToolbar
+              category={category}
+              searchInput={searchInput}
+              onCategoryChange={(c) => {
+                setCategory(c);
+                setActiveVendor(null);
+              }}
+              onSearchInputChange={setSearchInput}
+              onSearch={() => setQuery(searchInput.trim())}
             />
-          ))}
-        </div>
+            <PricingVendorChips
+              chips={chips}
+              activeVendor={activeVendor}
+              onSelect={onSelectChip}
+            />
+            <div className="space-y-9 pt-7">
+              {visibleSectionKeys.length === 0 ? (
+                <p className="text-sm text-slate-500">{ui.emptyCategory}</p>
+              ) : (
+                visibleSectionKeys.map((key) => (
+                  <PricingTable
+                    key={key}
+                    section={view.sections[key]}
+                    query={query}
+                  />
+                ))
+              )}
+            </div>
+          </>
+        ) : null}
       </section>
     </>
   );

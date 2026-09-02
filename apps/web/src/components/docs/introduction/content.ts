@@ -1,9 +1,6 @@
-﻿import type { Advantage, NavItem, ProductBlock, TocItem } from "./content-types";
-
-import { BRAND } from "@/lib/assets";
+import type { Advantage, NavItem, ProductBlock, TocItem } from "./content-types";
 
 export const docsOrigin = "https://docs.basedong.local";
-export const logoSrc = BRAND.logo;
 export const logoHref = "/";
 
 export const pageMeta = {
@@ -118,11 +115,11 @@ export const scenarios: { title: string; text: string }[] = [
   },
 ];
 
-export const contactEmail = "contact@siliconflow.cn";
+export const contactEmail = "basedong@88.com";
 
 export const moreLinks: { label: string; href: string }[] = [
-  { label: "SiliconFlow 平台", href: "/me/models" },
-  { label: "SiliconFlow 官网", href: "/" },
+  { label: "八色鸫平台", href: "/me/models" },
+  { label: "八色鸫官网", href: "/" },
   { label: "预留实例", href: "/reserved" },
   {
     label: "企业级 MaaS 平台（私有化）",
@@ -142,7 +139,7 @@ export const nextPage = {
   title: "快速上手",
   description:
     "新用户快速入门指南，从注册登录到获取 API Key 并完成首次模型调用的完整流程。",
-  href: "https://api-docs.siliconflow.cn/docs/userguide/quickstart",
+  href: "/docs/api",
 };
 
 export const tocItems: TocItem[] = [
@@ -213,7 +210,7 @@ export const navItems: NavItem[] = [
       {
         "type": "link",
         "label": "快速上手",
-        "href": "https://api-docs.siliconflow.cn/docs/userguide/quickstart",
+        "href": "/docs/api",
         "active": false
       },
       {
@@ -223,49 +220,49 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "开始使用",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/capabilities/text-generation",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "流式输出",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/capabilities/stream-mode",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "推理模型",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/capabilities/reasoning",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "Function Calling",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/guides/function-calling",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "JSON 模式",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/guides/json-mode",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "多模态输入",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/capabilities/multimodal-vision",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "前缀续写",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/guides/prefix",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "FIM 补全",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/guides/fim",
+            "href": "/docs/api",
             "active": false
           }
         ]
@@ -277,19 +274,19 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "图片生成",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/capabilities/images",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "视频生成",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/capabilities/video",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "语音合成",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/capabilities/text-to-speech",
+            "href": "/docs/api",
             "active": false
           }
         ]
@@ -301,19 +298,19 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "模型微调",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/guides/fine-tune",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "批量推理",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/guides/batch",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "Rate Limits",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/rate-limit-and-upgradation",
+            "href": "/docs/api",
             "active": false
           }
         ]
@@ -325,37 +322,37 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "实名认证",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/authentication",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "API 请求错误排查",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/error-code",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "模型问题排查",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/misc",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "财务相关",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/misc_finance",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "账户相关",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/misc_use",
+            "href": "/docs/api",
             "active": false
           },
           {
             "type": "link",
             "label": "上架合作",
-            "href": "https://api-docs.siliconflow.cn/docs/userguide/faqs/listing_guide",
+            "href": "/docs/api",
             "active": false
           }
         ]
@@ -370,327 +367,327 @@ export const navItems: NavItem[] = [
       {
         "type": "link",
         "label": "Claude Code",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-ClaudeCode"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "DeepSeek Harness",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-dsh"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "CC Switch",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-ccswitch"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Codex",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-codex"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Cline",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-cline"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Continue",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-Continue"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Qoder",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-Qoder"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Kilo Code",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-KiloCode"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "OpenCode",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-openCode"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Dify",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-dify"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "TRAE",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-trae"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Tyrion",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-tyrion"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Zadig",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-zadig"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "轻流无代码开发平台",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-qingflow"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "translate.js",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-translate-js"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "微服务编排框架 Juggle",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-juggle"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "LangBot",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-langbot"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "CodeWave",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-codewave"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Refly",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-refly"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "NoBase",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-nobase"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "AstrBot",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-astrbot"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "LazyLLM",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-lazyllm"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "LazyCraft",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-lazycraft"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "ClawX",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-ClawX"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Bob 翻译",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-bob"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "沉浸式翻译",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-immersive-translate"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Para 翻译",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-para"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "PDFMathTranslate Next",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-pdfmathtranslate-next"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Trancy",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-trancy"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "精挑翻译",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-selecttranslate"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "轻量翻译",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-lightrans"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "ChatHub",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-chathub"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Chatbox",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-chatbox"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "NextChat",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-nextchat"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Cherry Studio",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-cherry-studio"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "eechat",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-eechat"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "问道",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-wendao"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "却惑几菩提",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-qhgpt"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Chatika",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-chatika"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "RikkaHub",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-rikkahub"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "清雅",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-qingya"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Open Course",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-opencourse"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "说点啥",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-BiBiKeyboard"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "302.AI",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-302ai"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "麦悠电台",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-cube-sugar-studio"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Obsidian Copilot",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-obsidian"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "NoteGen",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-NoteGen"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "ToMemo",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-tomemo"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Sider",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-sider"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "飞书多维表格",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-feishu"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "minbricks 智能小说编辑器",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-minbricks"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "DeepStudent",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-deepstudent"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "飞速 MarkDown",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-MarkDown"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Next AI Draw.io",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-nextaidrawio"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Snaptium",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-snaptium"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "OpenManus",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-openmanus"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Chat2Graph",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-chat2graph"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "DB-GPT",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-DB-GPT"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "FastGPT",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-fastgpt"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "MindSearch",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-mindsearch"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "wiseflow AI 首席情报官",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-wiseflow"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "MarketAssistant",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-marketassistant"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "Deep Research Web UI",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-deep-research-web-ui"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "ValueCell",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/use-siliconcloud-in-ValueCell"
+        "href": "/docs/api"
       },
       {
         "type": "link",
         "label": "社区场景与应用",
-        "href": "https://api-docs.siliconflow.cn/docs/usercases/awesome-user-cases"
+        "href": "/docs/api"
       }
     ]
   },
@@ -706,28 +703,28 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "创建对话请求(OpenAI)",
-            "href": "https://api-docs.siliconflow.cn/docs/api/chat-completions-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "创建对话请求(Anthropic)",
-            "href": "https://api-docs.siliconflow.cn/docs/api/messages-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "创建嵌入请求",
-            "href": "https://api-docs.siliconflow.cn/docs/api/embeddings-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "创建重排序请求",
-            "href": "https://api-docs.siliconflow.cn/docs/api/rerank-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           }
@@ -740,7 +737,7 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "创建图片生成请求",
-            "href": "https://api-docs.siliconflow.cn/docs/api/images-generations-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           }
@@ -753,35 +750,35 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "上传参考音频",
-            "href": "https://api-docs.siliconflow.cn/docs/api/uploads-audio-voice-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "创建文本转语音请求",
-            "href": "https://api-docs.siliconflow.cn/docs/api/audio-speech-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "获取参考音频列表",
-            "href": "https://api-docs.siliconflow.cn/docs/api/audio-voice-list-get",
+            "href": "/docs/api",
             "method": "GET",
             "active": false
           },
           {
             "type": "link",
             "label": "删除参考音频",
-            "href": "https://api-docs.siliconflow.cn/docs/api/audio-voice-deletions-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "创建语音转文本请求",
-            "href": "https://api-docs.siliconflow.cn/docs/api/audio-transcriptions-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           }
@@ -794,14 +791,14 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "创建视频生成请求",
-            "href": "https://api-docs.siliconflow.cn/docs/api/video-submit-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "获取视频生成链接请求",
-            "href": "https://api-docs.siliconflow.cn/docs/api/video-status-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           }
@@ -814,42 +811,42 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "获取文件列表",
-            "href": "https://api-docs.siliconflow.cn/docs/api/files-get",
+            "href": "/docs/api",
             "method": "GET",
             "active": false
           },
           {
             "type": "link",
             "label": "上传文件",
-            "href": "https://api-docs.siliconflow.cn/docs/api/files-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "获取batch任务列表",
-            "href": "https://api-docs.siliconflow.cn/docs/api/batches-get",
+            "href": "/docs/api",
             "method": "GET",
             "active": false
           },
           {
             "type": "link",
             "label": "创建batch任务",
-            "href": "https://api-docs.siliconflow.cn/docs/api/batches-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           },
           {
             "type": "link",
             "label": "获取batch任务详情",
-            "href": "https://api-docs.siliconflow.cn/docs/api/batches-{batch_id}-get",
+            "href": "/docs/api",
             "method": "GET",
             "active": false
           },
           {
             "type": "link",
             "label": "取消batch任务",
-            "href": "https://api-docs.siliconflow.cn/docs/api/batches-{batch_id}-cancel-post",
+            "href": "/docs/api",
             "method": "POST",
             "active": false
           }
@@ -862,7 +859,7 @@ export const navItems: NavItem[] = [
           {
             "type": "link",
             "label": "获取用户模型列表",
-            "href": "https://api-docs.siliconflow.cn/docs/api/models-get",
+            "href": "/docs/api",
             "method": "GET",
             "active": false
           }
@@ -878,44 +875,44 @@ export const navItems: NavItem[] = [
       {
         "type": "link",
         "label": "平台使用协议",
-        "href": "https://api-docs.siliconflow.cn/docs/legals/terms-of-service"
+        "href": "/legals/user-agreement"
       },
       {
         "type": "link",
         "label": "隐私政策",
-        "href": "https://api-docs.siliconflow.cn/docs/legals/privacy-policy"
+        "href": "/legals/user-agreement"
       },
       {
         "type": "link",
         "label": "隐私政策摘要",
-        "href": "https://api-docs.siliconflow.cn/docs/legals/privacy-policy-summary"
+        "href": "/legals/user-agreement"
       },
       {
         "type": "link",
         "label": "个人信息收集清单",
-        "href": "https://api-docs.siliconflow.cn/docs/legals/personal-information-collection-list"
+        "href": "/legals/user-agreement"
       },
       {
         "type": "link",
         "label": "账户主体变更协议",
-        "href": "https://api-docs.siliconflow.cn/docs/legals/agreement-for-account-ownership-transfer"
+        "href": "/legals/user-agreement"
       },
       {
         "type": "link",
         "label": "用户充值协议",
-        "href": "https://api-docs.siliconflow.cn/docs/legals/recharge-policy"
+        "href": "/legals/user-agreement"
       },
       {
         "type": "link",
         "label": "第三方共享信息清单和第三方 SDK 目录",
-        "href": "https://api-docs.siliconflow.cn/docs/legals/personal-information-sharing-list"
+        "href": "/legals/user-agreement"
       }
     ]
   },
   {
     "type": "link",
     "label": "更新公告",
-    "href": "https://api-docs.siliconflow.cn/docs/release-notes/overview",
+    "href": "/docs/api",
     "active": false
   },
   {
@@ -924,13 +921,13 @@ export const navItems: NavItem[] = [
     "children": [
       {
         "type": "link",
-        "label": "SiliconFlow 平台",
+        "label": "八色鸫平台",
         "href": "/me/models",
         "active": false
       },
       {
         "type": "link",
-        "label": "SiliconFlow 官网",
+        "label": "八色鸫官网",
         "href": "/",
         "active": false
       },

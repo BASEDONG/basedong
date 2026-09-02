@@ -1,3 +1,5 @@
+import type { SfGradientPalette } from "@/types/siliconflow-cn-10b89bdc";
+
 export type NewsCategory =
   | "全部"
   | "荣誉奖项"
@@ -8,29 +10,44 @@ export type NewsCategory =
   | "生态合作"
   | "企业AI实践";
 
-export type NewsArticle = {
-  id: string;
+export type NewsArticleCopy = {
   title: string;
   excerpt: string;
+};
+
+export type NewsArticle = NewsArticleCopy & {
+  id: string;
   category: Exclude<NewsCategory, "全部">;
   date: string;
   href: string;
   thumb: string;
 };
 
-export type NewsFeatured = {
-  title: string;
-  excerpt: string;
+export type NewsFeatured = NewsArticleCopy & {
   category: Exclude<NewsCategory, "全部">;
   date: string;
   href: string;
   cover: string;
 };
 
+export type NewsStrings = {
+  pageTitle: string;
+  heroLogoAlt: string;
+  categoryFilterTitle: string;
+  featuredReadMore: string;
+  categoryLabels: Record<NewsCategory, string>;
+  featured: NewsArticleCopy;
+  articles: Record<string, NewsArticleCopy>;
+};
+
 export type NewsPageContent = {
   pageTitle: string;
+  heroLogoAlt: string;
+  categoryFilterTitle: string;
+  featuredReadMore: string;
+  categoryLabels: Record<NewsCategory, string>;
+  heroBackground: SfGradientPalette;
   featured: NewsFeatured;
-  heroBg: string;
   categories: NewsCategory[];
   articles: NewsArticle[];
   /** Extra articles shown when filtering (not on default page 1) */

@@ -1,0 +1,85 @@
+---
+title: API Reference
+description: basedong AI Model API Documentation
+---
+
+## Overview
+
+basedong Relay provides a complete set of RESTful API interfaces, Invoke chat, embeddings, images, audio, video, and more through **AI Model APIs** (OpenAI-compatible).
+
+<Callout title="Online Debugging">
+  You can visit the [Apifox Playground](https://apifox.newapi.ai/) to test and debug API interfaces online, or browse the API documentation below.
+</Callout>
+
+## AI Model APIs
+
+AI Model APIs provide access to various AI capabilities and are compatible with the OpenAI API format.
+
+<Cards>
+  <Card
+    icon={<List />}
+    title="Model List"
+    description="Retrieve a list of available models."
+    href="/en/docs/api/ai-model/models/list/listmodels"
+  />
+  <Card
+    icon={<MessageSquare />}
+    title="Chat"
+    description="Conversation completion interface."
+    href="/en/docs/api/ai-model/chat/openai/createchatcompletion"
+  />
+  <Card
+    icon={<FileText />}
+    title="Completions"
+    description="Traditional text completion interface."
+    href="/en/docs/api/ai-model/completions/createcompletion"
+  />
+  <Card
+    icon={<Database />}
+    title="Embeddings"
+    description="Text embedding vector generation interface."
+    href="/en/docs/api/ai-model/embeddings/createembedding"
+  />
+  <Card
+    icon={<Search />}
+    title="Rerank"
+    description="Document reranking interface."
+    href="/en/docs/api/ai-model/rerank/creatererank"
+  />
+  <Card
+    icon={<ShieldCheck />}
+    title="Moderations"
+    description="Content safety moderation interface. The content safety moderation interface is one of the compliance tools and does not replace the deployer's own safety governance obligations and upstream content policy requirements. Public-facing services should establish abuse reporting, log auditing, and handling mechanisms."
+    href="/en/docs/api/ai-model/moderations/createmoderation"
+  />
+  <Card
+    icon={<Headphones />}
+    title="Audio"
+    description="Speech recognition and speech synthesis interfaces."
+    href="/en/docs/api/ai-model/audio/openai/createspeech"
+  />
+  <Card
+    icon={<Radio />}
+    title="Real-time Speech"
+    description="Real-time audio streaming interface."
+    href="/en/docs/api/ai-model/realtime/createrealtimesession"
+  />
+  <Card
+    icon={<Image />}
+    title="Images"
+    description="AI image generation interface."
+    href="/en/docs/api/ai-model/images/openai/post-v1-images-generations"
+  />
+  <Card
+    icon={<Video />}
+    title="Video"
+    description="AI video generation interface."
+    href="/en/docs/api/ai-model/videos/sora/createvideo"
+  />
+  <Card
+    icon={<FileQuestion />}
+    title="Unimplemented"
+    description="Placeholder interface, not yet implemented."
+    href="/en/docs/api/ai-model/unimplemented/files/listfiles"
+  />
+</Cards>

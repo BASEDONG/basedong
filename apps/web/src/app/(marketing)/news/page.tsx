@@ -1,13 +1,19 @@
 ﻿import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { NewsPageClient } from "@/components/marketing/news/NewsPageClient";
+import { getMarketingPageMetadata } from "@/lib/marketing-page-metadata";
+import { staticPageMetadata } from "@/lib/static-page-metadata";
+import { ABOUT_MENU_ENABLED, APP_ROUTES } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "最新资讯、产品与活动 - 硅基流动 SiliconFlow",
-  description:
-    "了解硅基流动最新企业动态、模型上新、生态合作、客户案例与市场活动。",
-};
+export const metadata: Metadata = staticPageMetadata((locale) =>
+  getMarketingPageMetadata("news", locale),
+);
 
 export default function NewsPage() {
+  if (!ABOUT_MENU_ENABLED) {
+    redirect(APP_ROUTES.home);
+  }
+
   return (
     <div className="bg-white pb-[68px] text-slate-800 max-[1024px]:pb-0">
       <NewsPageClient />

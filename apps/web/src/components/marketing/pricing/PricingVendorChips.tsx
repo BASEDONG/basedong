@@ -18,7 +18,7 @@ export function PricingVendorChips({
   if (!chips.length) return null;
 
   return (
-    <div className="border-[#E8EDF5] bg-white/92 px-4 py-4 backdrop-blur md:px-7">
+    <div className="bg-white py-4">
       <div className="flex flex-wrap gap-3">
         {chips.map((chip) => {
           const active = activeVendor === chip.name;
@@ -30,8 +30,8 @@ export function PricingVendorChips({
               className={cn(
                 "inline-flex h-[34px] items-center gap-2 rounded-full border px-4 text-[13px] font-semibold transition duration-150",
                 active
-                  ? "border-[#4AABF0] bg-[#F3EFFF] text-[#4AABF0]"
-                  : "border-[#DDE5F0] bg-white text-slate-600 hover:border-[#BBA5FF]",
+                  ? "border-[#4AABF0] bg-[#EEF7FD] text-[#4AABF0]"
+                  : "border-[#DDE5F0] bg-white text-slate-600 hover:border-[#4AABF0]",
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

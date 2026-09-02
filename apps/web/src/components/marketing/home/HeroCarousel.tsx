@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowForwardIcon } from "@/components/marketing/shared/icons";
 import type { SfHeroSlide } from "@/types/siliconflow-cn-10b89bdc";
-import { heroSlides } from "./content";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { MarketingButton } from "@/components/marketing/shared/MarketingButton";
+import { getHomeContent } from "./content";
 import { HeroSlideBackground } from "./HeroSlideBackground";
 import { cn } from "@/lib/utils";
 
@@ -12,15 +13,9 @@ const RESUME_DELAY_MS = 20000;
 
 function HeroCta({ href, label }: { href: string; label: string }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group bd-gradient-bg flex h-16 items-center justify-center gap-2 rounded-[12px] px-[23px] text-[24px] font-bold text-white transition-transform duration-300 hover:-translate-y-0.5 max-lg:scale-75"
-    >
+    <MarketingButton href={href} size="lg" showArrow>
       {label}
-      <ArrowForwardIcon />
-    </a>
+    </MarketingButton>
   );
 }
 
@@ -37,7 +32,7 @@ function SlideContent({
 
   if (layout === "centered") {
     return (
-      <section className="mx-auto flex h-full max-w-[1434px] flex-col items-center justify-center px-6 text-center">
+      <section className="mx-auto flex h-full max-w-[var(--sf-content-max)] flex-col items-center justify-center px-6 text-center">
         <p className="mb-8 text-[36px] font-semibold lg:mb-8 lg:text-[64px]">
           {eyebrow} <span style={accentStyle}>{title}</span>
         </p>
@@ -49,7 +44,7 @@ function SlideContent({
 
   if (layout === "stacked") {
     return (
-      <section className="mx-auto flex h-full max-w-[1434px] flex-col items-start justify-center pl-[46px] max-lg:items-center max-lg:px-6">
+      <section className="mx-auto flex h-full max-w-[var(--sf-content-max)] flex-col items-start justify-center pl-[46px] max-lg:items-center max-lg:px-6">
         <p className="text-[36px] font-semibold lg:text-[64px]">{eyebrow}</p>
         <p
           className="mb-5 text-center text-[36px] font-semibold lg:mb-10 lg:text-[64px]"
@@ -66,7 +61,7 @@ function SlideContent({
   }
 
   return (
-    <section className="mx-auto flex h-full max-w-[1434px] flex-col items-start justify-center pl-[46px] max-lg:items-center max-lg:px-6">
+    <section className="mx-auto flex h-full max-w-[var(--sf-content-max)] flex-col items-start justify-center pl-[46px] max-lg:items-center max-lg:px-6">
       <p className="mb-6 text-center text-[36px] font-semibold lg:mb-6 lg:text-left lg:text-[64px]">
         {eyebrow}{" "}
         <span style={accentStyle}>{title}</span>
@@ -80,6 +75,8 @@ function SlideContent({
 }
 
 export function HeroCarousel() {
+  const { locale } = useLocale();
+  const { heroSlides, heroCarousel } = getHomeContent(locale);
   const [index, setIndex] = useState(0);
   const [autoPlayPaused, setAutoPlayPaused] = useState(false);
   const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -90,7 +87,7 @@ export function HeroCarousel() {
       setIndex((i) => (i + 1) % heroSlides.length);
     }, AUTO_PLAY_INTERVAL_MS);
     return () => window.clearInterval(timer);
-  }, [autoPlayPaused]);
+  }, [autoPlayPaused, heroSlides.length]);
 
   useEffect(() => {
     return () => {
@@ -114,7 +111,7 @@ export function HeroCarousel() {
     <section
       className="relative mb-[110px] h-[588px] w-full overflow-hidden lg:h-[760px] min-[1571px]:h-[888px]"
       aria-roledescription="carousel"
-      aria-label="首页重点内容"
+      aria-label={heroCarousel.ariaLabel}
     >
       {heroSlides.map((item, i) => (
         <div
@@ -138,7 +135,7 @@ export function HeroCarousel() {
             key={item.id}
             type="button"
             role="tab"
-            aria-label={`切换到 ${item.tabLabel}`}
+            aria-label={heroCarousel.switchTabLabel(item.tabLabel)}
             aria-selected={i === index}
             className="h-1 w-8 cursor-pointer transition-colors duration-300"
             style={{

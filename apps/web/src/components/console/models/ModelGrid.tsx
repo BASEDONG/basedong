@@ -14,7 +14,7 @@ export function ModelGrid({
 }: ModelGridProps) {
   return (
     <div
-      className={`grid w-full gap-3 pb-3 pt-0 grid-cols-1 md:grid-cols-2 ${
+      className={`grid w-full gap-4 pb-3 pt-0 grid-cols-1 md:grid-cols-2 ${
         filterOpen
           ? "xl:grid-cols-2 2xl:grid-cols-3"
           : "xl:grid-cols-3 2xl:grid-cols-4"

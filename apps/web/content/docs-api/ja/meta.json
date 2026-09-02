@@ -1,0 +1,10 @@
+{
+  "title": "APIリファレンス",
+  "description": "basedong の完全なインターフェースドキュメント",
+  "icon": "Code",
+  "root": true,
+  "pages": [
+    "index",
+    "ai-model"
+  ]
+}

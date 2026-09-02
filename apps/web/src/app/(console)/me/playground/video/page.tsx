@@ -2,7 +2,7 @@
 import { VideoPageClient } from "@/components/console/playground-video/VideoPageClient";
 
 export const metadata: Metadata = {
-  title: "硅基流动 SiliconFlow",
+  title: "视频生成 - 八色鸫",
 };
 
 export default function PlaygroundVideoPage() {

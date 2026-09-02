@@ -7,11 +7,12 @@ import { TokenFactoryCta } from "@/components/marketing/token-factory/TokenFacto
 import { TokenFactoryFeatures } from "@/components/marketing/token-factory/TokenFactoryFeatures";
 import { TokenFactoryHero } from "@/components/marketing/token-factory/TokenFactoryHero";
 import { WhyChooseSection } from "@/components/marketing/token-factory/WhyChooseSection";
+import { getMarketingPageMetadata } from "@/lib/marketing-page-metadata";
+import { staticPageMetadata } from "@/lib/static-page-metadata";
 
-export const metadata: Metadata = {
-  title: "八色鸫 AI 算力运营平台",
-  description: "适配主流 GPU，把自有算力快速变成可持续运转的 Token 产能",
-};
+export const metadata: Metadata = staticPageMetadata((locale) =>
+  getMarketingPageMetadata("token-factory", locale),
+);
 
 export default function TokenFactoryPage() {
   return (
