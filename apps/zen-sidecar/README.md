@@ -32,7 +32,7 @@ bash apps/zen-sidecar/scripts/probe-blackbox.sh
 - **Customer model:** `auto` — native Sidecar mapping; Channel `model_mapping` should be `{}`
 - **Health:** `GET /health` or `/healthz`; private Free Pool snapshot in JSON
 - **No host ports** on `zen-sidecar` — private compose network only
-- **Upstream (default):** `https://opencode.ai/zen/v1` (Anonymous Zen inside Sidecar only)
+- **Upstream (default):** `https://opencode.ai/zen` (Sidecar appends `/v1/...`; Anonymous Zen inside Sidecar only)
 
 ## Mock overlays (regression)
 

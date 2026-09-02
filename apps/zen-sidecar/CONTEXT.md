@@ -16,6 +16,10 @@ _Avoid_: hardcoded seven models, full Zen catalog, paid Zen directory
 The stable customer-facing model name on the New API Channel. Sidecar maps each `auto` call onto one member of the current Free Pool.
 _Avoid_: exposing raw free ids as the only product model (direct ids are ops/debug only)
 
+**Per-model retry**:
+On retryable upstream failures (429 / 5xx / transport), Sidecar retries the **same** Free Pool id up to `PER_MODEL_ATTEMPTS` (default 20), then moves to the next candidate. No separate global attempt cap. Non-429 `4xx` fails immediately without rotating.
+_Avoid_: relying on New API `RetryTimes` to rotate Free Pool members
+
 **Sidecar Credential**:
 The shared secret New API stores as Channel.Key and sends to the Sidecar. Never the upstream Zen credential.
 _Avoid_: putting Zen keys or `public` in New API’s Channel.Key field as if they were interchangeable with Sidecar auth

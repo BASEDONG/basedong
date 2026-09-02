@@ -34,12 +34,13 @@ PoC dev credential (compose only): `basedong-sidecar-dev-credential` â€” se
 
 ## RetryTimes (New API)
 
-The Sidecar **owns retry and Free Pool model rotation** (default budget ~10, cap 20 in spec).
+The Sidecar **owns retry and Free Pool model rotation**. For each Free Pool member it retries **429 / 5xx / transport errors** up to **`PER_MODEL_ATTEMPTS`** (default **20**), then moves to the next member. There is **no global attempt cap** beyond exhausting the candidate list (`len(pool) × PER_MODEL_ATTEMPTS` worst case). Non-429 `4xx` fails immediately without rotating.
 
 | Setting | Guidance |
 |---------|----------|
 | **RetryTimes** (global option) | **`0`** (or at most **`1`**) for the Zen Sidecar Channel path |
-| Rationale | VIP clients should see **one success or one clear failure** from New API. Internal 429/5xx rotation happens inside the Sidecar before the Relay returns. |
+| **PER_MODEL_ATTEMPTS** (Sidecar env) | Default **20**; mock retry overlay may use a smaller value for speed |
+| Rationale | VIP clients should see **one success or one clear failure** from New API. Internal same-model retry + model rotation happens inside the Sidecar before the Relay returns. |
 | Streaming | Sidecar rotates only **before any response body bytes**. No mid-stream model stitch. |
 
 Do not rely on New API channel retry loops to simulate Free Pool rotation.
