@@ -89,9 +89,9 @@ EPay 充值 (compliance → configure EPay options → `POST /api/user/pay` → 
 BASEDONG_API_BASE=http://localhost:3000 ./scripts/probe-epay.sh
 ```
 
-Ops: set `ServerAddress` to the basedong Web origin (EPay return → `/me/expensebill`) and `CustomCallbackAddress` to this API origin (notify URL). Enable payment compliance and fill `PayAddress` / `EpayId` / `EpayKey` / `PayMethods` in Admin options.
+Ops: set `ServerAddress` to the basedong Web origin (EPay return → `/me/wallet`) and `CustomCallbackAddress` to this API origin (notify URL). Enable payment compliance and fill `PayAddress` / `EpayId` / `EpayKey` / `PayMethods` in Admin options.
 
-Playground (session JWT → `/pg/chat/completions`, same billing as Relay). Requires a Channel for the model; Web Console uses this path so SPA does not need to paste an API Key. Probe also asserts `/api/log/self` consume rows for Console 账单:
+Playground (session JWT → `/pg/chat/completions`, same billing as Relay). Requires a Channel for the model; Web Console uses this path so SPA does not need to paste an API Key. Probe also asserts `/api/log/self` consume rows for Console 调用记录:
 
 ```bash
 BASEDONG_API_BASE=http://localhost:3000 MOCK_UPSTREAM=http://mock-openai:18080 ./scripts/probe-playground.sh

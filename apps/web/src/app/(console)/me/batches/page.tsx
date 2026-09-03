@@ -1,5 +1,5 @@
-﻿import { BatchesPageClient } from "@/components/console/batches/BatchesPageClient";
+﻿import { ConsoleOfflinePageClient } from "@/components/console/offline/ConsoleOfflinePageClient";
 
 export default function BatchesPage() {
-  return <BatchesPageClient />;
+  return <ConsoleOfflinePageClient />;
 }

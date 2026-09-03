@@ -1,5 +1,5 @@
-﻿import { InvitationPageClient } from "@/components/console/invitation/InvitationPageClient";
+﻿import { ConsoleOfflinePageClient } from "@/components/console/offline/ConsoleOfflinePageClient";
 
 export default function InvitationPage() {
-  return <InvitationPageClient />;
+  return <ConsoleOfflinePageClient />;
 }

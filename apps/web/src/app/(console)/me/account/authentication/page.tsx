@@ -1,6 +1,5 @@
-﻿import { redirect } from "next/navigation";
-import { APP_ROUTES } from "@/lib/routes";
+﻿import { ConsoleOfflinePageClient } from "@/components/console/offline/ConsoleOfflinePageClient";
 
-export default function AuthenticationPage() {
-  redirect(APP_ROUTES.consoleModels);
+export default function AccountAuthenticationPage() {
+  return <ConsoleOfflinePageClient />;
 }

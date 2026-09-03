@@ -54,7 +54,7 @@ export type BillsUiCopy = {
 };
 
 const zhCN: BillsUiCopy = {
-  pageTitle: "账单",
+  pageTitle: "调用记录",
   periodLabels: { month: "按月", day: "按天", minute: "按分钟" },
   allocationDimensionLabels: {
     模型服务视图: "模型服务视图",
@@ -110,7 +110,7 @@ const zhCN: BillsUiCopy = {
 };
 
 const en: BillsUiCopy = {
-  pageTitle: "Bills",
+  pageTitle: "Call history",
   periodLabels: { month: "By month", day: "By day", minute: "By minute" },
   allocationDimensionLabels: {
     模型服务视图: "Model service view",
@@ -167,7 +167,7 @@ const en: BillsUiCopy = {
 
 const zhTW: BillsUiCopy = {
   ...zhCN,
-  pageTitle: "帳單",
+  pageTitle: "呼叫記錄",
   periodLabels: { month: "按月", day: "按天", minute: "按分鐘" },
   allocationDimensionLabels: {
     模型服务视图: "模型服務視圖",
@@ -234,7 +234,7 @@ function fromEn(partial: Partial<BillsUiCopy>): BillsUiCopy {
 }
 
 const ja = fromEn({
-  pageTitle: "請求書",
+  pageTitle: "呼び出し記録",
   periodLabels: { month: "月別", day: "日別", minute: "分別" },
   allocationDimensionLabels: {
     模型服务视图: "モデルサービスビュー",

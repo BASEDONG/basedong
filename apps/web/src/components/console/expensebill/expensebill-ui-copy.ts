@@ -76,7 +76,7 @@ export type ExpenseBillUiCopy = {
 };
 
 const zhCN: ExpenseBillUiCopy = {
-  pageTitle: "充值",
+  pageTitle: "钱包",
   recordHeaders: ["编号", "时间", "充值渠道", "状态", "金额", "操作"],
   balanceLabel: "余额",
   overdraftSuffix: (n) => `（剩余可透支额度 ¥ ${n}）`,
@@ -157,7 +157,7 @@ const zhCN: ExpenseBillUiCopy = {
 };
 
 const en: ExpenseBillUiCopy = {
-  pageTitle: "Recharge",
+  pageTitle: "Wallet",
   recordHeaders: ["ID", "Time", "Channel", "Status", "Amount", "Actions"],
   balanceLabel: "Balance",
   overdraftSuffix: (n) => `(Remaining overdraft quota ¥ ${n})`,
@@ -243,7 +243,7 @@ const en: ExpenseBillUiCopy = {
 
 const zhTW: ExpenseBillUiCopy = {
   ...zhCN,
-  pageTitle: "儲值",
+  pageTitle: "錢包",
   recordHeaders: ["編號", "時間", "儲值渠道", "狀態", "金額", "操作"],
   balanceLabel: "餘額",
   overdraftSuffix: (n) => `（剩餘可透支額度 ¥ ${n}）`,
@@ -343,7 +343,7 @@ function fromEn(
 }
 
 const ja = fromEn({
-  pageTitle: "チャージ",
+  pageTitle: "ウォレット",
   recordHeaders: ["ID", "日時", "チャネル", "状態", "金額", "操作"],
   balanceLabel: "残高",
   overdraftSuffix: (n) => `（残りの透支枠 ¥ ${n}）`,

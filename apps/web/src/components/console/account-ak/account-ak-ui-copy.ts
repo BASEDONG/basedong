@@ -12,6 +12,8 @@ export type ApiKeysUiCopy = {
     description: string;
     createdAt: string;
     actions: string;
+    status?: string;
+    usedQuota?: string;
   };
   emptyText: string;
   table: {
@@ -19,6 +21,10 @@ export type ApiKeysUiCopy = {
     edit: string;
     copyAria: string;
     emptyAria: string;
+    enable?: string;
+    disable?: string;
+    statusEnabled?: string;
+    statusDisabled?: string;
   };
   createModal: {
     title: string;
@@ -85,6 +91,8 @@ const zhCN: ApiKeysUiCopy = {
     description: "描述",
     createdAt: "创建时间",
     actions: "操作",
+    status: "状态",
+    usedQuota: "已用额度",
   },
   emptyText: "暂无数据",
   table: {
@@ -92,6 +100,10 @@ const zhCN: ApiKeysUiCopy = {
     edit: "编辑",
     copyAria: "复制",
     emptyAria: "暂无数据",
+    enable: "启用",
+    disable: "停用",
+    statusEnabled: "已启用",
+    statusDisabled: "已停用",
   },
   createModal: {
     title: "新建密钥",
@@ -150,6 +162,8 @@ const en: ApiKeysUiCopy = {
     description: "Description",
     createdAt: "Created",
     actions: "Actions",
+    status: "Status",
+    usedQuota: "Used quota",
   },
   emptyText: "No data",
   table: {
@@ -157,6 +171,10 @@ const en: ApiKeysUiCopy = {
     edit: "Edit",
     copyAria: "Copy",
     emptyAria: "No data",
+    enable: "Enable",
+    disable: "Disable",
+    statusEnabled: "Enabled",
+    statusDisabled: "Disabled",
   },
   createModal: {
     title: "Create key",

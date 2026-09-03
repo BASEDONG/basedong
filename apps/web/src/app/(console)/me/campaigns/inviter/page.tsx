@@ -1,5 +1,5 @@
-﻿import { InviterPageClient } from "@/components/console/campaigns-inviter/InviterPageClient";
+﻿import { ConsoleOfflinePageClient } from "@/components/console/offline/ConsoleOfflinePageClient";
 
-export default function InviterCampaignPage() {
-  return <InviterPageClient />;
+export default function CampaignsInviterPage() {
+  return <ConsoleOfflinePageClient />;
 }
