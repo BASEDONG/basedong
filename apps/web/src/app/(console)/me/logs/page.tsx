@@ -1,5 +1,5 @@
-import { BillsPageClient } from "@/components/console/bills/BillsPageClient";
+import { CallLogsPageClient } from "@/components/console/call-logs/CallLogsPageClient";
 
-export default function LogsPage() {
-  return <BillsPageClient />;
+export default function CallLogsPage() {
+  return <CallLogsPageClient />;
 }

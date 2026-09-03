@@ -115,26 +115,26 @@ if (accountAuth) {
   ok("console/account-authentication/account-authentication-ui-copy.ts (14 locales)");
 }
 
-const bills = requireFile("src/components/console/bills/bills-ui-copy.ts");
-if (bills) {
-  requireMarkers("bills-ui-copy.ts", bills);
-  for (const key of ["getBillsUiCopy", "pageTitle", "detailHeaders", "loadFailed"]) {
-    if (!bills.includes(key)) fail(`bills-ui-copy.ts missing ${key}`);
+const callLogs = requireFile("src/components/console/call-logs/call-logs-ui-copy.ts");
+if (callLogs) {
+  requireMarkers("call-logs-ui-copy.ts", callLogs);
+  for (const key of ["getCallLogsUiCopy", "pageTitle", "quotaUsed", "loadFailed"]) {
+    if (!callLogs.includes(key)) fail(`call-logs-ui-copy.ts missing ${key}`);
   }
-  ok("console/bills/bills-ui-copy.ts (14 locales)");
+  ok("console/call-logs/call-logs-ui-copy.ts (14 locales)");
 }
 
-const expensebill = requireFile(
-  "src/components/console/expensebill/expensebill-ui-copy.ts",
+const wallet = requireFile(
+  "src/components/console/wallet/wallet-ui-copy.ts",
 );
-if (expensebill) {
-  requireMarkers("expensebill-ui-copy.ts", expensebill);
-  for (const key of ["getExpenseBillUiCopy", "pageTitle", "recordHeaders", "confirmPay"]) {
-    if (!expensebill.includes(key)) {
-      fail(`expensebill-ui-copy.ts missing ${key}`);
+if (wallet) {
+  requireMarkers("wallet-ui-copy.ts", wallet);
+  for (const key of ["getWalletUiCopy", "pageTitle", "recordHeaders", "confirmPay"]) {
+    if (!wallet.includes(key)) {
+      fail(`wallet-ui-copy.ts missing ${key}`);
     }
   }
-  ok("console/expensebill/expensebill-ui-copy.ts (14 locales)");
+  ok("console/wallet/wallet-ui-copy.ts (14 locales)");
 }
 
 const invoice = requireFile("src/components/console/invoice/invoice-ui-copy.ts");
@@ -325,8 +325,8 @@ if (meta) {
     "getConsoleModelsPageMetadata",
     "getConsoleAccountAkPageMetadata",
     "getConsoleAccountAuthPageMetadata",
-    "getConsoleBillsPageMetadata",
-    "getConsoleExpenseBillPageMetadata",
+    "getConsoleCallLogsPageMetadata",
+    "getConsoleWalletPageMetadata",
     "getConsoleInvoicePageMetadata",
     "getConsolePlaygroundChatPageMetadata",
     "getConsolePlaygroundImagePageMetadata",

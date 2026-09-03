@@ -1,31 +1,31 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { listTopUps, type TopUpRecord } from "@/lib/backend/client";
-import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
+import type { WalletUiCopy } from "./wallet-ui-copy";
 import { EmptyDataIcon, SyncIcon } from "./icons";
 
 function formatTime(ts: number): string {
-  if (!ts) return "—";
+  if (!ts) return "â€”";
   const d = new Date(ts * 1000);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "â€”";
   return d.toLocaleString("zh-CN", { hour12: false });
 }
 
-function statusLabel(copy: ExpenseBillUiCopy, status: string): string {
+function statusLabel(copy: WalletUiCopy, status: string): string {
   if (status === "pending") return copy.statusPending;
   if (status === "success") return copy.statusSuccess;
   return copy.statusOther;
 }
 
-function channelLabel(copy: ExpenseBillUiCopy, method?: string): string {
+function channelLabel(copy: WalletUiCopy, method?: string): string {
   if (method === "alipay") return copy.alipay;
   if (method === "wxpay") return copy.wechatPay;
-  return method || "—";
+  return method || "â€”";
 }
 
 interface RechargeRecordsTableProps {
-  copy: ExpenseBillUiCopy;
+  copy: WalletUiCopy;
 }
 
 export function RechargeRecordsTable({ copy }: RechargeRecordsTableProps) {
@@ -112,9 +112,9 @@ export function RechargeRecordsTable({ copy }: RechargeRecordsTableProps) {
                     </td>
                     <td className="px-2 py-3">{statusLabel(copy, row.status)}</td>
                     <td className="px-2 py-3 pr-6 text-right">
-                      ¥ {Number(row.money).toFixed(2)}
+                      Â¥ {Number(row.money).toFixed(2)}
                     </td>
-                    <td className="px-2 py-3 pl-4 text-slate-400">—</td>
+                    <td className="px-2 py-3 pl-4 text-slate-400">â€”</td>
                   </tr>
                 ))
               )}

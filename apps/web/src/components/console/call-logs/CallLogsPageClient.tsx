@@ -11,9 +11,9 @@ import {
 } from "@/lib/backend/client";
 import { localizeBackendError } from "@/lib/backend/localize-error";
 import { ConsoleShell } from "../shared/ConsoleShell";
-import { getBillsUiCopy } from "./bills-ui-copy";
+import { getCallLogsUiCopy } from "./call-logs-ui-copy";
 import { getCallLogFilterCopy } from "./call-log-filter-copy";
-import { BillsAmountSummary } from "./BillsAmountSummary";
+import { CallLogsAmountSummary } from "./CallLogsAmountSummary";
 import { formatDateISO } from "./content";
 
 function dayStartUnix(isoDate: string): number {
@@ -32,9 +32,9 @@ function formatTs(sec: number) {
 }
 
 /** 调用记录 — usage-log filters (time / model / API Key name), not SiliconFlow billing chrome. */
-export function BillsPageClient() {
+export function CallLogsPageClient() {
   const { targetLocale } = useLocale();
-  const copy = useMemo(() => getBillsUiCopy(targetLocale), [targetLocale]);
+  const copy = useMemo(() => getCallLogsUiCopy(targetLocale), [targetLocale]);
   const filters = useMemo(
     () => getCallLogFilterCopy(targetLocale),
     [targetLocale],
@@ -165,7 +165,7 @@ export function BillsPageClient() {
           </button>
         </div>
 
-        <BillsAmountSummary
+        <CallLogsAmountSummary
           copy={copy}
           stat={stat}
           loading={loading}
