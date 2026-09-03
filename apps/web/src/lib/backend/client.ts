@@ -596,4 +596,87 @@ export async function getUsageSelfStat(params: {
   };
 }
 
+export type QuotaDataItem = {
+  model_name?: string;
+  created_at?: number;
+  token_used?: number;
+  count?: number;
+  quota?: number;
+};
+
+export async function getSelfQuotaData(params: {
+  startTimestamp: number;
+  endTimestamp: number;
+  defaultTime?: string;
+}): Promise<QuotaDataItem[]> {
+  const q = new URLSearchParams();
+  q.set("start_timestamp", String(params.startTimestamp));
+  q.set("end_timestamp", String(params.endTimestamp));
+  if (params.defaultTime) q.set("default_time", params.defaultTime);
+  const data = await backendFetch<QuotaDataItem[]>(
+    `/api/data/self?${q.toString()}`,
+    { method: "GET" },
+  );
+  return Array.isArray(data) ? data : [];
+}
+
+export type TaskLogRow = {
+  id?: number | string;
+  task_id?: string;
+  platform?: string;
+  status?: string;
+  progress?: string;
+  submit_time?: number;
+  finish_time?: number;
+  fail_reason?: string;
+  quota?: number;
+};
+
+async function listSelfPagedTasks(
+  path: string,
+  params: { page?: number; pageSize?: number } = {},
+): Promise<{ items: TaskLogRow[]; total: number }> {
+  const q = new URLSearchParams();
+  q.set("p", String(params.page ?? 1));
+  q.set("page_size", String(params.pageSize ?? 50));
+  const data = await backendFetch<{
+    items?: TaskLogRow[];
+    data?: TaskLogRow[];
+    total?: number;
+  }>(`${path}?${q.toString()}`, { method: "GET" });
+  const items = data?.items ?? data?.data ?? [];
+  return {
+    items: Array.isArray(items) ? items : [],
+    total: data?.total ?? (Array.isArray(items) ? items.length : 0),
+  };
+}
+
+export async function listSelfMjLogs(params: {
+  page?: number;
+  pageSize?: number;
+} = {}): Promise<{ items: TaskLogRow[]; total: number }> {
+  return listSelfPagedTasks("/api/mj/self", params);
+}
+
+export async function listSelfTasks(params: {
+  page?: number;
+  pageSize?: number;
+} = {}): Promise<{ items: TaskLogRow[]; total: number }> {
+  return listSelfPagedTasks("/api/task/self", params);
+}
+
+export async function updateSelfProfile(input: {
+  username: string;
+  display_name?: string;
+}): Promise<void> {
+  await backendFetch<unknown>("/api/user/self", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: input.username,
+      display_name: input.display_name ?? "",
+    }),
+  });
+}
+
 

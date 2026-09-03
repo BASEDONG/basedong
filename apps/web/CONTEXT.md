@@ -10,7 +10,7 @@ The frontend is split into five **zones** — each maps to a `src/components/{zo
 Public website pages cloned from `siliconflow.cn` — home, pricing, partner, news, etc.
 
 **Console**:
-Cloud control plane cloned from `cloud.siliconflow.cn` — model plaza, billing, playground, campaigns.
+Cloud control plane under `/me/*`. IA and page capabilities align with upstream new-api's **user** console (not Admin); visual skin stays basedong. Primary surfaces: 模型广场, 在线体验, 用量概览, API 密钥, 记录, 钱包, 个人资料. SiliconFlow-heritage extras that need large Backend work are Console 下线页.
 
 **Auth**:
 Login/register for Backend 用户. Register uses separate **用户名** + **邮箱** (邮箱验证码 + 人机验证); login accepts username or email. Cloned from `account.siliconflow.cn`.
@@ -44,16 +44,58 @@ Function that rewrites known external SiliconFlow URLs to local `APP_ROUTES` pat
 _Avoid_: toLocalHref, link mapper
 
 **Console**:
-The customer control plane under `/me/*` (models, billing, playground, API Keys). Not the operator Admin UI.
-_Avoid_: Admin, dashboard
+The customer control plane under `/me/*` (模型广场, 在线体验, 用量概览, API 密钥, 记录, 钱包, 个人资料). Not the operator Admin UI. Copy uses basedong synonyms; do not paste upstream new-api user-console labels verbatim.
+_Avoid_: Admin, dashboard (as a name for the whole Console), 用户管理控制台 (ambiguous with Admin)
 
 **词元**:
 Customer-facing name for billed model usage units. See Backend glossary; never use “Token” in UI copy when you mean 词元.
 _Avoid_: Token, 令牌
 
 **API Key**:
-Customer credential shown in Console account settings. Created/managed via Backend; not named Token in basedong UI.
+Customer credential for Relay, managed in Console. Created/managed via Backend; not named Token in basedong UI.
 _Avoid_: Token, 令牌
+
+### Console surfaces
+
+**模型广场**:
+Console catalog of models offered to the 用户; basedong-specific product entry and default post-login landing. Distinct from Marketing pricing pages even when both read `/api/pricing`.
+_Avoid_: model market, plaza alone when Marketing vs Console is unclear
+
+**在线体验**:
+Console session playground for trying models while signed in (Backend `/pg/…`, not pasting an API Key). Product surface is Chat; image/video/TTS shells are Console 下线页.
+_Avoid_: Playground, 游乐场 as the Chinese UI label
+
+**用量概览**:
+Single Console page for the 用户's usage statistics (upstream user Dashboard capability; one page, not a separate “overview” plus “charts” pair).
+_Avoid_: 数据看板, Dashboard as UI label, splitting 概览 and 数据看板 into two pages
+
+**记录**:
+Console nav group that contains 调用记录, 绘图记录, and 异步任务.
+_Avoid_: 使用日志, Usage logs, 日志 as the group label
+
+**调用记录**:
+Console list of the 用户's consume / request rows (Backend `/api/log/self`). Replaces the SiliconFlow-era “账单” framing for the same data.
+_Avoid_: 账单, 使用日志, bills
+
+**绘图记录**:
+Console list of the 用户's drawing-task rows (Backend MJ self logs).
+_Avoid_: Drawing logs as UI label
+
+**异步任务**:
+Console list of the 用户's async task rows (Backend task self logs).
+_Avoid_: Task logs as UI label, 任务记录 when 异步任务 is meant
+
+**钱包**:
+Console page for 额度 balance, 充值, redemption, and top-up history. 钱包 is the page; **充值** is the purchase action (see Backend glossary).
+_Avoid_: expense bill, expensebill, naming the whole page only 充值 when it also holds history and balance
+
+**个人资料**:
+Console page for the 用户's profile and account settings at upstream user Profile capability parity (whatever self APIs Backend already exposes).
+_Avoid_: Personal settings as UI label when 个人资料 is meant
+
+**Console 下线页**:
+A `/me/*` route omitted from the Console sidebar whose direct visit shows that basedong does not offer the capability (SiliconFlow-heritage gaps such as invoice/batches/campaigns, and retired multimodal 在线体验 shells). Not a silent fake of the old clone.
+_Avoid_: leaving working-looking clone UI on these URLs, treating sidebar omission alone as enough
 
 ### Locales
 

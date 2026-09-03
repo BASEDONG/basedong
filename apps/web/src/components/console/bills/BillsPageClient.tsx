@@ -93,7 +93,7 @@ export function BillsPageClient() {
     <ConsoleShell
       collapsed={collapsed}
       onToggleCollapse={() => setCollapsed((v) => !v)}
-      activeKey="bills"
+      activeKey="call-logs"
       title={copy.pageTitle}
       notificationCount={0}
       textTone="black"

@@ -1,14 +1,5 @@
-﻿import type { Metadata } from "next";
-import { ImagePageClient } from "@/components/console/playground-image/ImagePageClient";
-
-export const metadata: Metadata = {
-  title: "图像生成 - 八色鸫",
-};
+﻿import { ConsoleOfflinePageClient } from "@/components/console/offline/ConsoleOfflinePageClient";
 
 export default function PlaygroundImagePage() {
-  return (
-    <div className="flex h-dvh min-h-0 flex-1 flex-col overflow-hidden">
-      <ImagePageClient />
-    </div>
-  );
+  return <ConsoleOfflinePageClient />;
 }
