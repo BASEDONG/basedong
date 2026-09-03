@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
 import { getSelf } from "@/lib/backend/client";
 import { ConsoleShell } from "../shared/ConsoleShell";
-import { getExpenseBillUiCopy } from "./expensebill-ui-copy";
+import { getWalletUiCopy } from "./wallet-ui-copy";
 import { OnlineRechargeForm } from "./OnlineRechargeForm";
 import { RechargeRecordsTable } from "./RechargeRecordsTable";
 import { defaultAmount } from "./content";
@@ -14,9 +14,9 @@ import { defaultAmount } from "./content";
  * 钱包 — only Backend-backed 充值 paths (online pay + redemption inside the form).
  * SiliconFlow voucher/package/auto-recharge shells are omitted.
  */
-export function ExpenseBillPageClient() {
+export function WalletPageClient() {
   const { targetLocale } = useLocale();
-  const copy = useMemo(() => getExpenseBillUiCopy(targetLocale), [targetLocale]);
+  const copy = useMemo(() => getWalletUiCopy(targetLocale), [targetLocale]);
 
   const [collapsed, setCollapsed] = useState(false);
   const [amount, setAmount] = useState<number | "other">(defaultAmount);
@@ -49,7 +49,7 @@ export function ExpenseBillPageClient() {
       <div className="flex h-full w-full min-w-[1000px] flex-col gap-4">
         <div className="rounded-[8px] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600">
           {copy.pageTitle}
-          {quota != null ? ` · ${quota}` : null}
+          {quota != null ? ` Â· ${quota}` : null}
         </div>
         <div
           className={cn(

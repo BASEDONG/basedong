@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   useEffect,
@@ -17,13 +17,13 @@ import {
 } from "@/lib/backend/client";
 import { localizeBackendError } from "@/lib/backend/localize-error";
 import { ASSET, amountPresets, formatYuan } from "./content";
-import type { ExpenseBillUiCopy } from "./expensebill-ui-copy";
+import type { WalletUiCopy } from "./wallet-ui-copy";
 import { DownIcon } from "./icons";
 
 type PayMethod = "alipay" | "wechat";
 
 interface OnlineRechargeFormProps {
-  copy: ExpenseBillUiCopy;
+  copy: WalletUiCopy;
   amount: number | "other";
   customAmount: number;
   onAmountChange: (v: number | "other") => void;
@@ -33,7 +33,7 @@ interface OnlineRechargeFormProps {
 function FieldLabel({ children }: { children: string }) {
   return (
     <div className="mr-2 flex h-[42px] min-w-[80px] items-center justify-center text-sm text-slate-500">
-      {children}：
+      {children}ï¼š
     </div>
   );
 }
@@ -373,7 +373,7 @@ export function OnlineRechargeForm({
 
       <div className="ml-[86px] flex items-center text-sm text-slate-500">
         <input
-          id="expensebill-agree"
+          id="wallet-agree"
           type="checkbox"
           checked={agreed}
           onChange={(e) => setAgreed(e.target.checked)}
@@ -381,7 +381,7 @@ export function OnlineRechargeForm({
         />
         <div>
           <label
-            htmlFor="expensebill-agree"
+            htmlFor="wallet-agree"
             className="cursor-pointer text-slate-500"
           >
             {copy.agreePrefix}

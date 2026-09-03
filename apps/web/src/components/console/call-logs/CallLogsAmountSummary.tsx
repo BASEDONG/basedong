@@ -1,10 +1,10 @@
 "use client";
 
 import type { UsageStat } from "@/lib/backend/client";
-import type { BillsUiCopy } from "./bills-ui-copy";
+import type { CallLogsUiCopy } from "./call-logs-ui-copy";
 
-interface BillsAmountSummaryProps {
-  copy: BillsUiCopy;
+interface CallLogsAmountSummaryProps {
+  copy: CallLogsUiCopy;
   stat: UsageStat;
   loading?: boolean;
   onRefresh?: () => void;
@@ -37,12 +37,12 @@ function Metric({
   );
 }
 
-export function BillsAmountSummary({
+export function CallLogsAmountSummary({
   copy,
   stat,
   loading,
   onRefresh,
-}: BillsAmountSummaryProps) {
+}: CallLogsAmountSummaryProps) {
   return (
     <div className="mb-4 flex items-end justify-between gap-6 rounded-[8px] bg-white px-6 py-4">
       <div className="flex flex-wrap gap-10">

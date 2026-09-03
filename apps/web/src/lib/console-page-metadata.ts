@@ -3,8 +3,8 @@ import { pickTargetCatalog } from "@/lib/pick-catalog";
 import { APP_ROUTES } from "@/lib/routes";
 import { getConsoleChromeCopy } from "@/components/console/shared/chrome-copy";
 import { getApiKeysUiCopy } from "@/components/console/account-ak/account-ak-ui-copy";
-import { getBillsUiCopy } from "@/components/console/bills/bills-ui-copy";
-import { getExpenseBillUiCopy } from "@/components/console/expensebill/expensebill-ui-copy";
+import { getCallLogsUiCopy } from "@/components/console/call-logs/call-logs-ui-copy";
+import { getWalletUiCopy } from "@/components/console/wallet/wallet-ui-copy";
 import { getInvoiceUiCopy } from "@/components/console/invoice/invoice-ui-copy";
 import { getAuthUiCopy } from "@/components/console/account-authentication/account-authentication-ui-copy";
 import { getModelsUiCopy } from "@/components/console/models/models-ui-copy";
@@ -147,8 +147,8 @@ const INVOICE_DESCRIPTIONS: Record<TargetLocale, string> = {
   id: "Ajukan dan kelola faktur.",
 };
 
-export function getConsoleBillsPageMetadata(locale: string): PageMeta {
-  const copy = getBillsUiCopy(locale);
+export function getConsoleCallLogsPageMetadata(locale: string): PageMeta {
+  const copy = getCallLogsUiCopy(locale);
   const chrome = getConsoleChromeCopy(locale);
   return {
     title: `${copy.pageTitle} · ${chrome.brandAlt}`,
@@ -156,8 +156,8 @@ export function getConsoleBillsPageMetadata(locale: string): PageMeta {
   };
 }
 
-export function getConsoleExpenseBillPageMetadata(locale: string): PageMeta {
-  const copy = getExpenseBillUiCopy(locale);
+export function getConsoleWalletPageMetadata(locale: string): PageMeta {
+  const copy = getWalletUiCopy(locale);
   const chrome = getConsoleChromeCopy(locale);
   return {
     title: `${copy.pageTitle} · ${chrome.brandAlt}`,
@@ -412,10 +412,10 @@ const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
   [APP_ROUTES.consoleModels]: getConsoleModelsPageMetadata,
   [APP_ROUTES.consoleAccountAk]: getConsoleAccountAkPageMetadata,
   [APP_ROUTES.consoleAccountAuthentication]: getConsoleAccountAuthPageMetadata,
-  [APP_ROUTES.consoleBills]: getConsoleBillsPageMetadata,
-  [APP_ROUTES.consoleExpenseBill]: getConsoleExpenseBillPageMetadata,
-  [APP_ROUTES.consoleLogs]: getConsoleBillsPageMetadata,
-  [APP_ROUTES.consoleWallet]: getConsoleExpenseBillPageMetadata,
+  [APP_ROUTES.consoleBills]: getConsoleCallLogsPageMetadata,
+  [APP_ROUTES.consoleExpenseBill]: getConsoleWalletPageMetadata,
+  [APP_ROUTES.consoleLogs]: getConsoleCallLogsPageMetadata,
+  [APP_ROUTES.consoleWallet]: getConsoleWalletPageMetadata,
   [APP_ROUTES.consoleOverview]: (locale) => {
     const chrome = getConsoleChromeCopy(locale);
     return {

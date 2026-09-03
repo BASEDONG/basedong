@@ -1,7 +1,7 @@
-export const ASSET = {
-  alipay: "/assets/console/expensebill/images/zfb.svg",
-  wechat: "/assets/console/expensebill/images/order-wx.svg",
-  empty: "/assets/console/expensebill/images/finetune-empty.webp",
+﻿export const ASSET = {
+  alipay: "/assets/console/wallet/images/zfb.svg",
+  wechat: "/assets/console/wallet/images/order-wx.svg",
+  empty: "/assets/console/wallet/images/finetune-empty.webp",
 } as const;
 
 export type BenefitTab = "balance" | "coupon" | "package";
@@ -24,5 +24,5 @@ export const defaultAutoThreshold = 10;
 export const defaultAutoAmount = 20;
 
 export function formatYuan(n: number) {
-  return `¥ ${n}`;
+  return `Â¥ ${n}`;
 }

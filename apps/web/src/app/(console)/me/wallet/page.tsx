@@ -1,10 +1,9 @@
-import { Suspense } from "react";
-import { ExpenseBillPageClient } from "@/components/console/expensebill/ExpenseBillPageClient";
+import { WalletPageClient } from "@/components/console/wallet/WalletPageClient";
 
 export default function WalletPage() {
   return (
-    <Suspense fallback={null}>
-      <ExpenseBillPageClient />
-    </Suspense>
+    <main>
+      <WalletPageClient />
+    </main>
   );
 }
