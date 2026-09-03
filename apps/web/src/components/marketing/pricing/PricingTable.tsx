@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { CatalogIcon } from "@/components/shared/CatalogIcon";
 import { Card } from "@/components/ui/card";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
@@ -67,11 +68,10 @@ function ModelRow({
     >
       {showVendor ? (
         <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={logoSrc(vendor.logoFile, vendor.logo)}
-            alt=""
-            className="h-[18px] w-[18px] rounded-full object-contain"
+          <CatalogIcon
+            value={logoSrc(vendor.logoFile, vendor.logo)}
+            size={18}
+            className="rounded-full"
           />
           {vendor.vendor}
         </>

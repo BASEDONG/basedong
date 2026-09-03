@@ -26,7 +26,7 @@ export type PricingSection = {
   groups: PricingVendorGroup[];
 };
 
-export type PricingCategoryId = "全部" | "对话" | "生图" | "语音" | "视频";
+export type PricingCategoryId = "全部" | "文本" | "图像" | "语音" | "视频";
 
 export type PricingChip = {
   name: string;

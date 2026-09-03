@@ -266,7 +266,7 @@ export function ApplyInvoiceDrawer({
 
   return (
     <div
-      className="sf-cloud-console pointer-events-none fixed inset-0 z-[1000]"
+      className="sf-cloud-console pointer-events-none fixed inset-0 z-[1000] !bg-transparent"
       style={{ fontFamily: antFont }}
     >
       <div

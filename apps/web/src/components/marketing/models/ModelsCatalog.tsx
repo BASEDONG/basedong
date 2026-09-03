@@ -9,25 +9,32 @@ import {
 } from "lucide-react";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { cn } from "@/lib/utils";
-import { FILTER_ALL, getModelsContent } from "./content";
+import { getModelsContent } from "./content";
 import type { ModelCardData } from "./content-types";
 import { ModelCard } from "./ModelCard";
 
 type Props = {
   models: ModelCardData[];
-  typeFilter: string;
   vendorFilter: string;
-  sceneFilter: string;
+  billingFilter: string;
+  endpointFilter: string;
   searchQuery: string;
   page: number;
   onPageChange: (page: number) => void;
 };
 
+function matchesBilling(quotaType: number | undefined, billing: string): boolean {
+  if (!billing) return true;
+  if (billing === "token") return quotaType === 0;
+  if (billing === "request") return quotaType === 1;
+  return true;
+}
+
 export function ModelsCatalog({
   models,
-  typeFilter,
   vendorFilter,
-  sceneFilter,
+  billingFilter,
+  endpointFilter,
   searchQuery,
   page,
   onPageChange,
@@ -39,20 +46,28 @@ export function ModelsCatalog({
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     let list = models.filter((m) => {
-      if (typeFilter !== FILTER_ALL && m.type !== typeFilter) return false;
-      if (vendorFilter !== FILTER_ALL && m.vendor !== vendorFilter) return false;
-      if (sceneFilter !== FILTER_ALL && !m.sceneTags.includes(sceneFilter)) {
+      if (vendorFilter && m.vendor !== vendorFilter) return false;
+      if (!matchesBilling(m.quotaType, billingFilter)) return false;
+      if (
+        endpointFilter &&
+        !(m.endpoints ?? []).includes(endpointFilter)
+      ) {
         return false;
       }
       if (!q) return true;
-      const hay = [m.modelId, m.vendor, m.description, ...m.sceneTags, ...m.features]
-        .join(" ")
-        .toLowerCase();
+      const hay = [m.modelId, m.vendor, m.description].join(" ").toLowerCase();
       return hay.includes(q);
     });
     if (reversed) list = [...list].reverse();
     return list;
-  }, [models, typeFilter, vendorFilter, sceneFilter, searchQuery, reversed]);
+  }, [
+    models,
+    vendorFilter,
+    billingFilter,
+    endpointFilter,
+    searchQuery,
+    reversed,
+  ]);
 
   const pageSize = pageCopy.pageSize;
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -74,7 +89,6 @@ export function ModelsCatalog({
     }
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }, [currentPage, totalPages]);
-
 
   return (
     <div className="overflow-hidden pb-20">

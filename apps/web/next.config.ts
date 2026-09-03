@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  // @lobehub/icons ships ESM that Next must transpile for static export / client bundles.
+  transpilePackages: ["@lobehub/icons"],
 };
 
 export default nextConfig;

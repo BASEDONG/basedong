@@ -39,7 +39,7 @@ import {
   getNameRuleConfig,
   getQuotaTypeConfig,
 } from '../constants'
-import { parseModelTags, formatEndpointsDisplay } from '../lib'
+import { parseModelTags, formatEndpointsDisplay, formatCatalogTagsForDisplay } from '../lib'
 import type { Model, Vendor } from '../types'
 import { DataTableRowActions } from './data-table-row-actions'
 import { DescriptionCell } from './description-cell'
@@ -278,23 +278,31 @@ export function useModelsColumns(vendors: Vendor[] = []): ColumnDef<Model>[] {
       enableSorting: false,
     },
 
-    // Tags column
+    // Catalog control tags (modality / context / multimodal)
     {
       accessorKey: 'tags',
-      header: t('Tags'),
+      header: t('Catalog tags'),
       meta: { mobileHidden: true },
       cell: ({ row }) => {
         const tags = row.getValue('tags') as string
-        const tagArray = parseModelTags(tags)
+        const labelKeys = formatCatalogTagsForDisplay(parseModelTags(tags))
+        if (labelKeys.length === 0) {
+          return <span className='text-muted-foreground'>-</span>
+        }
         return (
           <BadgeListCell
-            items={tagArray.map((tag) => (
-              <StatusBadge key={tag} label={tag} autoColor={tag} size='sm' />
+            items={labelKeys.map((label) => (
+              <StatusBadge
+                key={label}
+                label={t(label)}
+                autoColor={label}
+                size='sm'
+              />
             ))}
           />
         )
       },
-      size: 100,
+      size: 140,
       enableSorting: false,
     },
 

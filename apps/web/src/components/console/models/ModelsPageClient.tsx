@@ -1,13 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "@/components/shared/LocaleProvider";
-import { getPricingCatalog, getUserModels } from "@/lib/backend/client";
-import { ConsoleShell } from "../shared/ConsoleShell";
 import {
-  enabledModelsToCards,
-  pricingToModelCards,
-} from "./catalog";
+  getPricingCatalog,
+  getUserModels,
+  type PricingEndpointInfo,
+} from "@/lib/backend/client";
+import {
+  extractCapabilityKeys,
+} from "@/lib/backend/model-tags";
+import { ConsoleShell } from "../shared/ConsoleShell";
+import { enabledModelsToCards, pricingToModelCards } from "./catalog";
 import type { FilterOption, FilterSection, ModelCardData } from "./content-types";
 import { ModelDetailDrawer } from "./ModelDetailDrawer";
 import { ModelGrid } from "./ModelGrid";
@@ -20,105 +25,26 @@ import {
 } from "./models-ui-copy";
 import { ScrollTopIcon } from "../shared/icons";
 
-const SERIES_ALIASES: Record<string, string[]> = {
-  Anthropic: ["anthropic", "claude"],
-  OpenAI: ["openai", "gpt", "codex"],
-  xAI: ["xai", "grok"],
-  Google: ["google", "gemini"],
-  字节跳动: ["字节", "doubao", "bytedance"],
-  智谱: ["智谱", "zai", "glm", "zhipu"],
-  Moonshot: ["moonshot", "kimi"],
-  MiniMax: ["minimax"],
-};
-
-const TAG_ALIASES: Record<string, string[]> = {
-  视觉: ["视觉", "多模态"],
-  推理: ["推理"],
-  代码: ["代码", "coder"],
-  旗舰: ["旗舰"],
-  轻量: ["轻量"],
-  聊天: ["聊天"],
-  图像: ["图像", "生图"],
-};
-
-function parseContextTokens(tag: string): number | null {
-  const normalized = tag.trim().toUpperCase().replace(/\s+/g, "");
-  const match = normalized.match(/^(\d+(?:\.\d+)?)(K|M)$/);
-  if (!match) return null;
-  const value = Number(match[1]);
-  if (Number.isNaN(value)) return null;
-  return match[2] === "M" ? value * 1000 : value;
-}
-
-function maxContextK(model: ModelCardData): number {
-  let max = 0;
-  for (const tag of model.featureTags) {
-    const tokens = parseContextTokens(tag);
-    if (tokens !== null && tokens > max) max = tokens;
-  }
-  return max;
-}
-
-function parseParamB(tag: string): number | null {
-  const normalized = tag.trim().toUpperCase().replace(/\s+/g, "");
-  const match = normalized.match(/^(\d+(?:\.\d+)?)(B|T)$/);
-  if (!match) return null;
-  const value = Number(match[1]);
-  if (Number.isNaN(value)) return null;
-  return match[2] === "T" ? value * 1000 : value;
-}
-
-function maxParamB(model: ModelCardData): number {
-  let max = 0;
-  for (const tag of model.featureTags) {
-    const params = parseParamB(tag);
-    if (params !== null && params > max) max = params;
-  }
-  return max;
-}
-
 function matchesType(model: ModelCardData, matchKey: string): boolean {
   return model.typeTags.includes(matchKey);
 }
 
 function matchesTag(model: ModelCardData, matchKey: string): boolean {
-  const aliases = TAG_ALIASES[matchKey] ?? [matchKey];
-  const haystack = model.featureTags.join(" ").toLowerCase();
-  return aliases.some((alias) => haystack.includes(alias.toLowerCase()));
+  const key = matchKey.toLowerCase();
+  return model.featureTags.some((tag) => tag.toLowerCase() === key);
 }
 
 function matchesSeries(model: ModelCardData, matchKey: string): boolean {
-  if (matchKey === "更多") return true;
-  const aliases = SERIES_ALIASES[matchKey] ?? [matchKey];
-  const haystack = `${model.title} ${model.provider}`.toLowerCase();
-  return aliases.some((alias) => haystack.includes(alias.toLowerCase()));
+  return model.provider === matchKey;
 }
 
 function matchesContext(model: ModelCardData, matchKey: string): boolean {
-  const max = maxContextK(model);
+  const max = model.contextK ?? 0;
   if (max <= 0) return false;
-  if (matchKey === "≥ 8K") return max >= 8;
-  if (matchKey === "≥ 16K") return max >= 16;
-  if (matchKey === "≥ 32K") return max >= 32;
   if (matchKey === "≥ 128K") return max >= 128;
-  return false;
-}
-
-function matchesSpec(model: ModelCardData, matchKey: string): boolean {
-  const max = maxParamB(model);
-  if (max <= 0) return false;
-  if (matchKey === "10B 以下") return max < 10;
-  if (matchKey === "10 ~ 50B") return max >= 10 && max <= 50;
-  if (matchKey === "50 ~ 100B") return max > 50 && max <= 100;
-  if (matchKey === "100B 以上") return max > 100;
-  return false;
-}
-
-function matchesDate(model: ModelCardData, matchKey: string): boolean {
-  if (!model.badge) return false;
-  if (matchKey === "近 30 天" || matchKey === "近 90 天") {
-    return /new/i.test(model.badge);
-  }
+  if (matchKey === "≥ 256K") return max >= 256;
+  if (matchKey === "≥ 512K") return max >= 512;
+  if (matchKey === "≥ 1M") return max >= 1000;
   return false;
 }
 
@@ -137,10 +63,6 @@ function matchesOption(
       return matchesSeries(model, matchKey);
     case "context":
       return matchesContext(model, matchKey);
-    case "spec":
-      return matchesSpec(model, matchKey);
-    case "date":
-      return matchesDate(model, matchKey);
     default:
       return true;
   }
@@ -163,8 +85,7 @@ function filterModels(
 
   return all.filter((model) => {
     if (q) {
-      const haystack =
-        `${model.title} ${model.provider} ${model.description}`.toLowerCase();
+      const haystack = `${model.title} ${model.provider} ${model.description}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
 
@@ -182,10 +103,10 @@ function filterModels(
 export function ModelsPageClient() {
   const { targetLocale } = useLocale();
   const ui = getModelsUiCopy(targetLocale);
-  const filterSections = useMemo(
-    () => getFilterSections(targetLocale),
-    [targetLocale],
-  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const targetModelId = searchParams.get("target")?.trim() || "";
   const mainRef = useRef<HTMLElement>(null);
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -199,7 +120,31 @@ export function ModelsPageClient() {
     null,
   );
   const [catalog, setCatalog] = useState<ModelCardData[]>([]);
+  const [endpointMap, setEndpointMap] = useState<
+    Record<string, PricingEndpointInfo>
+  >({});
   const [catalogNote, setCatalogNote] = useState<string | null>(null);
+
+  const filterSections = useMemo(() => {
+    const capabilityKeys = extractCapabilityKeys(
+      catalog.map((m) => m.featureTags),
+    );
+    const typeKeys = [
+      ...new Set(catalog.flatMap((m) => m.typeTags)),
+    ];
+    const vendors = [
+      ...new Set(
+        catalog
+          .map((m) => m.provider.trim())
+          .filter((name) => name.length > 0 && name !== "Backend"),
+      ),
+    ].sort((a, b) => a.localeCompare(b));
+    return getFilterSections(targetLocale, {
+      capabilityKeys,
+      vendors,
+      typeKeys,
+    });
+  }, [catalog, targetLocale]);
 
   useEffect(() => {
     setCatalogNote(ui.loadingCatalog);
@@ -229,9 +174,11 @@ export function ModelsPageClient() {
             pricing,
             enabled.length ? enabled : undefined,
           );
+          setEndpointMap(pricing.supported_endpoint ?? {});
         }
         if (cards.length === 0 && enabled.length > 0) {
           cards = enabledModelsToCards(enabled);
+          setEndpointMap({});
         }
         if (cards.length > 0) {
           setCatalog(cards);
@@ -239,10 +186,12 @@ export function ModelsPageClient() {
           return;
         }
         setCatalog([]);
+        setEndpointMap({});
         setCatalogNote(ui.emptyCatalog);
       } catch {
         if (cancelled) return;
         setCatalog([]);
+        setEndpointMap({});
         setCatalogNote(ui.catalogError);
       }
     })();
@@ -250,6 +199,14 @@ export function ModelsPageClient() {
       cancelled = true;
     };
   }, [ui.emptyCatalog, ui.catalogError]);
+
+  useEffect(() => {
+    if (!targetModelId || catalog.length === 0) return;
+    const match = catalog.find(
+      (m) => m.id.toLowerCase() === targetModelId.toLowerCase(),
+    );
+    if (match) setSelectedModel(match);
+  }, [catalog, targetModelId]);
 
   useEffect(() => {
     setShowScrollTop(false);
@@ -269,6 +226,15 @@ export function ModelsPageClient() {
       else next.add(id);
       return next;
     });
+  }
+
+  function handleCloseDrawer() {
+    setSelectedModel(null);
+    if (!targetModelId) return;
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete("target");
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
   function handleScrollTop() {
@@ -297,7 +263,8 @@ export function ModelsPageClient() {
         <>
           <ModelDetailDrawer
             model={selectedModel}
-            onClose={() => setSelectedModel(null)}
+            endpointMap={endpointMap}
+            onClose={handleCloseDrawer}
           />
           {showScrollTop ? (
             <button

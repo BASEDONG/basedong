@@ -7,9 +7,15 @@ import {
   pricingToMarketingModelCards,
   resolveHotModels,
 } from "@/lib/backend/catalog";
+import {
+  billingFilterOptions,
+  endpointFilterOptions,
+  vendorFilterOptions,
+  type FilterChipOption,
+} from "@/lib/backend/pricing-filters";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { getModelsContent } from "./content";
-import type { ModelCardData, ModelType } from "./content-types";
+import type { ModelCardData } from "./content-types";
 import { ModelsCatalog } from "./ModelsCatalog";
 import { ModelsHero } from "./ModelsHero";
 import { ModelsSeries } from "./ModelsSeries";
@@ -24,9 +30,9 @@ export function ModelsPageClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const typeFilter = searchParams.get("type") || "全部";
-  const vendorFilter = searchParams.get("vendor") || "全部";
-  const sceneFilter = searchParams.get("scene") || "全部";
+  const vendorFilter = searchParams.get("vendor") || "";
+  const billingFilter = searchParams.get("billing") || "";
+  const endpointFilter = searchParams.get("endpoint") || "";
   const appliedQuery = searchParams.get("q") || "";
   const page = Math.max(1, Number(searchParams.get("page") || "1") || 1);
 
@@ -64,29 +70,45 @@ export function ModelsPageClient() {
     };
   }, [locale]);
 
-  const vendorOptions = useMemo(() => {
-    const names = [...new Set(models.map((m) => m.vendor).filter(Boolean))].sort(
-      (a, b) => a.localeCompare(b, "zh"),
-    );
-    return ["全部", ...names];
-  }, [models]);
+  const filterModels = useMemo(
+    () =>
+      models.map((m) => ({
+        vendor: m.vendor,
+        quotaType: m.quotaType,
+        endpoints: m.endpoints ?? [],
+      })),
+    [models],
+  );
 
-  const typeOptions = useMemo(() => {
-    const present = new Set(models.map((m) => m.type));
-    const closed = pageCopy.typeOptions.filter(
-      (t) => t === "全部" || present.has(t as Exclude<ModelType, "全部">),
-    );
-    return closed.length > 1 ? closed : (["全部"] as ModelType[]);
-  }, [models, pageCopy.typeOptions]);
+  const vendorOptions = useMemo(
+    () => vendorFilterOptions(filterModels, pageCopy.filterAll),
+    [filterModels, pageCopy.filterAll],
+  );
 
-  const sceneOptions = useMemo(() => {
-    const tags = new Set<string>();
-    for (const m of models) {
-      for (const t of m.sceneTags) tags.add(t);
-    }
-    const dynamic = [...tags].sort((a, b) => a.localeCompare(b, "zh"));
-    return ["全部", ...dynamic];
-  }, [models]);
+  const billingOptions = useMemo(
+    () =>
+      billingFilterOptions(filterModels, {
+        all: pageCopy.filterAll,
+        token: pageCopy.billingTokenLabel,
+        request: pageCopy.billingRequestLabel,
+      }),
+    [
+      filterModels,
+      pageCopy.billingRequestLabel,
+      pageCopy.billingTokenLabel,
+      pageCopy.filterAll,
+    ],
+  );
+
+  const endpointOptions = useMemo(
+    () =>
+      endpointFilterOptions(
+        filterModels,
+        pageCopy.filterAll,
+        pageCopy.endpointDisplayLabel,
+      ),
+    [filterModels, pageCopy.endpointDisplayLabel, pageCopy.filterAll],
+  );
 
   const hotModels = useMemo(
     () =>
@@ -102,20 +124,20 @@ export function ModelsPageClient() {
       const next = new URLSearchParams(searchParams.toString());
 
       for (const [key, value] of Object.entries(patch)) {
-        if (value === null || value === "" || value === "全部") {
+        if (value === null || value === "") {
           next.delete(key);
           continue;
         }
         next.set(key, value);
       }
 
-      const hasQ = Boolean(next.get("q"));
-      const pageVal = next.get("page");
+      // Drop legacy / unused filter params
+      next.delete("type");
+      next.delete("scene");
+      next.delete("tag");
 
-      if (hasQ && (!pageVal || pageVal === "1")) {
-        next.set("page", "1");
-        next.delete("pageSize");
-      } else if (!pageVal || pageVal === "1") {
+      const pageVal = next.get("page");
+      if (!pageVal || pageVal === "1") {
         next.delete("page");
         next.delete("pageSize");
       } else {
@@ -128,26 +150,11 @@ export function ModelsPageClient() {
     [pathname, router, searchParams],
   );
 
-  const onTypeFilter = useCallback(
-    (v: string) => {
-      replaceQuery({ type: v === "全部" ? null : v, page: "1" });
-    },
-    [replaceQuery],
-  );
-
-  const onVendorFilter = useCallback(
-    (v: string) => {
-      replaceQuery({ vendor: v === "全部" ? null : v, page: "1" });
-    },
-    [replaceQuery],
-  );
-
-  const onSceneFilter = useCallback(
-    (v: string) => {
-      replaceQuery({ scene: v === "全部" ? null : v, page: "1" });
-    },
-    [replaceQuery],
-  );
+  const onFilter =
+    (key: "vendor" | "billing" | "endpoint") =>
+    (option: FilterChipOption) => {
+      replaceQuery({ [key]: option.value || null, page: "1" });
+    };
 
   const onSearch = useCallback(() => {
     const q = searchInput.trim();
@@ -164,7 +171,7 @@ export function ModelsPageClient() {
 
   const onPageChange = useCallback(
     (p: number) => {
-      replaceQuery({ page: String(p) });
+      replaceQuery({ page: p <= 1 ? null : String(p) });
     },
     [replaceQuery],
   );
@@ -194,26 +201,26 @@ export function ModelsPageClient() {
       {loadState === "ready" ? (
         <>
           <ModelsToolbar
-            typeFilter={typeFilter}
             vendorFilter={vendorFilter}
-            sceneFilter={sceneFilter}
+            billingFilter={billingFilter}
+            endpointFilter={endpointFilter}
             searchQuery={searchInput}
-            typeOptions={typeOptions}
             vendorOptions={vendorOptions}
-            sceneOptions={sceneOptions}
+            billingOptions={billingOptions}
+            endpointOptions={endpointOptions}
             hotModels={hotModels}
-            onTypeFilter={onTypeFilter}
-            onVendorFilter={onVendorFilter}
-            onSceneFilter={onSceneFilter}
+            onVendorFilter={onFilter("vendor")}
+            onBillingFilter={onFilter("billing")}
+            onEndpointFilter={onFilter("endpoint")}
             onSearchQuery={setSearchInput}
             onSearch={onSearch}
             onHotModel={onHotModel}
           />
           <ModelsCatalog
             models={models}
-            typeFilter={typeFilter}
             vendorFilter={vendorFilter}
-            sceneFilter={sceneFilter}
+            billingFilter={billingFilter}
+            endpointFilter={endpointFilter}
             searchQuery={appliedQuery}
             page={page}
             onPageChange={onPageChange}

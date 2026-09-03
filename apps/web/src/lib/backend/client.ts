@@ -1,6 +1,11 @@
 import type { ClientErrorKey } from "@/components/console/shared/backend-error-ui-copy";
 import { assertApiBase } from "./config";
-import { clearAccessToken, getAccessToken, setAccessToken } from "./session";
+import {
+  applyAuthSession,
+  clearAccessToken,
+  getAccessToken,
+  getSessionSid,
+} from "./session";
 
 export type { ClientErrorKey };
 
@@ -15,6 +20,7 @@ export type BackendUser = {
 type ApiEnvelope<T> = {
   success: boolean;
   message?: string;
+  code?: string;
   data?: T;
 };
 
@@ -25,37 +31,153 @@ async function parseEnvelope<T>(res: Response): Promise<ApiEnvelope<T>> {
 
 export class BackendError extends Error {
   readonly clientKey?: ClientErrorKey;
+  readonly status?: number;
+  readonly code?: string;
 
-  constructor(message: string, clientKey?: ClientErrorKey) {
+  constructor(
+    message: string,
+    clientKey?: ClientErrorKey,
+    status?: number,
+    code?: string,
+  ) {
     super(message);
     this.name = "BackendError";
     this.clientKey = clientKey;
+    this.status = status;
+    this.code = code;
   }
 }
 
+const STALE_AUTH_CODES = new Set([
+  "AUTH_TOKEN_EXPIRED",
+  "AUTH_SESSION_REVOKED",
+  "AUTH_UNAUTHORIZED",
+]);
+
+function isStaleAuthResponse(status: number, code?: string): boolean {
+  if (status !== 401) return false;
+  return !code || STALE_AUTH_CODES.has(code);
+}
+
+export type RefreshOutcome =
+  | { kind: "authenticated" }
+  | { kind: "anonymous" }
+  | { kind: "transient_error" };
+
+type AuthBundleData = {
+  access_token?: string;
+  session?: { sid?: string } | null;
+};
+
+let refreshPromise: Promise<RefreshOutcome> | null = null;
+
+/**
+ * Rotate access JWT via HttpOnly Refresh Cookie (upstream new-api pattern).
+ * Same-site Web↔API required for the cookie to be sent (SameSite=Strict).
+ */
+export async function refreshAuthentication(): Promise<RefreshOutcome> {
+  if (!refreshPromise) {
+    refreshPromise = (async (): Promise<RefreshOutcome> => {
+      try {
+        const base = assertApiBase();
+        const headers = new Headers();
+        const sid = getSessionSid();
+        if (sid) headers.set("X-Auth-Session", sid);
+        const res = await fetch(`${base}/api/user/auth/refresh`, {
+          method: "POST",
+          headers,
+          credentials: "include",
+        });
+        const envelope = await parseEnvelope<AuthBundleData>(res);
+        if (
+          res.ok &&
+          envelope.success &&
+          envelope.data?.access_token &&
+          typeof envelope.data.access_token === "string"
+        ) {
+          applyAuthSession({
+            access_token: envelope.data.access_token,
+            session: envelope.data.session,
+          });
+          return { kind: "authenticated" };
+        }
+        if (res.status === 401 || res.status === 409) {
+          clearAccessToken();
+          return { kind: "anonymous" };
+        }
+        return { kind: "transient_error" };
+      } catch {
+        return { kind: "transient_error" };
+      }
+    })().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
+/** Console cold start: restore memory JWT from Refresh Cookie when same-site. */
+export async function ensureAuthSession(): Promise<boolean> {
+  if (getAccessToken()) return true;
+  const outcome = await refreshAuthentication();
+  return outcome.kind === "authenticated" && Boolean(getAccessToken());
+}
+
+type BackendFetchOptions = RequestInit & {
+  /** Skip 401→refresh→retry (e.g. the refresh call itself). */
+  skipAuthRefresh?: boolean;
+};
+
 export async function backendFetch<T>(
   path: string,
-  init: RequestInit = {},
+  init: BackendFetchOptions = {},
 ): Promise<T> {
+  const { skipAuthRefresh, ...reqInit } = init;
   const base = assertApiBase();
-  const headers = new Headers(init.headers);
-  if (!headers.has("Content-Type") && init.body) {
-    headers.set("Content-Type", "application/json");
-  }
-  const token = getAccessToken();
-  if (token && !headers.has("Authorization")) {
-    headers.set("Authorization", `Bearer ${token}`);
+
+  async function once(): Promise<{
+    res: Response;
+    envelope: ApiEnvelope<T>;
+  }> {
+    const headers = new Headers(reqInit.headers);
+    if (!headers.has("Content-Type") && reqInit.body) {
+      headers.set("Content-Type", "application/json");
+    }
+    const token = getAccessToken();
+    if (token && !headers.has("Authorization")) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    const res = await fetch(`${base}${path}`, {
+      ...reqInit,
+      headers,
+      credentials: "include",
+    });
+    const envelope = await parseEnvelope<T>(res);
+    return { res, envelope };
   }
 
-  const res = await fetch(`${base}${path}`, {
-    ...init,
-    headers,
-    credentials: "include",
-  });
+  let { res, envelope } = await once();
 
-  const envelope = await parseEnvelope<T>(res);
+  if (
+    !skipAuthRefresh &&
+    isStaleAuthResponse(res.status, envelope.code) &&
+    getAccessToken()
+  ) {
+    const outcome = await refreshAuthentication();
+    if (outcome.kind === "authenticated") {
+      ({ res, envelope } = await once());
+    } else if (outcome.kind === "anonymous") {
+      // Token cleared; caller may retry anonymously for optional-auth routes.
+    }
+  }
+
   if (!res.ok || !envelope.success) {
-    throw new BackendError(envelope.message || `HTTP ${res.status}`);
+    throw new BackendError(
+      envelope.message || `HTTP ${res.status}`,
+      undefined,
+      res.status,
+      envelope.code,
+    );
   }
   return envelope.data as T;
 }
@@ -64,6 +186,7 @@ type LoginData = {
   access_token: string;
   token_type?: string;
   user?: BackendUser;
+  session?: { sid?: string } | null;
 };
 
 /** Public Backend flags used by Auth (from GET /api/status). */
@@ -109,7 +232,10 @@ export async function login(
   if (!data?.access_token) {
     throw new BackendError("Login response missing access_token", "loginMissingToken");
   }
-  setAccessToken(data.access_token);
+  applyAuthSession({
+    access_token: data.access_token,
+    session: data.session,
+  });
   return data;
 }
 
@@ -141,7 +267,14 @@ export async function register(input: RegisterInput): Promise<void> {
 
 export async function logout(): Promise<void> {
   try {
-    await backendFetch<unknown>("/api/user/auth/logout", { method: "POST" });
+    const headers = new Headers();
+    const sid = getSessionSid();
+    if (sid) headers.set("X-Auth-Session", sid);
+    await backendFetch<unknown>("/api/user/auth/logout", {
+      method: "POST",
+      headers,
+      skipAuthRefresh: true,
+    });
   } catch {
     // Still clear local session if Backend is unreachable or cookie refresh fails cross-origin.
   }
@@ -284,21 +417,42 @@ export async function requestEpayPay(
   paymentMethod: string,
 ): Promise<EpayPayResult> {
   const base = assertApiBase();
-  const headers = new Headers({ "Content-Type": "application/json" });
-  const token = getAccessToken();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const res = await fetch(`${base}/api/user/pay`, {
-    method: "POST",
-    headers,
-    credentials: "include",
-    body: JSON.stringify({ amount, payment_method: paymentMethod }),
-  });
-  const json = (await res.json()) as {
-    message?: string;
-    data?: Record<string, string> | string;
-    url?: string;
-  };
+  async function once(): Promise<{
+    res: Response;
+    json: {
+      message?: string;
+      data?: Record<string, string> | string;
+      url?: string;
+      code?: string;
+    };
+  }> {
+    const headers = new Headers({ "Content-Type": "application/json" });
+    const token = getAccessToken();
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    const res = await fetch(`${base}/api/user/pay`, {
+      method: "POST",
+      headers,
+      credentials: "include",
+      body: JSON.stringify({ amount, payment_method: paymentMethod }),
+    });
+    const json = (await res.json()) as {
+      message?: string;
+      data?: Record<string, string> | string;
+      url?: string;
+      code?: string;
+    };
+    return { res, json };
+  }
+
+  let { res, json } = await once();
+  if (isStaleAuthResponse(res.status, json.code) && getAccessToken()) {
+    const outcome = await refreshAuthentication();
+    if (outcome.kind === "authenticated") {
+      ({ res, json } = await once());
+    }
+  }
+
   if (json.message !== "success" || !json.url || !json.data || typeof json.data === "string") {
     const detail =
       typeof json.data === "string"
@@ -309,6 +463,8 @@ export async function requestEpayPay(
     throw new BackendError(
       detail || "拉起支付失败",
       detail ? undefined : "paymentStartFailed",
+      res.status,
+      json.code,
     );
   }
   return { url: json.url, params: json.data };
@@ -393,33 +549,30 @@ export type PricingVendor = {
   icon?: string;
 };
 
+export type PricingEndpointInfo = {
+  path?: string;
+  method?: string;
+};
+
 export type PricingCatalog = {
   items: PricingItem[];
   vendors: PricingVendor[];
   group_ratio?: Record<string, number>;
+  /** Endpoint type → path/method map from `/api/pricing`. */
+  supported_endpoint?: Record<string, PricingEndpointInfo>;
 };
 
-/** Public/auth pricing catalog used by model plaza. */
-export async function getPricingCatalog(): Promise<PricingCatalog> {
-  const base = assertApiBase();
-  const headers = new Headers();
-  const token = getAccessToken();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
-  const res = await fetch(`${base}/api/pricing`, {
-    method: "GET",
-    headers,
-    credentials: "include",
-  });
-  const json = (await res.json()) as {
-    success?: boolean;
-    message?: string;
-    data?: PricingItem[];
-    vendors?: PricingVendor[];
-    group_ratio?: Record<string, number>;
-  };
-  if (!res.ok || !json.success) {
-    throw new BackendError(json.message || `HTTP ${res.status}`);
-  }
+type PricingEnvelope = {
+  success?: boolean;
+  message?: string;
+  code?: string;
+  data?: PricingItem[];
+  vendors?: PricingVendor[];
+  group_ratio?: Record<string, number>;
+  supported_endpoint?: Record<string, PricingEndpointInfo>;
+};
+
+function pricingCatalogFromEnvelope(json: PricingEnvelope): PricingCatalog {
   return {
     items: Array.isArray(json.data) ? json.data : [],
     vendors: Array.isArray(json.vendors) ? json.vendors : [],
@@ -427,7 +580,64 @@ export async function getPricingCatalog(): Promise<PricingCatalog> {
       json.group_ratio && typeof json.group_ratio === "object"
         ? json.group_ratio
         : undefined,
+    supported_endpoint:
+      json.supported_endpoint && typeof json.supported_endpoint === "object"
+        ? json.supported_endpoint
+        : undefined,
   };
+}
+
+/**
+ * Public/optional-auth pricing catalog (upstream `/api/pricing` + TryUserAuth).
+ * Mirrors new-api: attach memory JWT when present; on stale auth refresh once;
+ * if session is gone, fall back to anonymous (no Bearer) so marketing pages stay public.
+ */
+export async function getPricingCatalog(): Promise<PricingCatalog> {
+  const base = assertApiBase();
+
+  async function fetchPricing(withToken: boolean): Promise<{
+    res: Response;
+    json: PricingEnvelope;
+  }> {
+    const headers = new Headers();
+    if (withToken) {
+      const token = getAccessToken();
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+    }
+    const res = await fetch(`${base}/api/pricing`, {
+      method: "GET",
+      headers,
+      credentials: "include",
+    });
+    const json = (await res.json()) as PricingEnvelope;
+    return { res, json };
+  }
+
+  let withToken = Boolean(getAccessToken());
+  let { res, json } = await fetchPricing(withToken);
+
+  if (withToken && isStaleAuthResponse(res.status, json.code)) {
+    const outcome = await refreshAuthentication();
+    if (outcome.kind === "authenticated") {
+      ({ res, json } = await fetchPricing(true));
+    } else if (outcome.kind === "anonymous") {
+      ({ res, json } = await fetchPricing(false));
+    } else {
+      // Transient refresh failure with a dead access JWT: drop Bearer like a cold start.
+      clearAccessToken();
+      ({ res, json } = await fetchPricing(false));
+    }
+  }
+
+  if (!res.ok || !json.success) {
+    throw new BackendError(
+      json.message || `HTTP ${res.status}`,
+      undefined,
+      res.status,
+      json.code,
+    );
+  }
+  return pricingCatalogFromEnvelope(json);
 }
 
 export type ChatMessage = {
@@ -451,32 +661,65 @@ export async function playgroundChat(args: {
   max_tokens?: number;
 }): Promise<PlaygroundChatResult> {
   const base = assertApiBase();
-  const headers = new Headers({ "Content-Type": "application/json" });
-  const token = getAccessToken();
-  if (!token) {
-    throw new BackendError("未登录，请先登录后再使用在线体验", "playgroundNotLoggedIn");
+
+  if (!getAccessToken()) {
+    const ok = await ensureAuthSession();
+    if (!ok) {
+      throw new BackendError(
+        "未登录，请先登录后再使用在线体验",
+        "playgroundNotLoggedIn",
+      );
+    }
   }
-  headers.set("Authorization", `Bearer ${token}`);
 
-  const res = await fetch(`${base}/pg/chat/completions`, {
-    method: "POST",
-    headers,
-    credentials: "include",
-    body: JSON.stringify({
-      model: args.model,
-      messages: args.messages,
-      stream: false,
-      group: args.group ?? "default",
-      temperature: args.temperature,
-      max_tokens: args.max_tokens ?? 1024,
-    }),
-  });
+  async function once(): Promise<{
+    res: Response;
+    json: {
+      choices?: { message?: { content?: string } }[];
+      error?: { message?: string; code?: string; type?: string };
+      message?: string;
+      code?: string;
+    };
+  }> {
+    const headers = new Headers({ "Content-Type": "application/json" });
+    const token = getAccessToken();
+    if (!token) {
+      throw new BackendError(
+        "未登录，请先登录后再使用在线体验",
+        "playgroundNotLoggedIn",
+      );
+    }
+    headers.set("Authorization", `Bearer ${token}`);
+    const res = await fetch(`${base}/pg/chat/completions`, {
+      method: "POST",
+      headers,
+      credentials: "include",
+      body: JSON.stringify({
+        model: args.model,
+        messages: args.messages,
+        stream: false,
+        group: args.group ?? "default",
+        temperature: args.temperature,
+        max_tokens: args.max_tokens ?? 1024,
+      }),
+    });
+    const json = (await res.json()) as {
+      choices?: { message?: { content?: string } }[];
+      error?: { message?: string; code?: string; type?: string };
+      message?: string;
+      code?: string;
+    };
+    return { res, json };
+  }
 
-  const json = (await res.json()) as {
-    choices?: { message?: { content?: string } }[];
-    error?: { message?: string; code?: string; type?: string };
-    message?: string;
-  };
+  let { res, json } = await once();
+  const authCode = json.code || json.error?.code;
+  if (isStaleAuthResponse(res.status, authCode) && getAccessToken()) {
+    const outcome = await refreshAuthentication();
+    if (outcome.kind === "authenticated") {
+      ({ res, json } = await once());
+    }
+  }
 
   if (!res.ok || json.error) {
     const msg =
@@ -490,7 +733,7 @@ export async function playgroundChat(args: {
     ) {
       throw new BackendError(`额度不足：${msg}`);
     }
-    throw new BackendError(msg);
+    throw new BackendError(msg, undefined, res.status, authCode);
   }
 
   const content = json.choices?.[0]?.message?.content;

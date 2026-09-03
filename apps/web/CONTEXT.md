@@ -13,7 +13,7 @@ Public website pages cloned from `siliconflow.cn` — home, pricing, partner, ne
 Cloud control plane cloned from `cloud.siliconflow.cn` — model plaza, billing, playground, campaigns.
 
 **Auth**:
-Login/register for Backend 用户. Register uses separate **用户名** + **邮箱** (邮箱验证码 + 人机验证); login accepts username or email. Cloned from `account.siliconflow.cn`.
+Login/register for Backend 用户. Register uses separate **用户名** + **邮箱** (邮箱验证码 + 人机验证); login accepts username or email. Cloned from `account.siliconflow.cn`. Access JWT is **memory-only** (upstream new-api pattern); cold start uses Refresh Cookie via `ensureAuthSession` when Web and Backend are same-site. See `apps/api/docs/basedong.md` (SPA session).
 
 **Docs**:
 Local docs shell under `/docs/api`. Body content is **vendored** from [QuantumNous/new-api-docs-v1](https://github.com/QuantumNous/new-api-docs-v1) AI 模型接口 MDX (+ OpenAPI JSON) via `npm run sync:docs` → `content/docs-api/{zh,en,ja}/`. Endpoint pages render with **fumadocs-openapi** (`createAPIPage`); shell/sidebar stay local. Sidebar mirrors the upstream folder/`meta.json` tree (nested subgroups). Management APIs are not synced and are stripped from root `meta.json` / index. Do not link out to docs.newapi.pro.
@@ -110,12 +110,15 @@ Per-page copy lives under `src/components/{zone}/{page}/`:
 - **`content.ts`** — `getXxxContent(locale)` assembling base + strings via `pickCatalog` from `@/lib/pick-catalog`.
 - **`*-ui-copy.ts`** (optional) — section titles / hero shell when the main catalog is large.
 
-**Category filters** use Source-locale Chinese IDs as keys (e.g. `"全部"`, `"对话"`); `categoryLabels` maps keys to display labels per locale (same pattern as pricing/models).
+**Category filters** use Source-locale Chinese IDs as keys (e.g. `"全部"`, `"文本"`, `"图像"`); `categoryLabels` maps keys to display labels per locale (same pattern as pricing/models).
 
 **Illustration copy**:
 Readable product/diagram labels (enterprise `ScenarioDesignSvgs` + `scenarioDiagramSpecs` in page catalogs) are locale-specific catalog content. Prefer React SVG components fed by catalogs. Decorative Latin fragments in Storyset static assets under `public/assets/marketing/` (e.g. street signs, option letters) are not Source Locale copy and need not be duplicated per locale unless they become user-facing marketing strings.
 
 **Backend-derived UI** (pricing table headers, model card description fallback) takes `locale` and reads from the nearest catalog or `src/lib/backend/catalog.ts` helpers — not from static JSON fixtures.
+
+**Catalog Control Tag**:
+Canonical Admin model `tags` tokens with a `bs` prefix that Web maps to UI and never shows raw as chips. Modality: `bsText` / `bsImage` / `bsVideo` / `bsAudio`. Context: `bsCtx{n}` (n = thousands of tokens; Web formats `127K` / `1M`). Differentiating capability: `bsCapMultimodal` only (reasoning/tools are defaults, not tags). No freeform catalog tags. Operator contract: [`apps/api/docs/basedong.md`](../api/docs/basedong.md) § Model catalog tags.
 
 ### Catalog layout (Console)
 

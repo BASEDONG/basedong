@@ -8,13 +8,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "轻量",
-      "低延迟",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "claude-opus-4-5",
@@ -25,13 +21,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "旗舰",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "claude-opus-4-6",
@@ -42,13 +34,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "旗舰",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "claude-opus-4-7",
@@ -59,13 +47,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "旗舰",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "claude-opus-4-8",
@@ -76,13 +60,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "旗舰",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "claude-opus-5",
@@ -93,11 +73,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "claude-sonnet-4-6",
@@ -108,13 +86,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "推理",
-      "代码",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "claude-sonnet-5",
@@ -125,13 +99,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "Claude",
-      "Anthropic",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "codex-auto-review",
@@ -142,13 +112,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "代码",
-      "代理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "codex-auto-review-openai-compact",
@@ -159,13 +125,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "代码",
-      "代理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.4",
@@ -176,13 +138,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "推理",
-      "代码",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.4-mini",
@@ -193,13 +151,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "推理",
-      "代码",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.4-openai-compact",
@@ -210,11 +164,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.5",
@@ -225,13 +177,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "推理",
-      "代码",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.5-mini",
@@ -242,11 +190,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.5-openai-compact",
@@ -257,11 +203,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.6-luna",
@@ -272,13 +216,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "聊天",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.6-sol",
@@ -289,13 +229,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "聊天",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-5.6-terra",
@@ -306,13 +242,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "聊天",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gpt-image-2",
@@ -323,13 +255,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "生图"
+      "图像"
     ],
-    "featureTags": [
-      "图像",
-      "生成",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "grok-4.20-multi-agent-xhigh",
@@ -340,13 +268,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "文本",
-      "推理",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "grok-4.5",
@@ -357,12 +281,10 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
     "featureTags": [
-      "文本",
-      "视觉",
-      "1M"
+      "multimodal"
     ]
   },
   {
@@ -374,12 +296,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "聊天",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "grok-4.6",
@@ -390,12 +309,10 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
     "featureTags": [
-      "文本",
-      "视觉",
-      "1M"
+      "multimodal"
     ]
   },
   {
@@ -407,13 +324,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "生图"
+      "图像"
     ],
-    "featureTags": [
-      "图像",
-      "生成",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "grok-imagine-image-lite",
@@ -424,13 +337,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "生图"
+      "图像"
     ],
-    "featureTags": [
-      "图像",
-      "生成",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "doubao-seed-2.0-code",
@@ -441,12 +350,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "代码",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "doubao-seed-2.0-lite",
@@ -457,12 +363,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "轻量",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "doubao-seed-2.0-mini",
@@ -473,12 +376,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "轻量",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "doubao-seed-2.0-pro",
@@ -489,12 +389,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "旗舰",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "glm-5-turbo",
@@ -505,11 +402,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "glm-5.1",
@@ -520,11 +415,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "glm-5.2",
@@ -535,11 +428,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "glm-5.3",
@@ -550,11 +441,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "kimi-k2.6",
@@ -565,11 +454,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "kimi-k2.7-code",
@@ -580,12 +467,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "代码",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "kimi-k3",
@@ -596,12 +480,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "旗舰",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "MiniMax-M2.7",
@@ -612,11 +493,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "MiniMax-M3",
@@ -627,11 +506,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "对话"
+      "文本"
     ],
-    "featureTags": [
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gemini-3-pro-image-preview",
@@ -642,13 +519,9 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "生图"
+      "图像"
     ],
-    "featureTags": [
-      "图像",
-      "生成",
-      "1M"
-    ]
+    "featureTags": []
   },
   {
     "id": "gemini-3.1-flash-image-preview",
@@ -659,12 +532,8 @@
     "badge": null,
     "deprecated": false,
     "typeTags": [
-      "生图"
+      "图像"
     ],
-    "featureTags": [
-      "图像",
-      "生成",
-      "1M"
-    ]
+    "featureTags": []
   }
 ]

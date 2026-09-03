@@ -9,10 +9,8 @@ export const FILTER_ALL = "全部";
 
 export const TYPE_OPTIONS = [
   FILTER_ALL,
-  "对话",
-  "生图",
-  "嵌入",
-  "重排序",
+  "文本",
+  "图像",
   "语音",
   "视频",
 ] as const satisfies readonly ModelType[];

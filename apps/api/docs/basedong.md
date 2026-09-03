@@ -110,6 +110,40 @@ Domain language for basedong product copy lives in `docs/backend/CONTEXT.md` (�
 
 Point the Web SPA at this Backend with `NEXT_PUBLIC_API_BASE=http://localhost:3000` (see root `docker-compose.yml` `web-dev`).
 
+## Model catalog tags (Web contract)
+
+Customer Marketing + Console model plaza read model metadata from `GET /api/pricing` (`tags` on each pricing row, from Admin **Models** metadata). Web does **not** invent modality/context from freeform English words like `Vision` or `image`.
+
+管理员 must set **Catalog Control Tags** (canonical `bs*` tokens) via the Model edit drawer (**Modality** / **Context window** / **Multimodal**). Display strings are mapped only on Web. Freeform tags are not part of the contract — save keeps only control tokens.
+
+### Required / preferred control tags
+
+| Purpose | Token (write exactly; case-insensitive) | Customer effect |
+|---------|----------------------------------------|-----------------|
+| Modality — text / chat | `bsText` | Plaza type **文本** (default if no modality tag) |
+| Modality — image generation | `bsImage` | Plaza type **图像** |
+| Modality — video generation | `bsVideo` | Plaza type **视频** |
+| Modality — audio generation | `bsAudio` | Plaza type **语音** |
+| Context window | `bsCtx{n}` (n = thousands of tokens; any positive integer, e.g. `bsCtx127`, `bsCtx1000`) | Web formats as **127K** / **1M**; plaza filters use numeric thresholds (e.g. ≥128K) — not a closed write enum. |
+| Capability — multimodal | `bsCapMultimodal` | Differentiating chip / filter (**多模态**). Understanding image and/or audio input — not generation modality. |
+
+Rules:
+
+- At most **one** modality control tag and **one** context control tag per model (Admin UI enforces this on save).
+- Context is a **numeric** control tag: Admin enters thousands of tokens → `bsCtx{n}`; display symbols (`K`/`M`) are formatted on Web and need not be translated.
+- **Multimodal** is a single optional differentiator. Reasoning / tools are assumed default and are **not** catalog tags.
+- Prefer media over text if several modality tags somehow coexist (`bsImage` / `bsVideo` / `bsAudio` win over `bsText`).
+- Control tags are **not** shown raw as customer chips; Web maps them to display labels / canonical keys.
+- Do **not** store freeform marketing words (`轻量`, `旗舰`, `Reasoning`) in `tags`. Description is for prose.
+- Legacy dual-read (migration only): old `bsCtx128k` / `bsCtx1m` and freeform `128K` / `1M` parse to the same numeric K; Admin save rewrites to `bsCtx{n}`. Former `Vision` / `Audio` / `bsCapVision` / `bsCapAudio` map to multimodal. Retired capability tokens are dropped on Admin save.
+- `bsCapMultimodal` means **understanding** multimodal input — use `bsImage` / `bsAudio` for generation product type.
+
+### Where to configure
+
+Admin → **Models** (metadata) → edit model → **Modality** + **Context window** + **Multimodal**.
+
+Web parsers: `apps/web/src/lib/backend/model-tags.ts`. Admin helpers: `apps/api/web/src/features/models/lib/model-utils.ts`.
+
 ## Zen Sidecar Channel (`auto`)
 
 When offering model **`auto`** backed by Anonymous Zen free pool, operators attach **one Channel** to the private Sidecar — not a second control plane. Full runbook: [`docs/zen-sidecar/runbook.md`](../../docs/zen-sidecar/runbook.md).
@@ -126,4 +160,4 @@ Customer disclosure: [`docs/zen-sidecar/customer-auto-disclosure.md`](../../docs
 
 ### SPA session
 
-Web calls control-plane with `NEXT_PUBLIC_API_BASE` and stores the short-lived **access** JWT in `sessionStorage` (`Authorization: Bearer`). Refresh cookies are `SameSite=Strict` on `/api/user/auth` — for silent refresh across reloads, serve Web and Backend on the **same site** (reverse proxy). Cross-origin SPAs should expect re-login when the access JWT expires (~15 minutes). `/api` applies CORS that reflects the request Origin so browser calls work.
+Web calls control-plane with `NEXT_PUBLIC_API_BASE`. The short-lived **access** JWT lives in **memory only** (upstream new-api Admin UI pattern — not `sessionStorage`), sent as `Authorization: Bearer`. After reload, Web attempts `POST /api/user/auth/refresh` using the HttpOnly Refresh Cookie (`SameSite=Strict` on `/api/user/auth`). Silent restore needs Web and Backend on the **same site** (reverse proxy). Cross-origin SPAs should expect re-login when the access JWT expires (~15 minutes) unless a same-site proxy is used. Public optional-auth routes such as `GET /api/pricing` fall back to anonymous (no Bearer) when refresh cannot restore a session. `/api` applies CORS that reflects the request Origin so browser calls work.
