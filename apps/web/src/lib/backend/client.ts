@@ -160,7 +160,9 @@ export type BackendApiKey = {
   expired_time?: number;
   status?: number;
   remain_quota?: number;
+  used_quota?: number;
   unlimited_quota?: boolean;
+  accessed_time?: number;
 };
 
 type PageData<T> = {
@@ -233,6 +235,88 @@ export async function updateApiKeyName(
 
 export async function deleteApiKey(id: number): Promise<void> {
   await backendFetch<unknown>(`/api/token/${id}`, { method: "DELETE" });
+}
+
+/** Enable (1) or disable (2) an API Key via status_only update. */
+export async function setApiKeyStatus(
+  id: number,
+  status: 1 | 2,
+): Promise<void> {
+  const current = await backendFetch<BackendApiKey>(`/api/token/${id}`, {
+    method: "GET",
+  });
+  await backendFetch<unknown>("/api/token/?status_only=true", {
+    method: "PUT",
+    body: JSON.stringify({
+      id,
+      name: current.name,
+      status,
+      remain_quota: current.remain_quota ?? 0,
+      expired_time: current.expired_time ?? -1,
+      unlimited_quota: current.unlimited_quota ?? true,
+    }),
+  });
+}
+
+export type TwoFactorStatus = {
+  enabled?: boolean;
+  locked?: boolean;
+  backup_codes_remaining?: number;
+};
+
+export async function getTwoFactorStatus(): Promise<TwoFactorStatus> {
+  const data = await backendFetch<TwoFactorStatus>("/api/user/2fa/status", {
+    method: "GET",
+  });
+  return data ?? {};
+}
+
+export type UserSessionRow = {
+  id?: string;
+  sid?: string;
+  created_at?: number;
+  last_seen_at?: number;
+  user_agent?: string;
+  ip?: string;
+  current?: boolean;
+};
+
+export async function listUserSessions(): Promise<UserSessionRow[]> {
+  const data = await backendFetch<
+    UserSessionRow[] | { items?: UserSessionRow[]; sessions?: UserSessionRow[] }
+  >("/api/user/sessions", { method: "GET" });
+  if (Array.isArray(data)) return data;
+  return data?.items ?? data?.sessions ?? [];
+}
+
+export async function revokeUserSession(sid: string): Promise<void> {
+  await backendFetch<unknown>(`/api/user/sessions/${encodeURIComponent(sid)}`, {
+    method: "DELETE",
+  });
+}
+
+export async function revokeOtherSessions(): Promise<void> {
+  await backendFetch<unknown>("/api/user/sessions/revoke-others", {
+    method: "POST",
+  });
+}
+
+export async function changeSelfPassword(input: {
+  username: string;
+  original_password: string;
+  password: string;
+  display_name?: string;
+}): Promise<void> {
+  await backendFetch<unknown>("/api/user/self", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: input.username,
+      display_name: input.display_name ?? "",
+      original_password: input.original_password,
+      password: input.password,
+    }),
+  });
 }
 
 /** Redeem an Admin-issued 兑换码; returns 额度 credited (not new balance). */

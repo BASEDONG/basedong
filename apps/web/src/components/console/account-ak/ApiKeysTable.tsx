@@ -2,7 +2,10 @@
 
 import { useCallback, useState } from "react";
 import type { ApiKeysUiCopy } from "./account-ak-ui-copy";
-import type { ApiKeyRow } from "./content";
+import {
+  API_KEY_STATUS_ENABLED,
+  type ApiKeyRow,
+} from "./content";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import { EditKeyModal } from "./EditKeyModal";
 import {
@@ -24,6 +27,7 @@ interface ApiKeysTableProps {
   onUpdateDescription: (id: string, description: string) => void;
   onCopied: () => void;
   onDeleteMismatch: () => void;
+  onToggleStatus?: (id: string, enable: boolean) => void;
   /** Resolve full API Key secret when list only has a masked value. */
   onReveal?: (id: string) => Promise<string | null | undefined>;
 }
@@ -41,6 +45,7 @@ export function ApiKeysTable({
   onUpdateDescription,
   onCopied,
   onDeleteMismatch,
+  onToggleStatus,
   onReveal,
 }: ApiKeysTableProps) {
   const [revealedAll, setRevealedAll] = useState(false);
@@ -135,6 +140,12 @@ export function ApiKeysTable({
                   {copy.tableHeaders.description}
                 </th>
                 <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
+                  {copy.tableHeaders.status ?? "Status"}
+                </th>
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
+                  {copy.tableHeaders.usedQuota ?? "Used"}
+                </th>
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
                   {copy.tableHeaders.createdAt}
                 </th>
                 <th className="h-[55px] rounded-tr-[8px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
@@ -146,7 +157,7 @@ export function ApiKeysTable({
               {keys.length === 0 ? (
                 <tr className="h-[167px]">
                   <td
-                    colSpan={5}
+                    colSpan={7}
                     className="border-b border-[rgb(226,232,240)] bg-white p-4 text-center text-[rgb(148,163,184)]"
                   >
                     <div className="mx-2 my-8 text-center text-[rgb(100,116,139)]">
@@ -192,11 +203,35 @@ export function ApiKeysTable({
                           {row.description || "—"}
                         </div>
                       </td>
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4 text-sm leading-[22px]">
+                        {row.status === API_KEY_STATUS_ENABLED
+                          ? (copy.table.statusEnabled ?? "Enabled")
+                          : (copy.table.statusDisabled ?? "Disabled")}
+                      </td>
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4 text-sm leading-[22px]">
+                        {row.usedQuota}
+                      </td>
                       <td className="border-b border-[rgb(226,232,240)] bg-white p-4 text-sm leading-[22px] whitespace-nowrap">
                         {row.createdAt}
                       </td>
                       <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
                         <div className="flex select-none flex-nowrap items-center gap-3">
+                          {onToggleStatus ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                onToggleStatus(
+                                  row.id,
+                                  row.status !== API_KEY_STATUS_ENABLED,
+                                )
+                              }
+                              className="cursor-pointer border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(74,171,240)] transition-opacity hover:opacity-80"
+                            >
+                              {row.status === API_KEY_STATUS_ENABLED
+                                ? (copy.table.disable ?? "Disable")
+                                : (copy.table.enable ?? "Enable")}
+                            </button>
+                          ) : null}
                           <button
                             type="button"
                             onClick={() => setPendingDelete(row)}
