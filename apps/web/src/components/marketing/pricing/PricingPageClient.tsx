@@ -24,13 +24,13 @@ export function PricingPageClient() {
   const emptySections = useMemo(
     () =>
       ({
-        对话: {
+        文本: {
           title: ui.chatTitle,
           headers: [],
           priceColumns: 3,
           groups: [],
         },
-        生图: {
+        图像: {
           title: ui.imageTitle,
           headers: [],
           priceColumns: 1,
@@ -87,6 +87,22 @@ export function PricingPageClient() {
     };
   }, [emptySections, locale]);
 
+  const categoryTabs = useMemo((): PricingCategoryId[] => {
+    if (loadState !== "ready") return ["全部"];
+    const present = PRICING_SECTION_KEYS.filter((k) =>
+      pricingSectionHasModels(view.sections, k),
+    );
+    return ["全部", ...present];
+  }, [loadState, view.sections]);
+
+  useEffect(() => {
+    if (category === "全部") return;
+    if (!categoryTabs.includes(category)) {
+      setCategory("全部");
+      setActiveVendor(null);
+    }
+  }, [category, categoryTabs]);
+
   const visibleSectionKeys = useMemo(() => {
     if (loadState !== "ready") return [];
     const keys =
@@ -100,12 +116,13 @@ export function PricingPageClient() {
 
   const chips = useMemo(() => {
     if (loadState !== "ready") return [];
-    if (category === "全部") return view.chips;
-    if (!pricingSectionHasModels(view.sections, category)) return view.chips;
+    const base = view.chips.filter((c) => c.name !== "Backend");
+    if (category === "全部") return base;
+    if (!pricingSectionHasModels(view.sections, category)) return base;
     const vendors = new Set(
       view.sections[category].groups.map((g) => g.vendor),
     );
-    return view.chips.filter((c) => vendors.has(c.name));
+    return base.filter((c) => vendors.has(c.name));
   }, [category, loadState, view]);
 
   function onSelectChip(chip: PricingChip) {
@@ -143,6 +160,7 @@ export function PricingPageClient() {
           <>
             <PricingToolbar
               category={category}
+              categories={categoryTabs}
               searchInput={searchInput}
               onCategoryChange={(c) => {
                 setCategory(c);

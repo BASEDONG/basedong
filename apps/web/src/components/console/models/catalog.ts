@@ -1,10 +1,13 @@
 import { BRAND } from "@/lib/assets";
 import type { PricingCatalog } from "@/lib/backend/client";
 import {
-  endpointToTypeTags,
   featureTagsFromPricing,
+  formatRetailPrice,
+  pricingItemToTypeTags,
   vendorIcon,
   vendorName,
+  contextLabelFromPricing,
+  contextKFromPricing,
 } from "@/lib/backend/catalog";
 import type { ModelCardData } from "./content-types";
 
@@ -23,16 +26,24 @@ export function pricingToModelCards(
     const name = item.model_name?.trim();
     if (!name) continue;
     if (enabled && !enabled.has(name)) continue;
+    const retail = formatRetailPrice(item);
+    const hasPrice =
+      retail.input !== "—" || retail.output !== "—" || retail.unit !== "—";
+    const contextK = contextKFromPricing(item);
     cards.push({
       id: name,
       title: name,
       provider: vendorName(item, catalog.vendors),
-      description: item.description?.trim() || "来自 Backend 模型目录",
+      description: item.description?.trim() ?? "",
       logo: vendorIcon(item, catalog.vendors),
       badge: null,
       deprecated: false,
-      typeTags: endpointToTypeTags(item.supported_endpoint_types),
+      typeTags: pricingItemToTypeTags(item),
       featureTags: featureTagsFromPricing(item),
+      endpointTypes: item.supported_endpoint_types?.filter(Boolean) ?? [],
+      context: contextLabelFromPricing(item),
+      contextK,
+      retailPrice: hasPrice ? retail : undefined,
     });
   }
   return cards;
@@ -44,11 +55,13 @@ export function enabledModelsToCards(models: string[]): ModelCardData[] {
     id: name,
     title: name,
     provider: "Backend",
-    description: "当前用户分组可用的模型",
+    description: "",
     logo: BRAND.logoMark,
     badge: null,
     deprecated: false,
-    typeTags: ["对话"],
+    typeTags: ["文本"],
     featureTags: [],
+    context: null,
+    contextK: 0,
   }));
 }

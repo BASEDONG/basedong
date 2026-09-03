@@ -7,10 +7,9 @@ import { cn } from "@/lib/utils";
 import type { PricingCategoryId } from "./content-types";
 import { getPricingUiCopy } from "./pricing-ui-copy";
 
-const CATEGORIES: PricingCategoryId[] = ["全部", "对话", "生图", "语音", "视频"];
-
 type PricingToolbarProps = {
   category: PricingCategoryId;
+  categories: readonly PricingCategoryId[];
   searchInput: string;
   onCategoryChange: (c: PricingCategoryId) => void;
   onSearchInputChange: (v: string) => void;
@@ -19,6 +18,7 @@ type PricingToolbarProps = {
 
 export function PricingToolbar({
   category,
+  categories,
   searchInput,
   onCategoryChange,
   onSearchInputChange,
@@ -58,7 +58,7 @@ export function PricingToolbar({
       </form>
 
       <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map((id) => {
+        {categories.map((id) => {
           const active = category === id;
           return (
             <button

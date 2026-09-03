@@ -1,14 +1,11 @@
 [
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-haiku-4-5",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "轻量",
-      "低延迟"
-    ],
+    "sceneTags": [],
     "description": "Claude Haiku 4.5：Anthropic Claude Haiku 系列模型，对外短名，后台映射到带日期的上游模型。",
     "features": [],
     "inputPrice": "",
@@ -19,14 +16,11 @@
   },
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-opus-4-5",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "旗舰",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "Claude Opus 4.5：Anthropic Claude Opus 系列旗舰模型，对外短名，后台映射到带日期的上游模型。",
     "features": [],
     "inputPrice": "",
@@ -37,14 +31,11 @@
   },
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-opus-4-6",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "旗舰",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "Claude Opus 4.6：Anthropic Claude Opus 系列旗舰模型，适合高难度推理、代码和复杂任务。",
     "features": [],
     "inputPrice": "",
@@ -55,14 +46,11 @@
   },
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-opus-4-7",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "旗舰",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "Claude Opus 4.7：Anthropic Claude Opus 系列旗舰模型，适合高难度推理、代码和复杂任务。",
     "features": [],
     "inputPrice": "",
@@ -73,14 +61,11 @@
   },
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-opus-4-8",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "旗舰",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "Claude Opus 4.8：Anthropic Claude Opus 系列旗舰模型，适合高难度推理、代码和复杂任务。",
     "features": [],
     "inputPrice": "",
@@ -91,7 +76,7 @@
   },
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-opus-5",
     "published": "",
     "publishedAt": "",
@@ -106,14 +91,11 @@
   },
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-sonnet-4-6",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "推理",
-      "代码"
-    ],
+    "sceneTags": [],
     "description": "Claude Sonnet 4.6：Anthropic Claude Sonnet 系列模型，兼顾高能力、速度和代码/代理场景。",
     "features": [],
     "inputPrice": "",
@@ -124,14 +106,11 @@
   },
   {
     "vendor": "Anthropic",
-    "type": "对话",
+    "type": "文本",
     "modelId": "claude-sonnet-5",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "Claude",
-      "Anthropic"
-    ],
+    "sceneTags": [],
     "description": "Claude Sonnet 5：Anthropic Sonnet 系列模型。",
     "features": [],
     "inputPrice": "",
@@ -142,14 +121,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "codex-auto-review",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "代码",
-      "代理"
-    ],
+    "sceneTags": [],
     "description": "codex-auto-review：Codex 代码审查功能模型别名。",
     "features": [],
     "inputPrice": "",
@@ -160,14 +136,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "codex-auto-review-openai-compact",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "代码",
-      "代理"
-    ],
+    "sceneTags": [],
     "description": "codex-auto-review-openai-compact：Codex 代码审查紧凑版模型别名。",
     "features": [],
     "inputPrice": "",
@@ -178,14 +151,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.4",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "推理",
-      "代码"
-    ],
+    "sceneTags": [],
     "description": "GPT-5.4：OpenAI GPT 系列模型，适合推理与代码任务。",
     "features": [],
     "inputPrice": "",
@@ -196,14 +166,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.4-mini",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "推理",
-      "代码"
-    ],
+    "sceneTags": [],
     "description": "GPT-5.4 Mini：OpenAI GPT 系列轻量模型，适合推理与代码任务。",
     "features": [],
     "inputPrice": "",
@@ -214,7 +181,7 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.4-openai-compact",
     "published": "",
     "publishedAt": "",
@@ -229,14 +196,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.5",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "推理",
-      "代码"
-    ],
+    "sceneTags": [],
     "description": "GPT-5.5：OpenAI GPT 系列模型，适合推理与代码任务。",
     "features": [],
     "inputPrice": "",
@@ -247,7 +211,7 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.5-mini",
     "published": "",
     "publishedAt": "",
@@ -262,7 +226,7 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.5-openai-compact",
     "published": "",
     "publishedAt": "",
@@ -277,14 +241,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.6-luna",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "聊天",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "GPT-5.6 Luna：OpenAI GPT 系列模型，适合聊天与推理场景。",
     "features": [],
     "inputPrice": "",
@@ -295,14 +256,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.6-sol",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "聊天",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "GPT-5.6 Sol：OpenAI GPT 系列模型，适合聊天与推理场景。",
     "features": [],
     "inputPrice": "",
@@ -313,14 +271,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "gpt-5.6-terra",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "聊天",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "GPT-5.6 Terra：OpenAI GPT 系列模型，适合聊天与推理场景。",
     "features": [],
     "inputPrice": "",
@@ -331,14 +286,11 @@
   },
   {
     "vendor": "OpenAI",
-    "type": "生图",
+    "type": "图像",
     "modelId": "gpt-image-2",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "图像",
-      "生成"
-    ],
+    "sceneTags": [],
     "description": "GPT Image 2：OpenAI 图像生成模型。",
     "features": [],
     "inputPrice": "",
@@ -349,14 +301,11 @@
   },
   {
     "vendor": "xAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "grok-4.20-multi-agent-xhigh",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "文本",
-      "推理"
-    ],
+    "sceneTags": [],
     "description": "Grok 4.20 Multi-Agent xHigh：xAI 多智能体高阶推理模型。",
     "features": [],
     "inputPrice": "",
@@ -367,16 +316,17 @@
   },
   {
     "vendor": "xAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "grok-4.5",
     "published": "",
     "publishedAt": "",
     "sceneTags": [
-      "文本",
-      "视觉"
+      "multimodal"
     ],
     "description": "Grok 4.5：xAI 多模态模型，支持文本与视觉理解。",
-    "features": [],
+    "features": [
+      "multimodal"
+    ],
     "inputPrice": "",
     "outputPrice": "",
     "context": "1M",
@@ -385,13 +335,11 @@
   },
   {
     "vendor": "xAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "grok-4.5-聊天",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "聊天"
-    ],
+    "sceneTags": [],
     "description": "Grok 4.5 聊天：面向对话场景的 Grok 4.5 变体。",
     "features": [],
     "inputPrice": "",
@@ -402,16 +350,17 @@
   },
   {
     "vendor": "xAI",
-    "type": "对话",
+    "type": "文本",
     "modelId": "grok-4.6",
     "published": "",
     "publishedAt": "",
     "sceneTags": [
-      "文本",
-      "视觉"
+      "multimodal"
     ],
     "description": "Grok 4.6：xAI 多模态模型，支持文本与视觉理解。",
-    "features": [],
+    "features": [
+      "multimodal"
+    ],
     "inputPrice": "",
     "outputPrice": "",
     "context": "1M",
@@ -420,14 +369,11 @@
   },
   {
     "vendor": "xAI",
-    "type": "生图",
+    "type": "图像",
     "modelId": "grok-imagine-image-2.0",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "图像",
-      "生成"
-    ],
+    "sceneTags": [],
     "description": "Grok Imagine Image 2.0：xAI 图像生成模型。",
     "features": [],
     "inputPrice": "",
@@ -438,14 +384,11 @@
   },
   {
     "vendor": "xAI",
-    "type": "生图",
+    "type": "图像",
     "modelId": "grok-imagine-image-lite",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "图像",
-      "生成"
-    ],
+    "sceneTags": [],
     "description": "Grok Imagine Image Lite：xAI 轻量图像生成模型。",
     "features": [],
     "inputPrice": "",
@@ -456,13 +399,11 @@
   },
   {
     "vendor": "字节跳动",
-    "type": "对话",
+    "type": "文本",
     "modelId": "doubao-seed-2.0-code",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "代码"
-    ],
+    "sceneTags": [],
     "description": "豆包 Seed 2.0 Code：字节跳动面向代码场景的模型。",
     "features": [],
     "inputPrice": "",
@@ -473,13 +414,11 @@
   },
   {
     "vendor": "字节跳动",
-    "type": "对话",
+    "type": "文本",
     "modelId": "doubao-seed-2.0-lite",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "轻量"
-    ],
+    "sceneTags": [],
     "description": "豆包 Seed 2.0 Lite：字节跳动轻量模型。",
     "features": [],
     "inputPrice": "",
@@ -490,13 +429,11 @@
   },
   {
     "vendor": "字节跳动",
-    "type": "对话",
+    "type": "文本",
     "modelId": "doubao-seed-2.0-mini",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "轻量"
-    ],
+    "sceneTags": [],
     "description": "豆包 Seed 2.0 Mini：字节跳动迷你模型。",
     "features": [],
     "inputPrice": "",
@@ -507,13 +444,11 @@
   },
   {
     "vendor": "字节跳动",
-    "type": "对话",
+    "type": "文本",
     "modelId": "doubao-seed-2.0-pro",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "旗舰"
-    ],
+    "sceneTags": [],
     "description": "豆包 Seed 2.0 Pro：字节跳动旗舰模型。",
     "features": [],
     "inputPrice": "",
@@ -524,7 +459,7 @@
   },
   {
     "vendor": "智谱",
-    "type": "对话",
+    "type": "文本",
     "modelId": "glm-5-turbo",
     "published": "",
     "publishedAt": "",
@@ -539,7 +474,7 @@
   },
   {
     "vendor": "智谱",
-    "type": "对话",
+    "type": "文本",
     "modelId": "glm-5.1",
     "published": "",
     "publishedAt": "",
@@ -554,7 +489,7 @@
   },
   {
     "vendor": "智谱",
-    "type": "对话",
+    "type": "文本",
     "modelId": "glm-5.2",
     "published": "",
     "publishedAt": "",
@@ -569,7 +504,7 @@
   },
   {
     "vendor": "智谱",
-    "type": "对话",
+    "type": "文本",
     "modelId": "glm-5.3",
     "published": "",
     "publishedAt": "",
@@ -584,7 +519,7 @@
   },
   {
     "vendor": "Moonshot",
-    "type": "对话",
+    "type": "文本",
     "modelId": "kimi-k2.6",
     "published": "",
     "publishedAt": "",
@@ -599,13 +534,11 @@
   },
   {
     "vendor": "Moonshot",
-    "type": "对话",
+    "type": "文本",
     "modelId": "kimi-k2.7-code",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "代码"
-    ],
+    "sceneTags": [],
     "description": "Kimi K2.7 Code：Moonshot AI 面向代码任务的模型。",
     "features": [],
     "inputPrice": "",
@@ -616,13 +549,11 @@
   },
   {
     "vendor": "Moonshot",
-    "type": "对话",
+    "type": "文本",
     "modelId": "kimi-k3",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "旗舰"
-    ],
+    "sceneTags": [],
     "description": "Kimi K3：Moonshot AI 旗舰模型。",
     "features": [],
     "inputPrice": "",
@@ -633,7 +564,7 @@
   },
   {
     "vendor": "MiniMax",
-    "type": "对话",
+    "type": "文本",
     "modelId": "MiniMax-M2.7",
     "published": "",
     "publishedAt": "",
@@ -648,7 +579,7 @@
   },
   {
     "vendor": "MiniMax",
-    "type": "对话",
+    "type": "文本",
     "modelId": "MiniMax-M3",
     "published": "",
     "publishedAt": "",
@@ -663,14 +594,11 @@
   },
   {
     "vendor": "Google",
-    "type": "生图",
+    "type": "图像",
     "modelId": "gemini-3-pro-image-preview",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "图像",
-      "生成"
-    ],
+    "sceneTags": [],
     "description": "Gemini 3 Pro Image Preview：Google Gemini 图像生成预览模型。",
     "features": [],
     "inputPrice": "",
@@ -681,14 +609,11 @@
   },
   {
     "vendor": "Google",
-    "type": "生图",
+    "type": "图像",
     "modelId": "gemini-3.1-flash-image-preview",
     "published": "",
     "publishedAt": "",
-    "sceneTags": [
-      "图像",
-      "生成"
-    ],
+    "sceneTags": [],
     "description": "Gemini 3.1 Flash Image Preview：Google Gemini 轻量图像生成预览模型。",
     "features": [],
     "inputPrice": "",

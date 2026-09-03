@@ -3,21 +3,22 @@
 import type { KeyboardEvent } from "react";
 import { Search } from "lucide-react";
 import { useLocale } from "@/components/shared/LocaleProvider";
+import type { FilterChipOption } from "@/lib/backend/pricing-filters";
 import { cn } from "@/lib/utils";
 import { getModelsContent } from "./content";
 
 type Props = {
-  typeFilter: string;
   vendorFilter: string;
-  sceneFilter: string;
+  billingFilter: string;
+  endpointFilter: string;
   searchQuery: string;
-  typeOptions: readonly string[];
-  vendorOptions: readonly string[];
-  sceneOptions: readonly string[];
+  vendorOptions: readonly FilterChipOption[];
+  billingOptions: readonly FilterChipOption[];
+  endpointOptions: readonly FilterChipOption[];
   hotModels: readonly string[];
-  onTypeFilter: (v: string) => void;
-  onVendorFilter: (v: string) => void;
-  onSceneFilter: (v: string) => void;
+  onVendorFilter: (v: FilterChipOption) => void;
+  onBillingFilter: (v: FilterChipOption) => void;
+  onEndpointFilter: (v: FilterChipOption) => void;
   onSearchQuery: (v: string) => void;
   onSearch: () => void;
   onHotModel: (name: string) => void;
@@ -25,10 +26,12 @@ type Props = {
 
 function FilterChip({
   label,
+  count,
   active,
   onClick,
 }: {
   label: string;
+  count?: number;
   active: boolean;
   onClick: () => void;
 }) {
@@ -44,22 +47,57 @@ function FilterChip({
       )}
     >
       {label}
+      {typeof count === "number" ? (
+        <span className="ml-1 font-normal opacity-70">({count})</span>
+      ) : null}
     </button>
   );
 }
 
+function FilterRow({
+  label,
+  options,
+  activeValue,
+  onSelect,
+}: {
+  label: string;
+  options: readonly FilterChipOption[];
+  activeValue: string;
+  onSelect: (option: FilterChipOption) => void;
+}) {
+  if (options.length <= 1) return null;
+  return (
+    <div className="mb-4 flex gap-4 last:mb-0 max-md:flex-col max-md:gap-2">
+      <span className="h-8 whitespace-nowrap text-sm font-semibold leading-8 text-slate-700">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => (
+          <FilterChip
+            key={option.value || "__all__"}
+            label={option.label}
+            count={option.value ? option.count : undefined}
+            active={activeValue === option.value}
+            onClick={() => onSelect(option)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ModelsToolbar({
-  typeFilter,
   vendorFilter,
-  sceneFilter,
+  billingFilter,
+  endpointFilter,
   searchQuery,
-  typeOptions,
   vendorOptions,
-  sceneOptions,
+  billingOptions,
+  endpointOptions,
   hotModels,
-  onTypeFilter,
   onVendorFilter,
-  onSceneFilter,
+  onBillingFilter,
+  onEndpointFilter,
   onSearchQuery,
   onSearch,
   onHotModel,
@@ -113,53 +151,24 @@ export function ModelsToolbar({
         </div>
       ) : null}
 
-      <div className="mb-4 flex gap-4 max-md:flex-col max-md:gap-2">
-        <span className="h-8 whitespace-nowrap text-sm font-semibold leading-8 text-slate-700">
-          {page.typeLabel}
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {typeOptions.map((option) => (
-            <FilterChip
-              key={option}
-              label={page.displayFilterLabel(option)}
-              active={typeFilter === option}
-              onClick={() => onTypeFilter(option)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-4 flex gap-4 max-md:flex-col max-md:gap-2">
-        <span className="h-8 whitespace-nowrap text-sm font-semibold leading-8 text-slate-700">
-          {page.vendorLabel}
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {vendorOptions.map((option) => (
-            <FilterChip
-              key={option}
-              label={page.displayFilterLabel(option)}
-              active={vendorFilter === option}
-              onClick={() => onVendorFilter(option)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="flex gap-4 max-md:flex-col max-md:gap-2">
-        <span className="h-8 whitespace-nowrap text-sm font-semibold leading-8 text-slate-700">
-          {page.sceneLabel}
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {sceneOptions.map((option) => (
-            <FilterChip
-              key={option}
-              label={page.displayFilterLabel(option)}
-              active={sceneFilter === option}
-              onClick={() => onSceneFilter(option)}
-            />
-          ))}
-        </div>
-      </div>
+      <FilterRow
+        label={page.vendorLabel}
+        options={vendorOptions}
+        activeValue={vendorFilter}
+        onSelect={onVendorFilter}
+      />
+      <FilterRow
+        label={page.billingLabel}
+        options={billingOptions}
+        activeValue={billingFilter}
+        onSelect={onBillingFilter}
+      />
+      <FilterRow
+        label={page.endpointLabel}
+        options={endpointOptions}
+        activeValue={endpointFilter}
+        onSelect={onEndpointFilter}
+      />
     </div>
   );
 }

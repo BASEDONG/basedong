@@ -1,5 +1,6 @@
 "use client";
 
+import { CatalogIcon } from "@/components/shared/CatalogIcon";
 import { cn } from "@/lib/utils";
 import type { PricingChip } from "./content-types";
 import { logoSrc } from "./content";
@@ -34,11 +35,10 @@ export function PricingVendorChips({
                   : "border-[#DDE5F0] bg-white text-slate-600 hover:border-[#4AABF0]",
               )}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={logoSrc(chip.logoFile, chip.logo)}
-                alt=""
-                className="h-[18px] w-[18px] rounded-full object-contain"
+              <CatalogIcon
+                value={logoSrc(chip.logoFile, chip.logo)}
+                size={18}
+                className="rounded-full"
               />
               {chip.name}
             </button>

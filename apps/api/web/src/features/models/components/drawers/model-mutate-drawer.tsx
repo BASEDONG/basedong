@@ -34,8 +34,8 @@ import {
   sideDrawerSwitchItemClassName,
 } from '@/components/drawer-layout'
 import { JsonEditor } from '@/components/json-editor'
-import { TagInput } from '@/components/tag-input'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Collapsible,
   CollapsibleContent,
@@ -83,7 +83,21 @@ import { safeJsonParse } from '@/features/system-settings/utils/json-parser'
 
 import { createModel, updateModel, getModel, getVendors } from '../../api'
 import { getNameRuleOptions, ENDPOINT_TEMPLATES } from '../../constants'
-import { modelsQueryKeys, vendorsQueryKeys, parseModelTags } from '../../lib'
+import {
+  modelsQueryKeys,
+  vendorsQueryKeys,
+  parseModelTags,
+  BS_MODALITY_OPTIONS,
+  applyContextKToTags,
+  applyModalityKeyToTags,
+  applyMultimodalToTags,
+  extractContextKFromTags,
+  extractModalityKeyFromTags,
+  extractMultimodalFromTags,
+  formatContextKLabel,
+  normalizeCatalogControlTags,
+  type BsModalityTagKey,
+} from '../../lib'
 import type { Model } from '../../types'
 
 // Extended schema for ratio configuration (internal form state only)
@@ -472,10 +486,12 @@ export function ModelMutateDrawer({
     async (values: ExtendedModelFormValues): Promise<void> => {
       setIsSubmitting(true)
       try {
+        const tagsRaw = Array.isArray(values.tags) ? values.tags : []
+        const tagsNormalized = normalizeCatalogControlTags(tagsRaw)
         const submitData = {
           ...values,
           id: isEditing ? currentModelId : undefined,
-          tags: Array.isArray(values.tags) ? values.tags.join(',') : '',
+          tags: tagsNormalized.join(','),
           status: values.status ? 1 : 0,
           sync_official: values.sync_official ? 1 : 0,
         }
@@ -855,26 +871,143 @@ export function ModelMutateDrawer({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name='tags'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Tags')}</FormLabel>
-                    <FormControl>
-                      <TagInput
-                        value={field.value || []}
-                        onChange={field.onChange}
-                        placeholder={t('Add tags...')}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Press Enter or comma to add tags')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <FormItem>
+                <FormLabel>{t('Modality')}</FormLabel>
+                <Select
+                  items={[
+                    { value: '__none__', label: t('Not set') },
+                    ...BS_MODALITY_OPTIONS.map((o) => ({
+                      value: o.key,
+                      label: t(o.labelKey),
+                    })),
+                  ]}
+                  value={
+                    extractModalityKeyFromTags(form.watch('tags') || []) ??
+                    '__none__'
+                  }
+                  onValueChange={(value) => {
+                    const key =
+                      !value || value === '__none__'
+                        ? null
+                        : (value as BsModalityTagKey)
+                    form.setValue(
+                      'tags',
+                      applyModalityKeyToTags(form.getValues('tags') || [], key),
+                      { shouldDirty: true }
+                    )
+                  }}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('Select modality')} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent alignItemWithTrigger={false}>
+                    <SelectGroup>
+                      <SelectItem value='__none__'>{t('Not set')}</SelectItem>
+                      {BS_MODALITY_OPTIONS.map((o) => (
+                        <SelectItem key={o.key} value={o.key}>
+                          {t(o.labelKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  {t(
+                    'Writes a bs* modality control tag (bsText / bsImage / bsVideo / bsAudio) for the customer catalog.'
+                  )}
+                </FormDescription>
+              </FormItem>
+
+              <FormItem>
+                <FormLabel>{t('Context window')}</FormLabel>
+                <div className='flex items-center gap-3'>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      min={1}
+                      step={1}
+                      placeholder='128'
+                      className='max-w-[12rem]'
+                      value={
+                        extractContextKFromTags(form.watch('tags') || []) ?? ''
+                      }
+                      onChange={(e) => {
+                        const raw = e.target.value.trim()
+                        if (raw === '') {
+                          form.setValue(
+                            'tags',
+                            applyContextKToTags(
+                              form.getValues('tags') || [],
+                              null
+                            ),
+                            { shouldDirty: true }
+                          )
+                          return
+                        }
+                        const n = Number.parseInt(raw, 10)
+                        form.setValue(
+                          'tags',
+                          applyContextKToTags(
+                            form.getValues('tags') || [],
+                            Number.isFinite(n) && n > 0 ? n : null
+                          ),
+                          { shouldDirty: true }
+                        )
+                      }}
+                    />
+                  </FormControl>
+                  {(() => {
+                    const k = extractContextKFromTags(form.watch('tags') || [])
+                    if (k === null) return null
+                    return (
+                      <span className='text-muted-foreground text-sm tabular-nums'>
+                        {formatContextKLabel(k)}
+                        <span className='ml-2 font-mono text-xs'>
+                          bsCtx{k}
+                        </span>
+                      </span>
+                    )
+                  })()}
+                </div>
+                <FormDescription>
+                  {t(
+                    'Thousands of tokens (e.g. 127 → bsCtx127 → 127K). Filters compare this number.'
+                  )}
+                </FormDescription>
+              </FormItem>
+
+              <FormItem>
+                <FormLabel>{t('Multimodal')}</FormLabel>
+                <label className='flex cursor-pointer items-center gap-2 text-sm'>
+                  <Checkbox
+                    checked={extractMultimodalFromTags(
+                      form.watch('tags') || []
+                    )}
+                    onCheckedChange={(value) => {
+                      form.setValue(
+                        'tags',
+                        applyMultimodalToTags(
+                          form.getValues('tags') || [],
+                          value === true
+                        ),
+                        { shouldDirty: true }
+                      )
+                    }}
+                  />
+                  <span>
+                    {t(
+                      'Understands image and/or audio input (not generation modality)'
+                    )}
+                  </span>
+                </label>
+                <FormDescription>
+                  {t(
+                    'Writes bsCapMultimodal when checked. Use Modality above for image/audio generation products.'
+                  )}
+                </FormDescription>
+              </FormItem>
             </SideDrawerSection>
 
             {/* Matching Configuration */}

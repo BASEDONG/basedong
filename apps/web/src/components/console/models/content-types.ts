@@ -8,6 +8,22 @@ export interface ModelCardData {
   deprecated: boolean;
   typeTags: string[];
   featureTags: string[];
+  /** Backend `supported_endpoint_types` for code-sample / docs routing. */
+  endpointTypes?: string[];
+  /**
+   * Context window display label from `bsCtx*` (preferred) or legacy `128K`/`1M`.
+   * Null when unknown.
+   */
+  context?: string | null;
+  /** Context window in thousands of tokens; 0 when unknown (filter helper). */
+  contextK?: number;
+  /** USD display from Backend ratios; omitted when unknown. */
+  retailPrice?: {
+    input: string;
+    output: string;
+    cache: string;
+    unit: string;
+  };
 }
 
 export interface NavItem {

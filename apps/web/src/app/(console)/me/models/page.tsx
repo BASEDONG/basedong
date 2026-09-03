@@ -1,5 +1,10 @@
-﻿import { ModelsPageClient } from "@/components/console/models/ModelsPageClient";
+﻿import { Suspense } from "react";
+import { ModelsPageClient } from "@/components/console/models/ModelsPageClient";
 
 export default function ModelsPage() {
-  return <ModelsPageClient />;
+  return (
+    <Suspense fallback={null}>
+      <ModelsPageClient />
+    </Suspense>
+  );
 }

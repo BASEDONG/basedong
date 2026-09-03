@@ -7,28 +7,59 @@ import type {
   PricingCategoryId,
 } from "@/components/marketing/pricing/content-types";
 import { getPricingSectionMeta } from "@/components/marketing/pricing/pricing-ui-copy";
-import { getModelsContent } from "@/components/marketing/models/content";
 import type { ModelCardData } from "@/components/marketing/models/content-types";
+import { contextLabelFromTags, parseTags, bsModalityKeyFromTags, capabilityKeysFromTags, maxContextKFromTags } from "@/lib/backend/model-tags";
 
-export type CatalogTypeTag =
-  | "对话"
-  | "生图"
-  | "语音"
-  | "视频"
-  | "嵌入"
-  | "重排序";
+export type CatalogTypeTag = "文本" | "图像" | "语音" | "视频";
 
-const PRICING_SECTION_KEYS = ["对话", "生图", "语音", "视频"] as const;
+const PRICING_SECTION_KEYS = ["文本", "图像", "语音", "视频"] as const;
 type PricingSectionKey = (typeof PRICING_SECTION_KEYS)[number];
 
 const INITIAL_VISIBLE = 5;
 
+const BS_MODALITY_TO_TYPE: Record<
+  NonNullable<ReturnType<typeof bsModalityKeyFromTags>>,
+  CatalogTypeTag
+> = {
+  bstext: "文本",
+  bsimage: "图像",
+  bsvideo: "视频",
+  bsaudio: "语音",
+};
+
+/** Alias: marketing endpoint filter uses the same modality keys. */
+export type EndpointModality = CatalogTypeTag;
+
+export const ENDPOINT_MODALITY_IDS = PRICING_SECTION_KEYS;
+
+/** @deprecated Prefer using CatalogTypeTag directly; kept for call sites. */
+export function typeTagToEndpointModality(
+  tag: CatalogTypeTag | string,
+): EndpointModality {
+  switch (tag) {
+    case "生图":
+    case "图像":
+      return "图像";
+    case "视频":
+      return "视频";
+    case "语音":
+      return "语音";
+    case "文本":
+    case "对话":
+    case "嵌入":
+    case "重排序":
+    default:
+      return "文本";
+  }
+}
+
 export function endpointToTypeTags(endpoints?: string[]): CatalogTypeTag[] {
-  if (!endpoints?.length) return ["对话"];
+  if (!endpoints?.length) return ["文本"];
   const tags = new Set<CatalogTypeTag>();
   for (const ep of endpoints) {
     const lower = ep.toLowerCase();
-    if (lower.includes("image") || lower.includes("图像")) tags.add("生图");
+    if (lower.includes("image") || lower.includes("图像") || lower.includes("生图"))
+      tags.add("图像");
     else if (
       lower.includes("audio") ||
       lower.includes("speech") ||
@@ -36,34 +67,63 @@ export function endpointToTypeTags(endpoints?: string[]): CatalogTypeTag[] {
     )
       tags.add("语音");
     else if (lower.includes("video")) tags.add("视频");
-    else if (lower.includes("embed")) tags.add("嵌入");
-    else if (lower.includes("rerank")) tags.add("重排序");
-    else tags.add("对话");
+    else tags.add("文本"); // chat / embed / rerank / …
   }
-  return tags.size ? [...tags] : ["对话"];
+  return tags.size ? [...tags] : ["文本"];
 }
 
+/**
+ * Catalog type for a pricing row.
+ * Explicit admin modality tags (`bsImage`, …) win — never infer from freeform
+ * tags that merely contain "image"/"video". Otherwise fall back to
+ * `supported_endpoint_types` (default 文本).
+ */
+export function pricingItemToTypeTags(item: PricingItem): CatalogTypeTag[] {
+  const modality = bsModalityKeyFromTags(item.tags);
+  if (modality) return [BS_MODALITY_TO_TYPE[modality]];
+  return endpointToTypeTags(item.supported_endpoint_types);
+}
+
+/** Modality keys for marketing endpoint-type filters. */
+export function pricingItemEndpoints(item: PricingItem): EndpointModality[] {
+  return pricingItemToTypeTags(item);
+}
+
+/**
+ * Differentiating chips for plaza cards.
+ * Only live capability keys (currently `multimodal`). Freeform / retired
+ * tokens and raw control tags are never shown.
+ */
 export function featureTagsFromPricing(item: PricingItem): string[] {
-  if (!item.tags?.trim()) return [];
-  return item.tags
-    .split(/[,，|/\s]+/)
-    .map((t) => t.trim())
-    .filter(Boolean)
-    .slice(0, 8);
+  return capabilityKeysFromTags(parseTags(item.tags));
+}
+
+/** Context display label from raw pricing tags (`bsCtx*` preferred, legacy K/M fallback). */
+export function contextLabelFromPricing(item: PricingItem): string | null {
+  return contextLabelFromTags(parseTags(item.tags));
+}
+
+/** Context window in thousands of tokens from raw pricing tags. */
+export function contextKFromPricing(item: PricingItem): number {
+  return maxContextKFromTags(parseTags(item.tags));
 }
 
 export function vendorName(
   item: PricingItem,
   vendors: PricingCatalog["vendors"],
 ): string {
-  if (item.owner_by?.trim()) return item.owner_by.trim();
   if (item.vendor_id != null) {
     const v = vendors.find((x) => x.id === item.vendor_id);
-    if (v?.name) return v.name;
+    if (v?.name?.trim()) return v.name.trim();
   }
+  if (item.owner_by?.trim()) return item.owner_by.trim();
   return "Backend";
 }
 
+/** Resolve model/vendor icon from Backend catalog.
+ * Values are `@lobehub/icons` keys (e.g. `OpenAI`, `DeepSeek.Color`) or a
+ * fallback asset path — render with `CatalogIcon`, not `<img src>`.
+ */
 export function vendorIcon(
   item: PricingItem,
   vendors: PricingCatalog["vendors"],
@@ -146,7 +206,7 @@ function primaryPricingSection(
   for (const key of PRICING_SECTION_KEYS) {
     if (tags.includes(key)) return key;
   }
-  return "对话";
+  return "文本";
 }
 
 function modelDetailHref(modelId: string): string {
@@ -200,10 +260,10 @@ export function pricingToMarketingSections(
 
     const vendor = vendorName(item, catalog.vendors);
     const logo = vendorIcon(item, catalog.vendors);
-    const tags = endpointToTypeTags(item.supported_endpoint_types);
+    const tags = pricingItemToTypeTags(item);
     const sectionKey = primaryPricingSection(tags);
     const prices = formatRetailPrice(item);
-    const isChat = sectionKey === "对话";
+    const isChat = sectionKey === "文本";
 
     const model = {
       displayName: name,
@@ -269,29 +329,32 @@ export function pricingToMarketingModelCards(
   catalog: PricingCatalog,
   locale = "zh-CN",
 ): ModelCardData[] {
-  const descriptionFallback = getModelsContent(locale).catalogDescriptionFallback;
   const cards: ModelCardData[] = [];
   for (const item of catalog.items) {
     const name = item.model_name?.trim();
     if (!name) continue;
-    const tags = endpointToTypeTags(item.supported_endpoint_types);
-    const type = (tags[0] ?? "对话") as ModelCardData["type"];
+    const tags = pricingItemToTypeTags(item);
+    const type = (tags[0] ?? "文本") as ModelCardData["type"];
     const prices = formatRetailPrice(item);
     const featureTags = featureTagsFromPricing(item);
+    const vendor = vendorName(item, catalog.vendors);
     cards.push({
       modelId: name,
-      vendor: vendorName(item, catalog.vendors),
+      vendor,
       type,
-      description: item.description?.trim() || descriptionFallback,
+      description: item.description?.trim() ?? "",
       logo: vendorIcon(item, catalog.vendors),
       sceneTags: featureTags,
       features: featureTags,
       inputPrice: prices.input === "—" ? "" : prices.input,
       outputPrice: prices.output === "—" ? "" : prices.output,
-      context: "—",
+      context: contextLabelFromPricing(item) ?? "—",
       size: "—",
       published: "",
       publishedAt: "",
+      quotaType: item.quota_type,
+      endpoints: pricingItemEndpoints(item),
+      vendorId: item.vendor_id,
     });
   }
   return cards;

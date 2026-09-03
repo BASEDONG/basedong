@@ -2,10 +2,8 @@ import type { SfGradientPalette } from "@/types/siliconflow-cn-10b89bdc";
 
 export type ModelType =
   | "全部"
-  | "对话"
-  | "生图"
-  | "嵌入"
-  | "重排序"
+  | "文本"
+  | "图像"
   | "语音"
   | "视频";
 
@@ -23,6 +21,10 @@ export type ModelCardData = {
   context: string;
   size: string;
   logo: string;
+  /** 0 = pay-per-token, 1 = pay-per-request (Backend quota_type). */
+  quotaType?: number;
+  endpoints: string[];
+  vendorId?: number;
 };
 
 export type SeriesCardData = {
@@ -50,9 +52,12 @@ export type ModelsPageStrings = {
   searchPlaceholder: string;
   searchButton: string;
   hotLabel: string;
-  typeLabel: string;
   vendorLabel: string;
-  sceneLabel: string;
+  tagLabel: string;
+  billingLabel: string;
+  endpointLabel: string;
+  billingTokenLabel: string;
+  billingRequestLabel: string;
   catalogTitle: string;
   sortDefault: string;
   sortReverse: string;
@@ -63,6 +68,7 @@ export type ModelsPageStrings = {
   heroLogoAlt: string;
   filterAll: string;
   typeLabels: Record<Exclude<ModelType, "全部">, string>;
+  endpointLabels: Record<string, string>;
   statusLoading: string;
   statusEmpty: string;
   statusError: string;
@@ -80,9 +86,12 @@ export type ModelsPageContent = {
   searchPlaceholder: string;
   searchButton: string;
   hotLabel: string;
-  typeLabel: string;
   vendorLabel: string;
-  sceneLabel: string;
+  tagLabel: string;
+  billingLabel: string;
+  endpointLabel: string;
+  billingTokenLabel: string;
+  billingRequestLabel: string;
   catalogTitle: string;
   sortDefault: string;
   sortReverse: string;
@@ -96,7 +105,9 @@ export type ModelsPageContent = {
   typeOptions: readonly ModelType[];
   filterAll: string;
   typeLabels: ModelsPageStrings["typeLabels"];
+  endpointLabels: ModelsPageStrings["endpointLabels"];
   displayFilterLabel: (value: string) => string;
+  endpointDisplayLabel: (id: string) => string;
   statusLoading: string;
   statusEmpty: string;
   statusError: string;

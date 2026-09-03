@@ -46,6 +46,10 @@ function buildModelsContent(strings: ModelsPageStrings): ModelsPageContent {
     return value;
   }
 
+  function endpointDisplayLabel(id: string): string {
+    return strings.endpointLabels[id] ?? id;
+  }
+
   const series: SeriesCardData[] = SERIES_BASE.map((base, i) => ({
     name: base.name,
     description: strings.seriesDescriptions[i]!,
@@ -62,9 +66,12 @@ function buildModelsContent(strings: ModelsPageStrings): ModelsPageContent {
     searchPlaceholder: strings.searchPlaceholder,
     searchButton: strings.searchButton,
     hotLabel: strings.hotLabel,
-    typeLabel: strings.typeLabel,
     vendorLabel: strings.vendorLabel,
-    sceneLabel: strings.sceneLabel,
+    tagLabel: strings.tagLabel,
+    billingLabel: strings.billingLabel,
+    endpointLabel: strings.endpointLabel,
+    billingTokenLabel: strings.billingTokenLabel,
+    billingRequestLabel: strings.billingRequestLabel,
     catalogTitle: strings.catalogTitle,
     sortDefault: strings.sortDefault,
     sortReverse: strings.sortReverse,
@@ -81,7 +88,9 @@ function buildModelsContent(strings: ModelsPageStrings): ModelsPageContent {
     typeOptions: TYPE_OPTIONS,
     filterAll: strings.filterAll,
     typeLabels: strings.typeLabels,
+    endpointLabels: strings.endpointLabels,
     displayFilterLabel,
+    endpointDisplayLabel,
     statusLoading: strings.statusLoading,
     statusEmpty: strings.statusEmpty,
     statusError: strings.statusError,

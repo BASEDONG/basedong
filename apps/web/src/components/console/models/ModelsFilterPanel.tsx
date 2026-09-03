@@ -6,16 +6,24 @@ import { getMatchKey } from "./models-ui-copy";
 
 const LOGO_BASE = "/assets/console/models/images/logos";
 
+/** Logos keyed by upstream-style English vendor names (case-insensitive lookup). */
 const SERIES_LOGOS: Record<string, string> = {
-  DeepSeek: `${LOGO_BASE}/DeepSeek.svg`,
-  Qwen: `${LOGO_BASE}/Tongyi.svg`,
-  智谱: `${LOGO_BASE}/zhipu.svg`,
-  Kimi: `${LOGO_BASE}/moonshotai_new.png`,
-  蚂蚁百灵: `${LOGO_BASE}/ling.png`,
-  阶跃星辰: `${LOGO_BASE}/Stepfun.svg`,
-  MiniMax: `${LOGO_BASE}/minimax-color.svg`,
-  Wan: `${LOGO_BASE}/Tongyi.svg`,
+  anthropic: `${LOGO_BASE}/anthropic.svg`,
+  openai: `${LOGO_BASE}/openai.svg`,
+  xai: `${LOGO_BASE}/xai.svg`,
+  google: `${LOGO_BASE}/google.svg`,
+  deepseek: `${LOGO_BASE}/DeepSeek.svg`,
+  minimax: `${LOGO_BASE}/minimax-color.svg`,
+  bytedance: `${LOGO_BASE}/ByteDance.svg`,
+  qwen: `${LOGO_BASE}/Tongyi.svg`,
+  alibaba: `${LOGO_BASE}/Tongyi.svg`,
+  "z.ai": `${LOGO_BASE}/zhipu.svg`,
+  zhipu: `${LOGO_BASE}/zhipu.svg`,
 };
+
+function seriesLogo(matchKey: string): string | undefined {
+  return SERIES_LOGOS[matchKey.trim().toLowerCase()];
+}
 
 interface ModelsFilterPanelProps {
   sections: FilterSection[];
@@ -54,7 +62,7 @@ function FilterChip({
   withLogo?: boolean;
 }) {
   const matchKey = getMatchKey(option);
-  const logo = withLogo ? SERIES_LOGOS[matchKey] : undefined;
+  const logo = withLogo ? seriesLogo(matchKey) : undefined;
 
   return (
     <button
@@ -66,12 +74,12 @@ function FilterChip({
           : "border-slate-200 bg-slate-50 text-slate-700"
       }`}
     >
-      <span className="flex items-center justify-center">
+      <span className="flex items-center justify-center truncate px-1">
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={logo} alt="" className="mr-1 w-[14px]" />
+          <img src={logo} alt="" className="mr-1 w-[14px] shrink-0" />
         ) : null}
-        {option.label}
+        <span className="truncate">{option.label}</span>
       </span>
     </button>
   );
@@ -87,40 +95,31 @@ function FilterSectionBlock({
   onToggleChip: (id: string) => void;
 }) {
   const [open, setOpen] = useState(true);
-  const moreOption = section.options.find((o) => o.id === "series-更多");
-  const chips = section.options.filter((o) => o.id !== "series-更多");
 
   return (
     <div className="flex w-full flex-col gap-3">
       <div className="flex items-center justify-between">
         <span className="text-xs text-slate-400">{section.label}</span>
-        <button type="button" onClick={() => setOpen((v) => !v)} aria-label="toggle">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="toggle"
+        >
           <ChevronIcon open={open} />
         </button>
       </div>
       {open ? (
-        <>
-          <div className="grid grid-cols-2 gap-3 text-black/75">
-            {chips.map((option) => (
-              <FilterChip
-                key={option.id}
-                option={option}
-                selected={selectedChips.has(option.id)}
-                onToggle={() => onToggleChip(option.id)}
-                withLogo={section.id === "series"}
-              />
-            ))}
-          </div>
-          {moreOption ? (
-            <button
-              type="button"
-              onClick={() => onToggleChip(moreOption.id)}
-              className="cursor-pointer text-xs text-[var(--sf-cloud-primary)]"
-            >
-              {moreOption.label}
-            </button>
-          ) : null}
-        </>
+        <div className="grid grid-cols-2 gap-3 text-black/75">
+          {section.options.map((option) => (
+            <FilterChip
+              key={option.id}
+              option={option}
+              selected={selectedChips.has(option.id)}
+              onToggle={() => onToggleChip(option.id)}
+              withLogo={section.id === "series"}
+            />
+          ))}
+        </div>
       ) : null}
     </div>
   );

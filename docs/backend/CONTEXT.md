@@ -43,3 +43,7 @@ _Avoid_: root (role name only), operator (prefer 管理员 in product language)
 **充值**:
 Customer self-serve purchase of 额度 via Backend-built payment gateways (new-api: EPay for 支付宝/微信, Stripe/Creem/Waffo for cards/international) or redemption codes. No custom payment stack beyond enabling/configuring those gateways.
 _Avoid_: 发票 (out of product scope), top-up as a separate product name in UI when 充值 is enough
+
+**Catalog Control Tag**:
+Canonical tokens in model metadata `tags` (prefaced with `bs`) that the customer Web maps to plaza UI — modality (`bsText` / `bsImage` / `bsVideo` / `bsAudio`), numeric context (`bsCtx{n}` thousands of tokens), and differentiating multimodal (`bsCapMultimodal`). Owned by 管理员 via Admin Models UI; exposed to Web through `/api/pricing`. Full operator table: [`apps/api/docs/basedong.md`](../../apps/api/docs/basedong.md) (Model catalog tags).
+_Avoid_: freeform display strings (`文本`, `Reasoning`) as catalog tags; closed context enums when the real window is an arbitrary K; inferring generation modality from capability words like `Vision`; treating reasoning/tools as required capability chips

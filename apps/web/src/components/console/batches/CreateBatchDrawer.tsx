@@ -213,7 +213,7 @@ export function CreateBatchDrawer({ open, onClose }: CreateBatchDrawerProps) {
   const alternateUnit: PriceUnit = unit === "K" ? "M" : "K";
 
   return (
-    <div className="sf-cloud-console pointer-events-none fixed inset-0 z-[1000]">
+    <div className="sf-cloud-console pointer-events-none fixed inset-0 z-[1000] !bg-transparent">
       <button
         type="button"
         aria-label={copy.closeOverlay}
