@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { getConsoleNavGroups } from "../components/console/shared/chrome-copy.ts";
-import { APP_ROUTES } from "./routes.ts";
-import { isConsoleOfflinePath } from "./console-offline.ts";
+import { getConsoleNavGroups } from "../components/console/shared/chrome-copy";
+import { APP_ROUTES } from "./routes";
+import { isConsoleOfflinePath } from "./console-offline";
 
 test("Console nav IA matches agreed groups and canonical hrefs", () => {
   const groups = getConsoleNavGroups("zh-CN");

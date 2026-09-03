@@ -4,8 +4,8 @@ import test from "node:test";
 import {
   CONSOLE_OFFLINE_PATHS,
   isConsoleOfflinePath,
-} from "./console-offline.ts";
-import { APP_ROUTES } from "./routes.ts";
+} from "./console-offline";
+import { APP_ROUTES } from "./routes";
 
 test("multimodal playground shells are Console 下线页", () => {
   assert.equal(isConsoleOfflinePath("/me/playground/image"), true);
