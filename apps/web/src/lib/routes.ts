@@ -34,8 +34,10 @@ export const APP_ROUTES = {
   loginEmail: "/login",
   consoleModels: "/me/models",
   consoleBatches: "/me/batches",
+  /** @deprecated Prefer consoleLogs — kept for redirect. */
   consoleBills: "/me/bills",
   consoleInvoice: "/me/invoice",
+  /** @deprecated Prefer consoleWallet — kept for redirect. */
   consoleExpenseBill: "/me/expensebill",
   consoleInvitation: "/me/invitation",
   consoleAccountAk: "/me/account/ak",
@@ -47,6 +49,12 @@ export const APP_ROUTES = {
   consolePlaygroundImage: "/me/playground/image",
   consolePlaygroundTts: "/me/playground/text-to-speech",
   consolePlaygroundVideo: "/me/playground/video",
+  consoleOverview: "/me/overview",
+  consoleLogs: "/me/logs",
+  consoleLogsDrawing: "/me/logs/drawing",
+  consoleLogsTasks: "/me/logs/tasks",
+  consoleWallet: "/me/wallet",
+  consoleProfile: "/me/profile",
   formBusiness: "/share/base/form/shrcn2G8XKaFfNasfwD1lgDUbcb",
   formSupport: "/share/base/form/shrcnDiK9EIkGN3sK0PepqN1Ppb",
   /** 用户使用声明与合规使用协议（短链文案多为「用户协议」） */

@@ -1,14 +1,5 @@
-﻿import type { Metadata } from "next";
-import { VideoPageClient } from "@/components/console/playground-video/VideoPageClient";
-
-export const metadata: Metadata = {
-  title: "视频生成 - 八色鸫",
-};
+﻿import { ConsoleOfflinePageClient } from "@/components/console/offline/ConsoleOfflinePageClient";
 
 export default function PlaygroundVideoPage() {
-  return (
-    <div className="flex h-dvh min-h-0 flex-1 flex-col overflow-hidden">
-      <VideoPageClient />
-    </div>
-  );
+  return <ConsoleOfflinePageClient />;
 }

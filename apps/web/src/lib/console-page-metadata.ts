@@ -414,6 +414,36 @@ const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
   [APP_ROUTES.consoleAccountAuthentication]: getConsoleAccountAuthPageMetadata,
   [APP_ROUTES.consoleBills]: getConsoleBillsPageMetadata,
   [APP_ROUTES.consoleExpenseBill]: getConsoleExpenseBillPageMetadata,
+  [APP_ROUTES.consoleLogs]: getConsoleBillsPageMetadata,
+  [APP_ROUTES.consoleWallet]: getConsoleExpenseBillPageMetadata,
+  [APP_ROUTES.consoleOverview]: (locale) => {
+    const chrome = getConsoleChromeCopy(locale);
+    return {
+      title: `${chrome.nav.overview} · ${chrome.brandAlt}`,
+      description: chrome.nav.overview,
+    };
+  },
+  [APP_ROUTES.consoleProfile]: (locale) => {
+    const chrome = getConsoleChromeCopy(locale);
+    return {
+      title: `${chrome.nav.profile} · ${chrome.brandAlt}`,
+      description: chrome.nav.profile,
+    };
+  },
+  [APP_ROUTES.consoleLogsDrawing]: (locale) => {
+    const chrome = getConsoleChromeCopy(locale);
+    return {
+      title: `${chrome.nav.drawingLogs} · ${chrome.brandAlt}`,
+      description: chrome.nav.drawingLogs,
+    };
+  },
+  [APP_ROUTES.consoleLogsTasks]: (locale) => {
+    const chrome = getConsoleChromeCopy(locale);
+    return {
+      title: `${chrome.nav.taskLogs} · ${chrome.brandAlt}`,
+      description: chrome.nav.taskLogs,
+    };
+  },
   [APP_ROUTES.consoleInvoice]: getConsoleInvoicePageMetadata,
   [APP_ROUTES.consolePlaygroundChat]: getConsolePlaygroundChatPageMetadata,
   [APP_ROUTES.consolePlaygroundImage]: getConsolePlaygroundImagePageMetadata,

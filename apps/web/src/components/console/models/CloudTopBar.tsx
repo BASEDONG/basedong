@@ -38,8 +38,9 @@ export function CloudTopBar({
 
   const avatarMenu = [
     { label: chrome.nav.apiKeys, href: APP_ROUTES.consoleAccountAk },
-    { label: chrome.nav.recharge, href: APP_ROUTES.consoleExpenseBill },
-    { label: chrome.nav.bills, href: APP_ROUTES.consoleBills },
+    { label: chrome.nav.wallet, href: APP_ROUTES.consoleWallet },
+    { label: chrome.nav.callLogs, href: APP_ROUTES.consoleLogs },
+    { label: chrome.nav.profile, href: APP_ROUTES.consoleProfile },
   ] as const;
 
   useEffect(() => {

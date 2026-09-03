@@ -74,6 +74,8 @@ apps/api/skills-lock.json
 *.db
 *.db-journal
 logs/
+!apps/web/src/app/(console)/me/logs/
+!apps/web/src/app/(console)/me/logs/**/
 .gomodcache/
 .gocache/
 .data/

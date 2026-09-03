@@ -1,5 +1,5 @@
-﻿import { ApplyPageClient } from "@/components/console/dedicated-apply/ApplyPageClient";
+﻿import { ConsoleOfflinePageClient } from "@/components/console/offline/ConsoleOfflinePageClient";
 
 export default function DedicatedApplyPage() {
-  return <ApplyPageClient />;
+  return <ConsoleOfflinePageClient />;
 }

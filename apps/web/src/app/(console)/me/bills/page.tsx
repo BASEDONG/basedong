@@ -1,5 +1,7 @@
-﻿import { BillsPageClient } from "@/components/console/bills/BillsPageClient";
+﻿import { redirect } from "next/navigation";
+import { APP_ROUTES } from "@/lib/routes";
 
-export default function BillsPage() {
-  return <BillsPageClient />;
+/** Legacy SiliconFlow path → 调用记录 */
+export default function BillsRedirectPage() {
+  redirect(APP_ROUTES.consoleLogs);
 }
