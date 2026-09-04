@@ -16,6 +16,7 @@ import {
 import { localizeBackendError } from "@/lib/backend/localize-error";
 import { ConsoleShell } from "../shared/ConsoleShell";
 import { getProfileUiCopy } from "./profile-ui-copy";
+import { ProfileSecurityPanels } from "./ProfileSecurityPanels";
 
 function formatTs(sec?: number) {
   if (!sec) return "—";
@@ -191,21 +192,14 @@ export function ProfilePageClient() {
           </button>
         </section>
 
-        <section className="rounded-[8px] border border-slate-200 bg-white p-6">
-          <h2 className="text-sm font-semibold text-slate-800">
-            {copy.sectionSecurity}
-          </h2>
-          <p className="mt-3 text-sm text-slate-600">
-            {copy.twoFaLabel}:{" "}
-            {twoFa == null
-              ? copy.twoFaUnknown
-              : twoFa.enabled
-                ? copy.twoFaOn
-                : copy.twoFaOff}
-            {twoFa?.locked ? ` (${copy.twoFaLocked})` : null}
-          </p>
-          <p className="mt-2 text-xs text-slate-400">{copy.securityNote}</p>
-        </section>
+        <ProfileSecurityPanels
+          copy={copy}
+          targetLocale={targetLocale}
+          twoFa={twoFa}
+          onNotice={setNotice}
+          onError={setError}
+          onTwoFaChange={() => void refresh()}
+        />
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-6">
           <div className="flex items-center justify-between gap-3">

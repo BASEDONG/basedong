@@ -13,7 +13,7 @@ Prerequisites: local Backend (`docker compose up -d --build api`) and Web with `
 | 5 | Open `/me/logs` | 调用记录: filter by date/model/API key name; rows from `/api/log/self`; honest empty |
 | 6 | Open `/me/logs/drawing` and `/me/logs/tasks` | Lists or honest empty from MJ/task self APIs |
 | 7 | Open `/me/wallet` | 钱包: online 充值 + records; no voucher/package/auto tabs |
-| 8 | Open `/me/profile` | 个人资料: display name, password change, 2FA status, sessions revoke |
+| 8 | Open `/me/profile` | 个人资料: display name, password, 2FA setup/disable, Passkey, OAuth bindings list, sessions |
 | 9 | Open `/me/playground/chat` | Chat 在线体验 (needs Channel) |
 | 10 | Open `/me/bills` | Redirects to `/me/logs` |
 | 11 | Open `/me/expensebill` | Redirects to `/me/wallet` |
