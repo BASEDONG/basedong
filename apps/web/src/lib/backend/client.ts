@@ -671,16 +671,157 @@ export type TopupPayMethod = {
   min_topup?: string;
 };
 
+export type CreemProduct = {
+  productId: string;
+  name: string;
+  price: number;
+  currency: string;
+  quota: number;
+};
+
+export type WaffoPayMethod = {
+  name?: string;
+  icon?: string;
+  payMethodType?: string;
+  payMethodName?: string;
+};
+
 export type TopupInfo = {
   enable_online_topup?: boolean;
+  enable_stripe_topup?: boolean;
+  enable_creem_topup?: boolean;
+  enable_waffo_topup?: boolean;
+  enable_waffo_pancake_topup?: boolean;
+  enable_redemption?: boolean;
   pay_methods?: TopupPayMethod[];
+  creem_products?: CreemProduct[];
+  waffo_pay_methods?: WaffoPayMethod[];
   min_topup?: number;
+  stripe_min_topup?: number;
+  waffo_min_topup?: number;
+  waffo_pancake_min_topup?: number;
   amount_options?: number[];
   payment_compliance_confirmed?: boolean;
 };
 
 export async function getTopupInfo(): Promise<TopupInfo> {
   return backendFetch<TopupInfo>("/api/user/topup/info", { method: "GET" });
+}
+
+type MessageSuccessJson<T> = {
+  message?: string;
+  data?: T | string;
+  url?: string;
+  code?: string;
+};
+
+/**
+ * Payment amount/pay endpoints often return `{ message: "success", data }`
+ * instead of `{ success: true }`, so they cannot use backendFetch.
+ */
+async function messageSuccessFetch<T>(
+  path: string,
+  body: unknown,
+  mapData: (json: MessageSuccessJson<T>, status: number) => T,
+): Promise<T> {
+  const base = assertApiBase();
+
+  async function once(): Promise<{
+    res: Response;
+    json: MessageSuccessJson<T>;
+  }> {
+    const headers = new Headers({ "Content-Type": "application/json" });
+    const token = getAccessToken();
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    const res = await fetch(`${base}${path}`, {
+      method: "POST",
+      headers,
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
+    const json = (await res.json()) as MessageSuccessJson<T>;
+    return { res, json };
+  }
+
+  let { res, json } = await once();
+  if (isStaleAuthResponse(res.status, json.code) && getAccessToken()) {
+    const outcome = await refreshAuthentication();
+    if (outcome.kind === "authenticated") {
+      ({ res, json } = await once());
+    }
+  }
+
+  if (json.message !== "success") {
+    const detail =
+      typeof json.data === "string"
+        ? json.data
+        : json.message && json.message !== "success"
+          ? json.message
+          : `HTTP ${res.status}`;
+    throw new BackendError(
+      detail || "请求失败",
+      undefined,
+      res.status,
+      json.code,
+    );
+  }
+
+  try {
+    return mapData(json, res.status);
+  } catch (e) {
+    if (e instanceof BackendError) throw e;
+    throw new BackendError(
+      typeof json.data === "string" ? json.data : `HTTP ${res.status}`,
+      undefined,
+      res.status,
+      json.code,
+    );
+  }
+}
+
+function parsePayMoney(data: unknown, status: number): number {
+  const raw =
+    typeof data === "string" || typeof data === "number" ? String(data) : "";
+  const n = Number.parseFloat(raw);
+  if (!Number.isFinite(n)) {
+    throw new BackendError("金额计算失败", undefined, status);
+  }
+  return n;
+}
+
+/** Quote payable money for EPay (易支付) top-up amount. */
+export async function calculateEpayAmount(amount: number): Promise<number> {
+  return messageSuccessFetch<number>(
+    "/api/user/amount",
+    { amount: Math.floor(amount) },
+    (json, status) => parsePayMoney(json.data, status),
+  );
+}
+
+export async function calculateStripeAmount(amount: number): Promise<number> {
+  return messageSuccessFetch<number>(
+    "/api/user/stripe/amount",
+    { amount: Math.floor(amount) },
+    (json, status) => parsePayMoney(json.data, status),
+  );
+}
+
+export async function calculateWaffoAmount(amount: number): Promise<number> {
+  return messageSuccessFetch<number>(
+    "/api/user/waffo/amount",
+    { amount: Math.floor(amount) },
+    (json, status) => parsePayMoney(json.data, status),
+  );
+}
+
+export async function calculateWaffoPancakeAmount(
+  amount: number,
+): Promise<number> {
+  return messageSuccessFetch<number>(
+    "/api/user/waffo-pancake/amount",
+    { amount: Math.floor(amount) },
+    (json, status) => parsePayMoney(json.data, status),
+  );
 }
 
 export type EpayPayResult = {
@@ -696,58 +837,134 @@ export async function requestEpayPay(
   amount: number,
   paymentMethod: string,
 ): Promise<EpayPayResult> {
-  const base = assertApiBase();
+  return messageSuccessFetch<EpayPayResult>(
+    "/api/user/pay",
+    { amount: Math.floor(amount), payment_method: paymentMethod },
+    (json, status) => {
+      if (!json.url || !json.data || typeof json.data === "string") {
+        throw new BackendError(
+          typeof json.data === "string" ? json.data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return {
+        url: json.url,
+        params: json.data as unknown as Record<string, string>,
+      };
+    },
+  );
+}
 
-  async function once(): Promise<{
-    res: Response;
-    json: {
-      message?: string;
-      data?: Record<string, string> | string;
-      url?: string;
-      code?: string;
-    };
-  }> {
-    const headers = new Headers({ "Content-Type": "application/json" });
-    const token = getAccessToken();
-    if (token) headers.set("Authorization", `Bearer ${token}`);
-    const res = await fetch(`${base}/api/user/pay`, {
-      method: "POST",
-      headers,
-      credentials: "include",
-      body: JSON.stringify({ amount, payment_method: paymentMethod }),
-    });
-    const json = (await res.json()) as {
-      message?: string;
-      data?: Record<string, string> | string;
-      url?: string;
-      code?: string;
-    };
-    return { res, json };
-  }
+export async function requestStripePay(
+  amount: number,
+): Promise<{ pay_link: string }> {
+  return messageSuccessFetch<{ pay_link: string }>(
+    "/api/user/stripe/pay",
+    { amount: Math.floor(amount), payment_method: "stripe" },
+    (json, status) => {
+      const data = json.data;
+      if (
+        !data ||
+        typeof data === "string" ||
+        typeof (data as { pay_link?: string }).pay_link !== "string"
+      ) {
+        throw new BackendError(
+          typeof data === "string" ? data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return { pay_link: (data as { pay_link: string }).pay_link };
+    },
+  );
+}
 
-  let { res, json } = await once();
-  if (isStaleAuthResponse(res.status, json.code) && getAccessToken()) {
-    const outcome = await refreshAuthentication();
-    if (outcome.kind === "authenticated") {
-      ({ res, json } = await once());
-    }
-  }
+export async function requestCreemPay(
+  productId: string,
+): Promise<{ checkout_url: string }> {
+  return messageSuccessFetch<{ checkout_url: string }>(
+    "/api/user/creem/pay",
+    { product_id: productId, payment_method: "creem" },
+    (json, status) => {
+      const data = json.data;
+      if (
+        !data ||
+        typeof data === "string" ||
+        typeof (data as { checkout_url?: string }).checkout_url !== "string"
+      ) {
+        throw new BackendError(
+          typeof data === "string" ? data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return {
+        checkout_url: (data as { checkout_url: string }).checkout_url,
+      };
+    },
+  );
+}
 
-  if (json.message !== "success" || !json.url || !json.data || typeof json.data === "string") {
-    const detail =
-      typeof json.data === "string"
-        ? json.data
-        : json.message && json.message !== "success"
-          ? json.message
-          : `HTTP ${res.status}`;
-    throw new BackendError(
-      detail || "拉起支付失败",
-      detail ? undefined : "paymentStartFailed",
-      res.status,
-      json.code,
-    );
-  }
-  return { url: json.url, params: json.data };
+export async function requestWaffoPay(
+  amount: number,
+  payMethodIndex?: number,
+): Promise<{ payment_url: string }> {
+  return messageSuccessFetch<{ payment_url: string }>(
+    "/api/user/waffo/pay",
+    {
+      amount: Math.floor(amount),
+      ...(payMethodIndex != null ? { pay_method_index: payMethodIndex } : {}),
+    },
+    (json, status) => {
+      const data = json.data;
+      if (
+        !data ||
+        typeof data === "string" ||
+        typeof (data as { payment_url?: string }).payment_url !== "string"
+      ) {
+        throw new BackendError(
+          typeof data === "string" ? data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return {
+        payment_url: (data as { payment_url: string }).payment_url,
+      };
+    },
+  );
+}
+
+export async function requestWaffoPancakePay(
+  amount: number,
+): Promise<{ checkout_url: string }> {
+  return messageSuccessFetch<{ checkout_url: string }>(
+    "/api/user/waffo-pancake/pay",
+    { amount: Math.floor(amount) },
+    (json, status) => {
+      const data = json.data;
+      if (
+        !data ||
+        typeof data === "string" ||
+        typeof (data as { checkout_url?: string }).checkout_url !== "string"
+      ) {
+        throw new BackendError(
+          typeof data === "string" ? data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return {
+        checkout_url: (data as { checkout_url: string }).checkout_url,
+      };
+    },
+  );
 }
 
 /** POST a hidden form to the EPay gateway (stock new-api wallet pattern). */
@@ -784,15 +1001,35 @@ export type TopUpRecord = {
   payment_method?: string;
 };
 
+export type TopUpListResult = {
+  items: TopUpRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
 export async function listTopUps(
   page = 1,
   pageSize = 20,
-): Promise<TopUpRecord[]> {
+  keyword = "",
+): Promise<TopUpListResult> {
+  const q = new URLSearchParams({
+    p: String(page),
+    page_size: String(pageSize),
+  });
+  const trimmed = keyword.trim();
+  if (trimmed) q.set("keyword", trimmed);
   const data = await backendFetch<PageData<TopUpRecord>>(
-    `/api/user/topup/self?p=${page}&page_size=${pageSize}`,
+    `/api/user/topup/self?${q.toString()}`,
     { method: "GET" },
   );
-  return data?.items ?? [];
+  return {
+    items: data?.items ?? [],
+    total: typeof data?.total === "number" ? data.total : 0,
+    page: typeof data?.page === "number" ? data.page : page,
+    pageSize:
+      typeof data?.page_size === "number" ? data.page_size : pageSize,
+  };
 }
 
 /** Models enabled for the current 用户's groups (Backend catalog). */
