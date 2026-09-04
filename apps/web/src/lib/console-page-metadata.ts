@@ -5,15 +5,9 @@ import { getConsoleChromeCopy } from "@/components/console/shared/chrome-copy";
 import { getApiKeysUiCopy } from "@/components/console/account-ak/account-ak-ui-copy";
 import { getCallLogsUiCopy } from "@/components/console/call-logs/call-logs-ui-copy";
 import { getWalletUiCopy } from "@/components/console/wallet/wallet-ui-copy";
-import { getInvoiceUiCopy } from "@/components/console/invoice/invoice-ui-copy";
-import { getAuthUiCopy } from "@/components/console/account-authentication/account-authentication-ui-copy";
+import { getConsoleOfflineUiCopy } from "@/components/console/offline/offline-ui-copy";
 import { getModelsUiCopy } from "@/components/console/models/models-ui-copy";
 import { getPlaygroundUiCopy } from "@/components/console/shared/playground-ui-copy";
-import { getBatchesUiCopy } from "@/components/console/batches/batches-ui-copy";
-import { getInvitationUiCopy } from "@/components/console/invitation/invitation-ui-copy";
-import { getCampaignsInviterUiCopy } from "@/components/console/campaigns-inviter/campaigns-inviter-ui-copy";
-import { getCampaignsRealNameUiCopy } from "@/components/console/campaigns-real-name/campaigns-real-name-ui-copy";
-import { getDedicatedApplyUiCopy } from "@/components/console/dedicated-apply/dedicated-apply-ui-copy";
 
 type PageMeta = { title: string; description: string };
 
@@ -61,38 +55,12 @@ const AK_DESCRIPTIONS: Record<TargetLocale, string> = {
   id: "Buat dan kelola API Key untuk mengakses Relay basedong.",
 };
 
-const AUTH_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "查看实名认证状态与账户身份信息。",
-  en: "View identity verification status and account details.",
-  "zh-TW": "查看實名認證狀態與帳戶身份資訊。",
-  ja: "本人確認の状態とアカウント情報を確認します。",
-  fr: "Consultez le statut de vérification d'identité et les informations du compte.",
-  ru: "Просмотр статуса верификации личности и данных аккаунта.",
-  vi: "Xem trạng thái xác minh danh tính và thông tin tài khoản.",
-  ko: "본인 인증 상태 및 계정 정보를 확인합니다.",
-  de: "Identitätsprüfungsstatus und Kontodaten anzeigen.",
-  es: "Consulte el estado de verificación de identidad y los datos de la cuenta.",
-  "pt-BR": "Veja o status de verificação de identidade e os dados da conta.",
-  ar: "عرض حالة التحقق من الهوية وتفاصيل الحساب.",
-  hi: "पहचान सत्यापन स्थिति और खाता विवरण देखें।",
-  id: "Lihat status verifikasi identitas dan detail akun.",
-};
-
 export function getConsoleAccountAkPageMetadata(locale: string): PageMeta {
   const copy = getApiKeysUiCopy(locale);
   const chrome = getConsoleChromeCopy(locale);
   return {
     title: `${copy.pageTitle} · ${chrome.brandAlt}`,
     description: pickTargetCatalog(locale, AK_DESCRIPTIONS),
-  };
-}
-
-export function getConsoleAccountAuthPageMetadata(locale: string): PageMeta {
-  const copy = getAuthUiCopy(locale);
-  const chrome = getConsoleChromeCopy(locale);
-  return {
-    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
-    description: pickTargetCatalog(locale, AUTH_DESCRIPTIONS),
   };
 }
 
@@ -114,37 +82,20 @@ const BILLS_DESCRIPTIONS: Record<TargetLocale, string> = {
 };
 
 const EXPENSE_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "在线充值、自动充值与代金券兑换。",
-  en: "Online recharge, auto-recharge, and voucher redemption.",
-  "zh-TW": "線上儲值、自動儲值與代金券兌換。",
-  ja: "オンラインチャージ、自動チャージ、クーポン交換。",
-  fr: "Recharge en ligne, recharge automatique et bons.",
-  ru: "Онлайн-пополнение, автопополнение и купоны.",
-  vi: "Nạp tiền trực tuyến, tự động và đổi voucher.",
-  ko: "온라인 충전, 자동 충전 및 쿠폰 교환.",
-  de: "Online-Aufladung, Auto-Aufladung und Gutscheine.",
-  es: "Recarga en línea, automática y canje de cupones.",
-  "pt-BR": "Recarga online, automática e resgate de vouchers.",
-  ar: "شحن عبر الإنترنت، شحن تلقائي، واستبدال القسائم.",
-  hi: "ऑनलाइन रिचार्ज, ऑटो-रिचार्ज और वाउचर रिडेम्प्शन।",
-  id: "Isi ulang online, otomatis, dan penukaran voucher.",
-};
-
-const INVOICE_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "申请与管理发票开具。",
-  en: "Request and manage invoices.",
-  "zh-TW": "申請與管理發票開立。",
-  ja: "請求書の申請と管理。",
-  fr: "Demander et gérer les factures.",
-  ru: "Запрос и управление счетами.",
-  vi: "Yêu cầu và quản lý hóa đơn.",
-  ko: "세금계산서 신청 및 관리.",
-  de: "Rechnungen anfordern und verwalten.",
-  es: "Solicitar y gestionar facturas.",
-  "pt-BR": "Solicitar e gerenciar notas fiscais.",
-  ar: "طلب وإدارة الفواتير.",
-  hi: "चालान का अनुरोध और प्रबंधन।",
-  id: "Ajukan dan kelola faktur.",
+  "zh-CN": "在线充值、兑换码与充值记录。",
+  en: "Online top-up, redemption codes, and top-up history.",
+  "zh-TW": "線上儲值、兌換碼與儲值記錄。",
+  ja: "オンラインチャージ、交換コード、チャージ履歴。",
+  fr: "Recharge en ligne, codes d'échange et historique.",
+  ru: "Онлайн-пополнение, коды обмена и история.",
+  vi: "Nạp tiền trực tuyến, mã đổi và lịch sử nạp.",
+  ko: "온라인 충전, 교환 코드 및 충전 기록.",
+  de: "Online-Aufladung, Einlösecodes und Verlauf.",
+  es: "Recarga en línea, códigos de canje e historial.",
+  "pt-BR": "Recarga online, códigos de resgate e histórico.",
+  ar: "شحن عبر الإنترنت ورموز الاستبدال والسجل.",
+  hi: "ऑनलाइन टॉप-अप, रिडेम्प्शन कोड और इतिहास।",
+  id: "Isi ulang online, kode penukaran, dan riwayat.",
 };
 
 export function getConsoleCallLogsPageMetadata(locale: string): PageMeta {
@@ -165,12 +116,12 @@ export function getConsoleWalletPageMetadata(locale: string): PageMeta {
   };
 }
 
-export function getConsoleInvoicePageMetadata(locale: string): PageMeta {
-  const copy = getInvoiceUiCopy(locale);
+export function getConsoleOfflinePageMetadata(locale: string): PageMeta {
+  const copy = getConsoleOfflineUiCopy(locale);
   const chrome = getConsoleChromeCopy(locale);
   return {
     title: `${copy.pageTitle} · ${chrome.brandAlt}`,
-    description: pickTargetCatalog(locale, INVOICE_DESCRIPTIONS),
+    description: copy.body,
   };
 }
 
@@ -263,155 +214,23 @@ export function getConsolePlaygroundChatPageMetadata(locale: string): PageMeta {
 export function getConsolePlaygroundImagePageMetadata(
   locale: string,
 ): PageMeta {
-  return playgroundMeta(locale, "image");
+  return getConsoleOfflinePageMetadata(locale);
 }
 
 export function getConsolePlaygroundVideoPageMetadata(
   locale: string,
 ): PageMeta {
-  return playgroundMeta(locale, "video");
+  return getConsoleOfflinePageMetadata(locale);
 }
 
 export function getConsolePlaygroundTtsPageMetadata(locale: string): PageMeta {
-  return playgroundMeta(locale, "tts");
-}
-
-const BATCHES_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "创建与管理批量推理任务。",
-  en: "Create and manage batch inference jobs.",
-  "zh-TW": "建立與管理批量推理任務。",
-  ja: "バッチ推論ジョブの作成と管理。",
-  fr: "Créez et gérez des jobs d'inférence par lot.",
-  ru: "Создание и управление пакетными задачами.",
-  vi: "Tạo và quản lý job suy luận hàng loạt.",
-  ko: "배치 추론 작업 생성 및 관리.",
-  de: "Batch-Inferenzjobs erstellen und verwalten.",
-  es: "Cree y administre trabajos de inferencia por lotes.",
-  "pt-BR": "Crie e gerencie jobs de inferência em lote.",
-  ar: "إنشاء وإدارة مهام الاستنتاج الدفعي.",
-  hi: "बैच इन्फ़रेंस जॉब बनाएँ और प्रबंधित करें।",
-  id: "Buat dan kelola job inferensi batch.",
-};
-
-const INVITATION_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "查看邀请记录与推荐奖励。",
-  en: "View referral records and ambassador rewards.",
-  "zh-TW": "查看邀請記錄與推薦獎勵。",
-  ja: "紹介履歴と報酬を確認。",
-  fr: "Consultez vos parrainages et récompenses.",
-  ru: "Просмотр приглашений и наград.",
-  vi: "Xem lịch sử giới thiệu và phần thưởng.",
-  ko: "추천 기록 및 보상 확인.",
-  de: "Empfehlungsverlauf und Prämien anzeigen.",
-  es: "Consulte referidos y recompensas.",
-  "pt-BR": "Veja indicações e recompensas.",
-  ar: "عرض سجل الإحالات والمكافآت.",
-  hi: "रेफ़रल रिकॉर्ड और पुरस्कार देखें।",
-  id: "Lihat riwayat undangan dan hadiah.",
-};
-
-const INVITER_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "推荐官计划：邀请好友获得代金券。",
-  en: "Referral Ambassador Program: invite friends for vouchers.",
-  "zh-TW": "推薦官計畫：邀請好友獲得代金券。",
-  ja: "紹介アンバサダー：友達を招待してクーポンを獲得。",
-  fr: "Programme ambassadeur : invitez des amis pour des bons.",
-  ru: "Программа рефералов: приглашайте друзей за купоны.",
-  vi: "Chương trình giới thiệu: mời bạn bè nhận voucher.",
-  ko: "추천 앰배서더: 친구 초대로 쿠폰 획득.",
-  de: "Empfehlungsprogramm: Freunde einladen für Gutscheine.",
-  es: "Programa de embajadores: invite amigos por cupones.",
-  "pt-BR": "Programa embaixador: indique amigos por vouchers.",
-  ar: "برنامج السفراء: ادعُ الأصدقاء للحصول على قسائم.",
-  hi: "रेफ़रल एंबेसडर: वाउचर के लिए मित्रों को आमंत्रित करें।",
-  id: "Program duta: undang teman untuk voucher.",
-};
-
-const REAL_NAME_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "完成实名认证，领取认证专享代金券。",
-  en: "Complete identity verification to claim your reward voucher.",
-  "zh-TW": "完成實名認證，領取認證專享代金券。",
-  ja: "本人確認完了で認証特典クーポンを受け取り。",
-  fr: "Vérification d'identité pour obtenir un bon exclusif.",
-  ru: "Верификация личности для получения купона.",
-  vi: "Xác minh danh tính để nhận voucher đặc quyền.",
-  ko: "본인 인증 후 전용 쿠폰 수령.",
-  de: "Identitätsprüfung für exklusiven Gutschein.",
-  es: "Verificación de identidad para cupón exclusivo.",
-  "pt-BR": "Verificação de identidade para voucher exclusivo.",
-  ar: "التحقق من الهوية للحصول على قسيمة حصرية.",
-  hi: "पहचान सत्यापन पर विशेष वाउचर प्राप्त करें।",
-  id: "Verifikasi identitas untuk voucher eksklusif.",
-};
-
-const DEDICATED_APPLY_DESCRIPTIONS: Record<TargetLocale, string> = {
-  "zh-CN": "申请弹性 GPU 云函数公测。",
-  en: "Apply for Elastic GPU cloud functions beta access.",
-  "zh-TW": "申請彈性 GPU 雲函數公測。",
-  ja: "Elastic GPU クラウド関数ベータへ申請。",
-  fr: "Demander l'accès bêta aux fonctions GPU élastiques.",
-  ru: "Заявка на бета-доступ к Elastic GPU.",
-  vi: "Đăng ký beta GPU cloud functions linh hoạt.",
-  ko: "Elastic GPU 클라우드 함수 베타 신청.",
-  de: "Beta-Zugang für Elastic GPU Cloud Functions beantragen.",
-  es: "Solicitar acceso beta a funciones GPU elásticas.",
-  "pt-BR": "Solicitar acesso beta a funções GPU elásticas.",
-  ar: "التقدم لوصول تجريبي لوظائف GPU السحابية.",
-  hi: "Elastic GPU क्लाउड फ़ंक्शन बीटा के लिए आवेदन करें।",
-  id: "Ajukan akses beta GPU cloud functions elastis.",
-};
-
-export function getConsoleBatchesPageMetadata(locale: string): PageMeta {
-  const copy = getBatchesUiCopy(locale);
-  const chrome = getConsoleChromeCopy(locale);
-  return {
-    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
-    description: pickTargetCatalog(locale, BATCHES_DESCRIPTIONS),
-  };
-}
-
-export function getConsoleInvitationPageMetadata(locale: string): PageMeta {
-  const copy = getInvitationUiCopy(locale);
-  const chrome = getConsoleChromeCopy(locale);
-  return {
-    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
-    description: pickTargetCatalog(locale, INVITATION_DESCRIPTIONS),
-  };
-}
-
-export function getConsoleCampaignInviterPageMetadata(locale: string): PageMeta {
-  const copy = getCampaignsInviterUiCopy(locale);
-  const chrome = getConsoleChromeCopy(locale);
-  return {
-    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
-    description: pickTargetCatalog(locale, INVITER_DESCRIPTIONS),
-  };
-}
-
-export function getConsoleCampaignRealNamePageMetadata(
-  locale: string,
-): PageMeta {
-  const copy = getCampaignsRealNameUiCopy(locale);
-  const chrome = getConsoleChromeCopy(locale);
-  return {
-    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
-    description: pickTargetCatalog(locale, REAL_NAME_DESCRIPTIONS),
-  };
-}
-
-export function getConsoleDedicatedApplyPageMetadata(locale: string): PageMeta {
-  const copy = getDedicatedApplyUiCopy(locale);
-  const chrome = getConsoleChromeCopy(locale);
-  return {
-    title: `${copy.pageTitle} · ${chrome.brandAlt}`,
-    description: pickTargetCatalog(locale, DEDICATED_APPLY_DESCRIPTIONS),
-  };
+  return getConsoleOfflinePageMetadata(locale);
 }
 
 const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
   [APP_ROUTES.consoleModels]: getConsoleModelsPageMetadata,
   [APP_ROUTES.consoleAccountAk]: getConsoleAccountAkPageMetadata,
-  [APP_ROUTES.consoleAccountAuthentication]: getConsoleAccountAuthPageMetadata,
+  [APP_ROUTES.consoleAccountAuthentication]: getConsoleOfflinePageMetadata,
   [APP_ROUTES.consoleBills]: getConsoleCallLogsPageMetadata,
   [APP_ROUTES.consoleExpenseBill]: getConsoleWalletPageMetadata,
   [APP_ROUTES.consoleLogs]: getConsoleCallLogsPageMetadata,
@@ -444,16 +263,16 @@ const CONSOLE_RESOLVERS: Record<string, (locale: string) => PageMeta> = {
       description: chrome.nav.taskLogs,
     };
   },
-  [APP_ROUTES.consoleInvoice]: getConsoleInvoicePageMetadata,
+  [APP_ROUTES.consoleInvoice]: getConsoleOfflinePageMetadata,
   [APP_ROUTES.consolePlaygroundChat]: getConsolePlaygroundChatPageMetadata,
   [APP_ROUTES.consolePlaygroundImage]: getConsolePlaygroundImagePageMetadata,
   [APP_ROUTES.consolePlaygroundVideo]: getConsolePlaygroundVideoPageMetadata,
   [APP_ROUTES.consolePlaygroundTts]: getConsolePlaygroundTtsPageMetadata,
-  [APP_ROUTES.consoleBatches]: getConsoleBatchesPageMetadata,
-  [APP_ROUTES.consoleInvitation]: getConsoleInvitationPageMetadata,
-  [APP_ROUTES.consoleCampaignInviter]: getConsoleCampaignInviterPageMetadata,
-  [APP_ROUTES.consoleCampaignRealName]: getConsoleCampaignRealNamePageMetadata,
-  [APP_ROUTES.consoleDedicatedApply]: getConsoleDedicatedApplyPageMetadata,
+  [APP_ROUTES.consoleBatches]: getConsoleOfflinePageMetadata,
+  [APP_ROUTES.consoleInvitation]: getConsoleOfflinePageMetadata,
+  [APP_ROUTES.consoleCampaignInviter]: getConsoleOfflinePageMetadata,
+  [APP_ROUTES.consoleCampaignRealName]: getConsoleOfflinePageMetadata,
+  [APP_ROUTES.consoleDedicatedApply]: getConsoleOfflinePageMetadata,
 };
 
 export function resolveConsoleDocumentMetadata(
