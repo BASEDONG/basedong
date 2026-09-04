@@ -6,28 +6,6 @@ function base(props: IconProps, size = 16) {
   return { width: size, height: size, "aria-hidden": true as const, ...props };
 }
 
-export function InfoCircleIcon(props: IconProps) {
-  return (
-    <svg viewBox="64 64 896 896" fill="currentColor" {...base(props, 14)}>
-      <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z" />
-      <path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z" />
-    </svg>
-  );
-}
-
-export function CompareModelsIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" {...base(props, 16)}>
-      <path
-        d="M5.33333 2.00065H3.33333C2.97971 2.00065 2.64057 2.14113 2.39052 2.39118C2.14048 2.64122 2 2.98036 2 3.33398V12.6673C2 13.4007 2.6 14.0007 3.33333 14.0007H5.33333M10.6667 2.00065H12.6667C13.0203 2.00065 13.3594 2.14113 13.6095 2.39118C13.8595 2.64122 14 2.98036 14 3.33398V12.6673C14 13.0209 13.8595 13.3601 13.6095 13.6101C13.3594 13.8602 13.0203 14.0007 12.6667 14.0007H10.6667M8 13.334V14.6673M8 9.33398V10.6673M8 5.33398V6.66732M8 1.33398V2.66732"
-        stroke="#4AABF0"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export function ClearChatIcon(props: IconProps) {
   return (
     <svg viewBox="64 64 896 896" fill="currentColor" {...base(props, 14)}>

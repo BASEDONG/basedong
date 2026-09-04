@@ -4,19 +4,46 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import {
   changeSelfPassword,
+  getPublicAuthStatus,
   getSelf,
   getTwoFactorStatus,
   listUserSessions,
   revokeOtherSessions,
   revokeUserSession,
   updateSelfProfile,
+  type BackendUser,
+  type PublicAuthStatus,
   type TwoFactorStatus,
   type UserSessionRow,
 } from "@/lib/backend/client";
 import { localizeBackendError } from "@/lib/backend/localize-error";
+import type { Locale } from "@/lib/locale";
+import { ConsoleEmptyState } from "../shared/ConsoleEmptyState";
 import { ConsoleShell } from "../shared/ConsoleShell";
-import { getProfileUiCopy } from "./profile-ui-copy";
+import { MessageToast } from "../shared/MessageToast";
+import { CONSOLE_PRIMARY_BTN, CONSOLE_SURFACE } from "../shared/console-ui";
+import {
+  formatConsoleCount,
+  formatConsoleQuota,
+} from "../shared/format-quota";
+import { notifySelfUpdated } from "../shared/self-events";
+import { ProfileAccessTokenPanel } from "./ProfileAccessTokenPanel";
+import { ProfileBindingsPanel } from "./ProfileBindingsPanel";
+import { ProfileCheckinPanel } from "./ProfileCheckinPanel";
+import { ProfileDeleteAccountPanel } from "./ProfileDeleteAccountPanel";
+import { ProfileLanguagePanel } from "./ProfileLanguagePanel";
 import { ProfileSecurityPanels } from "./ProfileSecurityPanels";
+import { ProfileSettingsPanel } from "./ProfileSettingsPanel";
+import { isCheckinVisible } from "./profile-gates";
+import { getProfileUiCopy } from "./profile-ui-copy";
+import {
+  settingsFormFromSelfSetting,
+  type UserSettingsForm,
+} from "./profile-settings";
+import {
+  profileHeaderStats,
+  type ProfileHeaderStats,
+} from "./profile-stats";
 
 function formatTs(sec?: number) {
   if (!sec) return "—";
@@ -26,28 +53,54 @@ function formatTs(sec?: number) {
 }
 
 export function ProfilePageClient() {
-  const { targetLocale } = useLocale();
+  const { targetLocale, preferredLocale, setPreferredLocale } = useLocale();
   const copy = useMemo(() => getProfileUiCopy(targetLocale), [targetLocale]);
   const [collapsed, setCollapsed] = useState(false);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [self, setSelf] = useState<BackendUser | null>(null);
+  const [authStatus, setAuthStatus] = useState<PublicAuthStatus | null>(null);
   const [originalPassword, setOriginalPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [stats, setStats] = useState<ProfileHeaderStats | null>(null);
+  const [settings, setSettings] = useState<UserSettingsForm>(() =>
+    settingsFormFromSelfSetting(),
+  );
   const [twoFa, setTwoFa] = useState<TwoFactorStatus | null>(null);
   const [sessions, setSessions] = useState<UserSessionRow[]>([]);
   const [sessionsError, setSessionsError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const showToast = useCallback(
+    (message: string, type: "success" | "error" = "success") => {
+      setToast({ message, type });
+    },
+    [],
+  );
 
   const refresh = useCallback(async () => {
     setError(null);
     try {
-      const self = await getSelf();
-      setUsername(self.username ?? "");
-      setDisplayName(self.display_name ?? "");
+      const me = await getSelf();
+      setSelf(me);
+      setUsername(me.username ?? "");
+      setDisplayName(me.display_name ?? "");
+      setStats(profileHeaderStats(me));
+      setSettings(settingsFormFromSelfSetting(me.setting));
     } catch (e) {
+      setSelf(null);
+      setStats(null);
       setError(localizeBackendError(targetLocale, e, copy.loadFailed));
+    }
+    try {
+      setAuthStatus(await getPublicAuthStatus());
+    } catch {
+      setAuthStatus(null);
     }
     try {
       setTwoFa(await getTwoFactorStatus());
@@ -72,16 +125,19 @@ export function ProfilePageClient() {
   const onSaveProfile = async () => {
     setSaving(true);
     setError(null);
-    setNotice(null);
     try {
       await updateSelfProfile({
         username: username.trim(),
         display_name: displayName.trim(),
       });
-      setNotice(copy.saved);
+      showToast(copy.saved);
+      notifySelfUpdated();
       await refresh();
     } catch (e) {
-      setError(localizeBackendError(targetLocale, e, copy.saveFailed));
+      showToast(
+        localizeBackendError(targetLocale, e, copy.saveFailed),
+        "error",
+      );
     } finally {
       setSaving(false);
     }
@@ -90,7 +146,6 @@ export function ProfilePageClient() {
   const onChangePassword = async () => {
     setSaving(true);
     setError(null);
-    setNotice(null);
     try {
       await changeSelfPassword({
         username: username.trim(),
@@ -100,12 +155,20 @@ export function ProfilePageClient() {
       });
       setOriginalPassword("");
       setNewPassword("");
-      setNotice(copy.passwordChanged);
+      showToast(copy.passwordChanged);
     } catch (e) {
-      setError(localizeBackendError(targetLocale, e, copy.passwordFailed));
+      showToast(
+        localizeBackendError(targetLocale, e, copy.passwordFailed),
+        "error",
+      );
     } finally {
       setSaving(false);
     }
+  };
+
+  const onLocaleChange = (code: Locale) => {
+    setPreferredLocale(code);
+    showToast(copy.languageSaved);
   };
 
   return (
@@ -114,24 +177,61 @@ export function ProfilePageClient() {
       onToggleCollapse={() => setCollapsed((v) => !v)}
       activeKey="profile"
       title={copy.pageTitle}
+      overlay={
+        <MessageToast
+          open={toast !== null}
+          type={toast?.type ?? "success"}
+          message={toast?.message ?? ""}
+          onClose={() => setToast(null)}
+        />
+      }
     >
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">
         {error ? (
           <p className="rounded-[8px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
             {error}
           </p>
         ) : null}
-        {notice ? (
-          <p className="rounded-[8px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-            {notice}
-          </p>
+
+        {stats ? (
+          <section className={`${CONSOLE_SURFACE} overflow-hidden`}>
+            <div className="border-b border-slate-100 px-4 py-3">
+              <h2 className="text-sm font-semibold text-slate-800">
+                {copy.sectionStats}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              <div className="px-4 py-3">
+                <div className="text-xs text-slate-500">{copy.statQuota}</div>
+                <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
+                  {formatConsoleQuota(stats.quota, targetLocale)}
+                </div>
+              </div>
+              <div className="px-4 py-3">
+                <div className="text-xs text-slate-500">
+                  {copy.statUsedQuota}
+                </div>
+                <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
+                  {formatConsoleQuota(stats.usedQuota, targetLocale)}
+                </div>
+              </div>
+              <div className="px-4 py-3">
+                <div className="text-xs text-slate-500">
+                  {copy.statRequests}
+                </div>
+                <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
+                  {formatConsoleCount(stats.requestCount, targetLocale)}
+                </div>
+              </div>
+            </div>
+          </section>
         ) : null}
 
-        <section className="rounded-[8px] border border-slate-200 bg-white p-6">
+        <section className={`${CONSOLE_SURFACE} p-4`}>
           <h2 className="text-sm font-semibold text-slate-800">
             {copy.sectionProfile}
           </h2>
-          <label className="mt-4 block text-xs text-slate-500">
+          <label className="mt-3 block text-xs text-slate-500">
             {copy.username}
           </label>
           <input
@@ -140,7 +240,7 @@ export function ProfilePageClient() {
             disabled
             readOnly
           />
-          <label className="mt-4 block text-xs text-slate-500">
+          <label className="mt-3 block text-xs text-slate-500">
             {copy.displayName}
           </label>
           <input
@@ -152,17 +252,35 @@ export function ProfilePageClient() {
             type="button"
             disabled={saving}
             onClick={() => void onSaveProfile()}
-            className="mt-4 inline-flex h-10 items-center rounded-[8px] bg-[#4AABF0] px-5 text-[13px] font-semibold text-white hover:bg-[#3A9BD8] disabled:opacity-60"
+            className={`mt-3 ${CONSOLE_PRIMARY_BTN}`}
           >
             {copy.save}
           </button>
         </section>
 
-        <section className="rounded-[8px] border border-slate-200 bg-white p-6">
+        <ProfileLanguagePanel
+          copy={copy}
+          preferredLocale={preferredLocale}
+          onLocaleChange={onLocaleChange}
+        />
+
+        {stats ? (
+          <ProfileSettingsPanel
+            copy={copy}
+            targetLocale={targetLocale}
+            settings={settings}
+            onSettingsChange={setSettings}
+            onNotice={(msg) => showToast(msg)}
+            onError={(msg) => showToast(msg, "error")}
+            onSaved={() => void refresh()}
+          />
+        ) : null}
+
+        <section className={`${CONSOLE_SURFACE} p-4`}>
           <h2 className="text-sm font-semibold text-slate-800">
             {copy.sectionPassword}
           </h2>
-          <label className="mt-4 block text-xs text-slate-500">
+          <label className="mt-3 block text-xs text-slate-500">
             {copy.originalPassword}
           </label>
           <input
@@ -172,7 +290,7 @@ export function ProfilePageClient() {
             onChange={(e) => setOriginalPassword(e.target.value)}
             autoComplete="current-password"
           />
-          <label className="mt-4 block text-xs text-slate-500">
+          <label className="mt-3 block text-xs text-slate-500">
             {copy.newPassword}
           </label>
           <input
@@ -186,34 +304,66 @@ export function ProfilePageClient() {
             type="button"
             disabled={saving || !originalPassword || !newPassword}
             onClick={() => void onChangePassword()}
-            className="mt-4 inline-flex h-10 items-center rounded-[8px] border border-slate-300 bg-white px-5 text-[13px] font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            className="mt-3 inline-flex h-10 items-center rounded-[12px] border border-slate-300 bg-white px-5 text-base text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
             {copy.changePassword}
           </button>
         </section>
 
+        <ProfileAccessTokenPanel
+          copy={copy}
+          targetLocale={targetLocale}
+          onNotice={(msg) => showToast(msg)}
+          onError={(msg) => showToast(msg, "error")}
+        />
+
+        {isCheckinVisible(authStatus) ? (
+          <ProfileCheckinPanel
+            copy={copy}
+            targetLocale={targetLocale}
+            onNotice={(msg) => showToast(msg)}
+            onError={(msg) => showToast(msg, "error")}
+            onQuotaMaybeChanged={() => {
+              notifySelfUpdated();
+              void refresh();
+            }}
+          />
+        ) : null}
+
+        <ProfileBindingsPanel
+          copy={copy}
+          targetLocale={targetLocale}
+          self={self}
+          onNotice={(msg) => showToast(msg)}
+          onError={(msg) => showToast(msg, "error")}
+          onBound={() => {
+            notifySelfUpdated();
+            void refresh();
+          }}
+        />
+
         <ProfileSecurityPanels
           copy={copy}
           targetLocale={targetLocale}
           twoFa={twoFa}
-          onNotice={setNotice}
-          onError={setError}
+          onNotice={(msg) => showToast(msg)}
+          onError={(msg) => showToast(msg, "error")}
           onTwoFaChange={() => void refresh()}
         />
 
-        <section className="rounded-[8px] border border-slate-200 bg-white p-6">
+        <section className={`${CONSOLE_SURFACE} p-4`}>
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-semibold text-slate-800">
               {copy.sectionSessions}
             </h2>
             <button
               type="button"
-              className="text-xs font-semibold text-[#4AABF0]"
+              className="text-xs font-semibold text-[rgb(74,171,240)]"
               onClick={() => {
                 void (async () => {
                   try {
                     await revokeOtherSessions();
-                    setNotice(copy.sessionsRevoked);
+                    showToast(copy.sessionsRevoked);
                     await refresh();
                   } catch (e) {
                     setError(
@@ -231,17 +381,19 @@ export function ProfilePageClient() {
             </button>
           </div>
           {sessionsError ? (
-            <p className="mt-3 text-sm text-slate-500">{sessionsError}</p>
+            <p className="mt-2 text-sm text-slate-500">{sessionsError}</p>
           ) : sessions.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">{copy.sessionsEmpty}</p>
+            <div className="mt-1">
+              <ConsoleEmptyState message={copy.sessionsEmpty} />
+            </div>
           ) : (
-            <ul className="mt-3 divide-y divide-slate-100">
+            <ul className="mt-2 divide-y divide-slate-100">
               {sessions.map((s, i) => {
                 const sid = s.sid ?? s.id ?? String(i);
                 return (
                   <li
                     key={sid}
-                    className="flex items-center justify-between gap-3 py-3 text-sm"
+                    className="flex items-center justify-between gap-3 py-2.5 text-sm"
                   >
                     <div className="min-w-0">
                       <div className="truncate text-slate-700">
@@ -249,7 +401,8 @@ export function ProfilePageClient() {
                         {s.current ? ` · ${copy.sessionCurrent}` : ""}
                       </div>
                       <div className="text-xs text-slate-400">
-                        {s.ip ?? "—"} · {formatTs(s.last_seen_at ?? s.created_at)}
+                        {s.ip ?? "—"} ·{" "}
+                        {formatTs(s.last_seen_at ?? s.created_at)}
                       </div>
                     </div>
                     {!s.current ? (
@@ -282,6 +435,16 @@ export function ProfilePageClient() {
             </ul>
           )}
         </section>
+
+        {username ? (
+          <ProfileDeleteAccountPanel
+            copy={copy}
+            targetLocale={targetLocale}
+            username={username}
+            onNotice={(msg) => showToast(msg)}
+            onError={(msg) => showToast(msg, "error")}
+          />
+        ) : null}
       </div>
     </ConsoleShell>
   );

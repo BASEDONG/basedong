@@ -144,9 +144,8 @@ if (playground) {
     "getPlaygroundUiCopy",
     "pageTitles",
     "promptPlaceholder",
-    "notConnectedImage",
-    "notConnectedVideo",
-    "notConnectedTts",
+    "clearChatAria",
+    "paramMaxTokens",
   ]) {
     if (!playground.includes(key)) {
       fail(`playground-ui-copy.ts missing ${key}`);
@@ -236,6 +235,25 @@ if (consoleShell) {
     fail("ConsoleShell must mirror layout when isRtl");
   }
   ok("ConsoleShell RTL layout mirroring");
+}
+
+const profile = requireFile(
+  "src/components/console/profile/profile-ui-copy.ts",
+);
+if (profile) {
+  requireMarkers("profile-ui-copy.ts", profile);
+  for (const key of [
+    "getProfileUiCopy",
+    "pageTitle",
+    "sectionStats",
+    "sectionSettings",
+    "sectionLanguage",
+    "statQuota",
+    "saveSettings",
+  ]) {
+    if (!profile.includes(key)) fail(`profile-ui-copy.ts missing ${key}`);
+  }
+  ok("console/profile/profile-ui-copy.ts (14 locales)");
 }
 
 const meta = requireFile("src/lib/console-page-metadata.ts");

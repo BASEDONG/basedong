@@ -10,7 +10,7 @@ The frontend is split into five **zones** — each maps to a `src/components/{zo
 Public website pages cloned from `siliconflow.cn` — home, pricing, partner, news, etc.
 
 **Console**:
-Cloud control plane under `/me/*`. IA and page capabilities align with upstream new-api's **user** console (not Admin); visual skin stays basedong. Primary surfaces: 模型广场, 在线体验, 用量概览, API 密钥, 记录, 钱包, 个人资料. SiliconFlow-heritage extras that need large Backend work are Console 下线页.
+Cloud control plane under `/me/*`. Fixed basedong information architecture (模型广场 as default landing); page content and journeys follow **交互对齐** with upstream new-api's **user** console (not Admin). Primary surfaces: 模型广场, 在线体验, 用量概览, API 密钥, 记录, 钱包, 个人资料. SiliconFlow-heritage extras that need large Backend work are Console 下线页.
 
 **Auth**:
 Login/register for Backend 用户. Register uses separate **用户名** + **邮箱** (邮箱验证码 + 人机验证); login accepts username or email. Cloned from `account.siliconflow.cn`. Access JWT is **memory-only** (upstream new-api pattern); cold start uses Refresh Cookie via `ensureAuthSession` when Web and Backend are same-site. See `apps/api/docs/basedong.md` (SPA session).
@@ -47,6 +47,10 @@ _Avoid_: toLocalHref, link mapper
 The customer control plane under `/me/*` (模型广场, 在线体验, 用量概览, API 密钥, 记录, 钱包, 个人资料). Not the operator Admin UI. Copy uses basedong synonyms; do not paste upstream new-api user-console labels verbatim.
 _Avoid_: Admin, dashboard (as a name for the whole Console), 用户管理控制台 (ambiguous with Admin)
 
+**交互对齐**:
+Console goal of matching upstream new-api **user** console sections, information density, and operation journeys (API call sequences, confirm steps, secondary panels) while keeping basedong skin and page grammar. Sidebar navigation stays basedong's fixed IA; in-page blocks follow Backend status/self/topup configuration the same way upstream does. Product acceptance is full user-console parity in one gate (engineering may use multiple PRs). Out of scope: Admin, and SiliconFlow-only Console 下线页.
+_Avoid_: pixel-perfect new-api UI, Admin skin, curated whitelist that drops Backend-available user capabilities, treating nav parity as required for content parity
+
 **词元**:
 Customer-facing name for billed model usage units. See Backend glossary; never use “Token” in UI copy when you mean 词元.
 _Avoid_: Token, 令牌
@@ -66,7 +70,7 @@ Console session playground for trying models while signed in (Backend `/pg/…`,
 _Avoid_: Playground, 游乐场 as the Chinese UI label
 
 **用量概览**:
-Single Console page for the 用户's usage statistics (upstream user Dashboard capability; one page, not a separate “overview” plus “charts” pair).
+Single Console page for the 用户's usage statistics at **交互对齐** with upstream user Dashboard (one page, not a separate “overview” plus “charts” pair).
 _Avoid_: 数据看板, Dashboard as UI label, splitting 概览 and 数据看板 into two pages
 
 **记录**:
@@ -86,16 +90,33 @@ Console list of the 用户's async task rows (Backend task self logs).
 _Avoid_: Task logs as UI label, 任务记录 when 异步任务 is meant
 
 **钱包**:
-Console page for 额度 balance, 充值, redemption, and top-up history. 钱包 is the page; **充值** is the purchase action (see Backend glossary).
-_Avoid_: expense bill, expensebill, naming the whole page only 充值 when it also holds history and balance
+Console page for 额度 and money actions at **交互对齐** with upstream user Wallet: balance/usage/request stats, online 充值 (all Backend-enabled gateways), redemption, subscription/recommended plans when offered, affiliate transfer when offered, and top-up order history. 钱包 is the page; **充值** is the purchase action (see Backend glossary).
+_Avoid_: expense bill, expensebill, naming the whole page only 充值 when it also holds history and balance; dropping Backend-available wallet capabilities as a product whitelist
 
 **个人资料**:
-Console page for the 用户's profile and account settings at upstream user Profile capability parity (whatever self APIs Backend already exposes).
-_Avoid_: Personal settings as UI label when 个人资料 is meant
+Console page for the 用户's account at **交互对齐** with upstream user Profile: header stats (额度 / usage / requests), settings and preferences (including notifications), bindings, security (password, 2FA, Passkey, sessions, access token, delete account when upstream exposes them), check-in when enabled, and a language preference block. Language in this block uses **Preferred Locale** (Target Locale Set), not upstream's narrower Backend `language` enum as Console source of truth.
+_Avoid_: Personal settings as UI label when 个人资料 is meant; treating Backend `language` as the Console locale source of truth
 
 **Console 下线页**:
-A `/me/*` route omitted from the Console sidebar whose direct visit shows that basedong does not offer the capability (SiliconFlow-heritage gaps such as invoice/batches/campaigns, and retired multimodal 在线体验 shells). Not a silent fake of the old clone.
-_Avoid_: leaving working-looking clone UI on these URLs, treating sidebar omission alone as enough
+A `/me/*` route omitted from the Console sidebar whose direct visit shows that basedong does not offer the capability (SiliconFlow-heritage gaps such as invoice/batches/campaigns, and retired multimodal 在线体验 shells). Not a silent fake of the old clone. These are not upstream user-console gaps and stay out of **交互对齐**.
+_Avoid_: leaving working-looking clone UI on these URLs, treating sidebar omission alone as enough; counting SiliconFlow-only pages as required upstream parity
+
+### Console page grammar
+
+Shared visual/interaction rules for `/me/*` tool pages. **交互对齐** defines content and journeys; **skin** stays basedong (SiliconFlow-heritage shell). Do not import Admin / new-api UI kits. Anchor pages: **API 密钥** (CTA, table, empty, toast) and **模型广场** (spacing, type scale).
+
+| Rule | Convention |
+|------|------------|
+| Shell | Always `ConsoleShell`; page title only in TopBar — no duplicate in-page H1. TopBar stacks above `main` (do not put `z-50` on `main`; avoid overflow clipping on the TopBar column wrapper) |
+| Primary CTA | `bd-gradient-bg` + `rounded-[12px]` via shared `CONSOLE_PRIMARY_BTN` (not scattered `bg-[#4AABF0]` / `rounded-[8px]`) |
+| Main surface | One primary content surface (table or list); helpers use `border-slate-200 bg-slate-50` hint strips — not unrelated dashed frames |
+| Card / table | `rounded-[8px] border border-slate-200 bg-white`; thead `bg-[rgb(248,250,252)]` |
+| Empty | Shared `ConsoleEmptyState` (icon + copy) — never a lone grey sentence |
+| Feedback | Ephemeral success/failure → shared `MessageToast`; persistent form validation may stay inline |
+| Numbers | 额度 via `formatConsoleQuota` (locale grouping); 词元 columns include unit copy — no raw ints |
+| Width | No page-level `min-w-[900px\|1000px]`; wrap tables in `overflow-x-auto` when needed |
+
+_Avoid_: New API Admin skin; inventing a second card/toast/empty system per page; restoring retired SiliconFlow fake capabilities for “fullness”
 
 ### Locales
 
@@ -128,8 +149,8 @@ Always the Source Locale (`zh-CN`). Used when a catalog key is missing for the a
 _Avoid_: English fallback, best-effort locale
 
 **Preferred Locale**:
-The Locale the user last chose in the language switcher. Covers the **Target Locale Set**; persisted (`bd_preferred_locale` cookie / localStorage). Bare-path Marketing/Auth entry redirects to the prefixed URL when Preferred Locale is a **Translated Locale** (not Source). Console paths stay bare; copy follows Preferred Locale.
-_Avoid_: selected language, display language
+The Locale the user last chose in the language switcher. Covers the **Target Locale Set**; persisted (`bd_preferred_locale` cookie / localStorage). Bare-path Marketing/Auth entry redirects to the prefixed URL when Preferred Locale is a **Translated Locale** (not Source). Console paths stay bare; copy follows Preferred Locale. Console **个人资料** language preference edits this same Preferred Locale (shared with the global switcher); it is the Console language source of truth over upstream Backend `language`.
+_Avoid_: selected language, display language, Backend `language` as Console locale source of truth
 
 **Translated Locale set** (Marketing + Auth):
 Equals the **Target Locale Set** (ADR 0007): `zh-CN` (Source; bare paths), `en`, `zh-TW`, `ja`, `fr`, `ru`, `vi`, `ko`, `de`, `es`, `pt-BR`, `ar`, `hi`, `id`. Full Marketing (12 pages), Auth, shared chrome, and SEO metadata catalogs; URL prefixes for all non-Source locales. `check:locales` validates all 14.

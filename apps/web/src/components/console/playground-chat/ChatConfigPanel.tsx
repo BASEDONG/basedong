@@ -3,22 +3,36 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { PlaygroundUiCopy } from "../shared/playground-ui-copy";
-import {
-  PARAM_DEFS,
-  defaultParamValues,
-  type ParamValues,
-} from "./content";
-import { ChevronDownIcon, CompareModelsIcon, InfoCircleIcon } from "./icons";
+import { PARAM_DEFS, type ParamDef, type ParamValues } from "./content";
+import { ChevronDownIcon } from "./icons";
 import { ParamSliderField } from "./ParamSliderField";
 import { AnimatedDropdown } from "./AnimatedDropdown";
-
-type ThinkingMode = "off" | "on";
 
 interface ChatConfigPanelProps {
   copy: PlaygroundUiCopy;
   model: string;
   modelOptions: string[];
   onModelChange: (model: string) => void;
+  group: string;
+  groupOptions: string[];
+  onGroupChange: (group: string) => void;
+  params: ParamValues;
+  onParamsChange: (params: ParamValues) => void;
+}
+
+function paramLabel(copy: PlaygroundUiCopy, key: ParamDef["key"]): string {
+  switch (key) {
+    case "maxTokens":
+      return copy.paramMaxTokens;
+    case "temperature":
+      return copy.paramTemperature;
+    case "topP":
+      return copy.paramTopP;
+    case "topK":
+      return copy.paramTopK;
+    case "frequencyPenalty":
+      return copy.paramFrequencyPenalty;
+  }
 }
 
 const selectClass =
@@ -29,27 +43,29 @@ export function ChatConfigPanel({
   model,
   modelOptions,
   onModelChange,
+  group,
+  groupOptions,
+  onGroupChange,
+  params,
+  onParamsChange,
 }: ChatConfigPanelProps) {
-  const [params, setParams] = useState<ParamValues>(defaultParamValues);
-  const [thinking, setThinking] = useState<ThinkingMode>("off");
   const [modelOpen, setModelOpen] = useState(false);
-  const [thinkingOpen, setThinkingOpen] = useState(false);
+  const [groupOpen, setGroupOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const options = modelOptions.length > 0 ? modelOptions : [];
-  const thinkingLabel =
-    thinking === "on" ? copy.thinkingOn : copy.thinkingOff;
+  const groups = groupOptions.length > 0 ? groupOptions : ["default"];
 
   useEffect(() => {
-    if (!modelOpen && !thinkingOpen) return;
+    if (!modelOpen && !groupOpen) return;
     const onDoc = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) {
         setModelOpen(false);
-        setThinkingOpen(false);
+        setGroupOpen(false);
       }
     };
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
-  }, [modelOpen, thinkingOpen]);
+  }, [groupOpen, modelOpen]);
 
   return (
     <div
@@ -58,13 +74,15 @@ export function ChatConfigPanel({
     >
       <div className="flex flex-col gap-3">
         <div className="grid w-full gap-1">
-          <div className="text-sm leading-5 text-slate-700">Model</div>
+          <div className="text-sm leading-5 text-slate-700">
+            {copy.modelLabel}
+          </div>
           <div className="relative">
             <button
               type="button"
               onClick={() => {
+                setGroupOpen(false);
                 setModelOpen((v) => !v);
-                setThinkingOpen(false);
               }}
               className={cn(
                 selectClass,
@@ -114,89 +132,72 @@ export function ChatConfigPanel({
           </div>
         </div>
 
+        <div className="grid w-full gap-1">
+          <div className="text-sm leading-5 text-slate-700">
+            {copy.groupLabel ?? "Group"}
+          </div>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setModelOpen(false);
+                setGroupOpen((v) => !v);
+              }}
+              className={cn(
+                selectClass,
+                groupOpen &&
+                  "border-[rgb(74,171,240)] shadow-[0_0_0_2px_rgba(74,171,240,0.1)]",
+              )}
+            >
+              <span className="truncate">
+                {group || (copy.selectGroup ?? "Select a group")}
+              </span>
+              <ChevronDownIcon
+                className={cn(
+                  "ml-2 size-3 shrink-0 text-slate-400 transition-transform duration-200 sf-chat-ease-ant",
+                  groupOpen && "rotate-180",
+                )}
+              />
+            </button>
+            <AnimatedDropdown
+              open={groupOpen}
+              className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-[6px] border border-slate-200 bg-white py-1 shadow-md"
+            >
+              {groups.map((opt) => (
+                <li key={opt}>
+                  <button
+                    type="button"
+                    className={cn(
+                      "flex w-full px-3 py-1.5 text-left text-sm transition-colors duration-150 sf-chat-ease-out hover:bg-slate-50",
+                      opt === group &&
+                        "bg-[var(--sf-cloud-primary-10)] text-[rgb(74,171,240)]",
+                    )}
+                    onClick={() => {
+                      onGroupChange(opt);
+                      setGroupOpen(false);
+                    }}
+                  >
+                    {opt}
+                  </button>
+                </li>
+              ))}
+            </AnimatedDropdown>
+          </div>
+        </div>
+
         <div className="model-form">
           {PARAM_DEFS.map((def) => (
             <ParamSliderField
               key={def.key}
               def={def}
+              label={paramLabel(copy, def.key)}
               value={params[def.key]}
               onChange={(value) =>
-                setParams((prev) => ({ ...prev, [def.key]: value }))
+                onParamsChange({ ...params, [def.key]: value })
               }
             />
           ))}
-
-          <div className="mb-6 h-14">
-            <div className="flex h-6 w-full items-center">
-              <div className="flex gap-1">
-                <span className="truncate text-sm leading-[22px] text-slate-700">
-                  {copy.enableThinking}
-                </span>
-                <InfoCircleIcon className="relative top-[-4px] left-[-2px] size-3 cursor-pointer text-xs text-slate-400" />
-              </div>
-            </div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setThinkingOpen((v) => !v);
-                  setModelOpen(false);
-                }}
-                className={cn(
-                  selectClass,
-                  thinkingOpen &&
-                    "border-[rgb(74,171,240)] shadow-[0_0_0_2px_rgba(74,171,240,0.1)]",
-                )}
-              >
-                <span>{thinkingLabel}</span>
-                <ChevronDownIcon
-                  className={cn(
-                    "size-3 text-slate-400 transition-transform duration-200 sf-chat-ease-ant",
-                    thinkingOpen && "rotate-180",
-                  )}
-                />
-              </button>
-              <AnimatedDropdown
-                open={thinkingOpen}
-                className="absolute z-20 mt-1 w-full overflow-hidden rounded-[6px] border border-slate-200 bg-white py-1 shadow-md"
-              >
-                {(
-                  [
-                    { key: "off" as const, label: copy.thinkingOff },
-                    { key: "on" as const, label: copy.thinkingOn },
-                  ] as const
-                ).map((opt) => (
-                  <li key={opt.key}>
-                    <button
-                      type="button"
-                      className={cn(
-                        "flex w-full px-3 py-1.5 text-left text-sm transition-colors duration-150 sf-chat-ease-out hover:bg-slate-50",
-                        opt.key === thinking &&
-                          "bg-[var(--sf-cloud-primary-10)] text-[rgb(74,171,240)]",
-                      )}
-                      onClick={() => {
-                        setThinking(opt.key);
-                        setThinkingOpen(false);
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  </li>
-                ))}
-              </AnimatedDropdown>
-            </div>
-          </div>
         </div>
-      </div>
-
-      <div className="flex justify-center">
-        <button
-          type="button"
-          className="inline-flex h-8 w-[140px] items-center justify-center gap-2 rounded-[6px] border border-transparent bg-[#f3e8ff] px-[15px] text-sm leading-[21px] text-[#6b21a8] shadow-[0_2px_0_0_rgba(74,171,240,0.06)] transition-all duration-200 sf-chat-ease-ant hover:opacity-90 active:opacity-80"
-        >
-          <CompareModelsIcon />
-          {copy.addCompareModel}
-        </button>
       </div>
     </div>
   );

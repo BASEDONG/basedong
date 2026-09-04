@@ -195,19 +195,61 @@ export function MenuUnfoldIcon(props: IconProps) {
   );
 }
 
-export function BellIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...baseProps(props)}>
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
-  );
-}
-
 export function ScrollTopIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...baseProps(props)}>
       <path d="m18 15-6-6-6 6" />
+    </svg>
+  );
+}
+
+export function CheckCircleIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="64 64 896 896"
+      fill="currentColor"
+      focusable="false"
+      {...baseProps(props, 16)}
+    >
+      <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm193.5 301.7l-210.6 292a31.8 31.8 0 01-51.7 0L318.5 484.9c-3.8-5.3 0-12.7 6.5-12.7h46.9c10.2 0 19.9 4.9 25.9 13.3l71.2 98.8 157.2-218c6-8.3 15.6-13.3 25.9-13.3H699c6.5 0 10.3 7.4 6.5 12.7z" />
+    </svg>
+  );
+}
+
+export function CloseCircleIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="64 64 896 896"
+      fill="currentColor"
+      fillRule="evenodd"
+      focusable="false"
+      {...baseProps(props, 16)}
+    >
+      <path d="M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64zm127.98 274.82h-.04l-.08.06L512 466.75 384.14 338.88c-.04-.05-.06-.06-.08-.06a.12.12 0 00-.07 0c-.03 0-.05.01-.09.05l-45.02 45.02a.2.2 0 00-.05.09.12.12 0 000 .07v.02a.27.27 0 00.06.06L466.75 512 338.88 639.86c-.05.04-.06.06-.06.08a.12.12 0 000 .07c0 .03.01.05.05.09l45.02 45.02a.2.2 0 00.09.05.12.12 0 00.07 0c.02 0 .04-.01.08-.05L512 557.25l127.86 127.87c.04.04.06.05.08.05a.12.12 0 00.07 0c.03 0 .05-.01.09-.05l45.02-45.02a.2.2 0 00.05-.09.12.12 0 000-.07v-.02a.27.27 0 00-.05-.06L557.25 512l127.87-127.86c.04-.04.05-.06.05-.08a.12.12 0 000-.07c0-.03-.01-.05-.05-.09l-45.02-45.02a.2.2 0 00-.09-.05.12.12 0 00-.07 0z" />
+    </svg>
+  );
+}
+
+/** Empty illustration for ConsoleEmptyState / tables. */
+export function EmptyBoxIcon(props: IconProps) {
+  return (
+    <svg
+      width={64}
+      height={40}
+      viewBox="0 0 64 41"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+        <ellipse fill="#f8fafc" cx="32" cy="33" rx="32" ry="7" />
+        <g fillRule="nonzero" stroke="#e2e8f0">
+          <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z" />
+          <path
+            d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z"
+            fill="#f8fafc"
+          />
+        </g>
+      </g>
     </svg>
   );
 }

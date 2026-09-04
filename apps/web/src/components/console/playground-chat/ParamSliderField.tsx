@@ -1,10 +1,11 @@
 "use client";
 
-import { CaretDownIcon, CaretUpIcon, InfoCircleIcon } from "./icons";
+import { CaretDownIcon, CaretUpIcon } from "./icons";
 import type { ParamDef } from "./content";
 
 interface ParamSliderFieldProps {
   def: ParamDef;
+  label: string;
   value: number;
   onChange: (value: number) => void;
 }
@@ -21,6 +22,7 @@ function snap(value: number, min: number, max: number, step: number) {
 
 export function ParamSliderField({
   def,
+  label,
   value,
   onChange,
 }: ParamSliderFieldProps) {
@@ -36,14 +38,9 @@ export function ParamSliderField({
   return (
     <div className="mb-3 h-[66px]">
       <div className="flex h-8 w-full items-center justify-between">
-        <div className="flex gap-1">
-          <span className="max-w-[120px] truncate text-sm text-slate-700">
-            {def.label}
-          </span>
-          {def.showInfo ? (
-            <InfoCircleIcon className="relative top-[-4px] left-[-2px] size-3 cursor-pointer text-xs text-slate-400" />
-          ) : null}
-        </div>
+        <span className="max-w-[120px] truncate text-sm text-slate-700">
+          {label}
+        </span>
         <div className="group relative mb-0 h-8 w-[90px] rounded-[6px] border border-slate-300 bg-white/50 transition-all duration-200 ease hover:border-[rgb(74,171,240)]">
           <input
             type="text"

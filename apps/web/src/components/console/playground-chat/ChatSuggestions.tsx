@@ -1,24 +1,36 @@
 "use client";
 
-import { SUGGESTION_PROMPTS } from "./content";
+import type { PlaygroundUiCopy } from "../shared/playground-ui-copy";
+import { SUGGESTION_PROMPTS_EN, SUGGESTION_PROMPTS_ZH } from "./content";
 import { ClearChatIcon } from "./icons";
 
 interface ChatSuggestionsProps {
+  copy: PlaygroundUiCopy;
+  locale: string;
   onPick: (text: string) => void;
   onClear: () => void;
 }
 
-export function ChatSuggestions({ onPick, onClear }: ChatSuggestionsProps) {
+export function ChatSuggestions({
+  copy,
+  locale,
+  onPick,
+  onClear,
+}: ChatSuggestionsProps) {
+  const prompts = locale.toLowerCase().startsWith("zh")
+    ? SUGGESTION_PROMPTS_ZH
+    : SUGGESTION_PROMPTS_EN;
+
   return (
     <div className="flex">
       <div className="flex-1 overflow-hidden">
         <div className="flex w-full gap-3">
-          {SUGGESTION_PROMPTS.map((text) => (
+          {prompts.map((text) => (
             <button
               key={text}
               type="button"
               onClick={() => onPick(text)}
-              className="max-w-[200px] cursor-pointer truncate rounded-[8px] border border-transparent bg-[#f1f5f9] px-3 py-1 text-xs leading-4 text-[#64748b] transition-all duration-150 sf-chat-ease-out hover:border-[rgb(108,40,246)]"
+              className="max-w-[200px] cursor-pointer truncate rounded-[8px] border border-transparent bg-[#f1f5f9] px-3 py-1 text-xs leading-4 text-[#64748b] transition-all duration-150 sf-chat-ease-out hover:border-[rgb(74,171,240)]"
             >
               {text}
             </button>
@@ -27,7 +39,7 @@ export function ChatSuggestions({ onPick, onClear }: ChatSuggestionsProps) {
       </div>
       <button
         type="button"
-        aria-label="clear"
+        aria-label={copy.clearChatAria}
         onClick={onClear}
         className="ml-2 flex size-8 min-w-8 items-center justify-center rounded-[6px] border border-slate-300 bg-white text-sm text-slate-800 shadow-[0_2px_0_0_rgba(0,0,0,0.02)] transition-all duration-200 sf-chat-ease-ant hover:border-[rgb(74,171,240)] hover:text-[rgb(74,171,240)]"
       >

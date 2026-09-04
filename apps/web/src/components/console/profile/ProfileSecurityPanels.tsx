@@ -25,6 +25,8 @@ import {
   isPasskeySupported,
   prepareCredentialCreationOptions,
 } from "@/lib/backend/passkey-webauthn";
+import { ConsoleEmptyState } from "../shared/ConsoleEmptyState";
+import { CONSOLE_PRIMARY_BTN, CONSOLE_SURFACE } from "../shared/console-ui";
 import type { ProfileUiCopy } from "./profile-ui-copy";
 
 type Props = {
@@ -196,7 +198,7 @@ export function ProfileSecurityPanels({
 
   return (
     <>
-      <section className="rounded-[8px] border border-slate-200 bg-white p-6">
+      <section className={`${CONSOLE_SURFACE} p-4`}>
         <h2 className="text-sm font-semibold text-slate-800">
           {copy.sectionSecurity}
         </h2>
@@ -215,7 +217,7 @@ export function ProfileSecurityPanels({
             type="button"
             disabled={busy}
             onClick={() => void startSetup()}
-            className="mt-4 inline-flex h-10 items-center rounded-[8px] bg-[#4AABF0] px-5 text-[13px] font-semibold text-white hover:bg-[#3A9BD8] disabled:opacity-60"
+            className={`mt-4 ${CONSOLE_PRIMARY_BTN}`}
           >
             {copy.twoFaEnable}
           </button>
@@ -294,7 +296,7 @@ export function ProfileSecurityPanels({
                     type="button"
                     disabled={busy || !code.trim()}
                     onClick={() => void confirmEnable()}
-                    className="inline-flex h-10 items-center rounded-[8px] bg-[#4AABF0] px-5 text-[13px] font-semibold text-white disabled:opacity-60"
+                    className={CONSOLE_PRIMARY_BTN}
                   >
                     {copy.twoFaConfirmEnable}
                   </button>
@@ -344,7 +346,7 @@ export function ProfileSecurityPanels({
         ) : null}
       </section>
 
-      <section className="rounded-[8px] border border-slate-200 bg-white p-6">
+      <section className={`${CONSOLE_SURFACE} p-4`}>
         <h2 className="text-sm font-semibold text-slate-800">
           {copy.sectionPasskey}
         </h2>
@@ -370,7 +372,7 @@ export function ProfileSecurityPanels({
               type="button"
               disabled={busy || !passkeyOk}
               onClick={() => void onRegisterPasskey()}
-              className="inline-flex h-10 items-center rounded-[8px] bg-[#4AABF0] px-5 text-[13px] font-semibold text-white disabled:opacity-60"
+              className={CONSOLE_PRIMARY_BTN}
             >
               {copy.passkeyRegister}
             </button>
@@ -387,13 +389,15 @@ export function ProfileSecurityPanels({
         </div>
       </section>
 
-      <section className="rounded-[8px] border border-slate-200 bg-white p-6">
+      <section className={`${CONSOLE_SURFACE} p-4`}>
         <h2 className="text-sm font-semibold text-slate-800">
           {copy.sectionOauth}
         </h2>
         <p className="mt-2 text-xs text-slate-400">{copy.oauthBindNote}</p>
         {bindings == null ? null : bindings.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">{copy.oauthEmpty}</p>
+          <div className="mt-2">
+            <ConsoleEmptyState message={copy.oauthEmpty} />
+          </div>
         ) : (
           <ul className="mt-3 divide-y divide-slate-100">
             {bindings.map((b) => (

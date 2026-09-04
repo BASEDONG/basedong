@@ -8,12 +8,22 @@ export type CallLogFilterCopy = {
   modelNamePlaceholder: string;
   apiKeyName: string;
   apiKeyNamePlaceholder: string;
+  group: string;
+  groupPlaceholder: string;
+  requestId: string;
+  requestIdPlaceholder: string;
   search: string;
+  prevPage: string;
+  nextPage: string;
+  pageOf: (page: number, totalPages: number) => string;
   colTime: string;
   colModel: string;
   colApiKey: string;
+  colGroup: string;
   colQuota: string;
   colTokens: string;
+  colDuration: string;
+  colRequestId: string;
   empty: string;
   totalRows: (n: number) => string;
   usageHint: string;
@@ -26,12 +36,22 @@ const zhCN: CallLogFilterCopy = {
   modelNamePlaceholder: "模型名称",
   apiKeyName: "API 密钥名称",
   apiKeyNamePlaceholder: "密钥名称",
+  group: "分组",
+  groupPlaceholder: "分组名",
+  requestId: "请求 ID",
+  requestIdPlaceholder: "request_id",
   search: "查询",
+  prevPage: "上一页",
+  nextPage: "下一页",
+  pageOf: (page, totalPages) => `${page} / ${totalPages}`,
   colTime: "时间",
   colModel: "模型",
   colApiKey: "API 密钥",
+  colGroup: "分组",
   colQuota: "扣减额度",
   colTokens: "词元",
+  colDuration: "耗时(s)",
+  colRequestId: "请求 ID",
   empty: "所选条件下暂无调用记录",
   totalRows: (n) => `共 ${n} 条`,
   usageHint:
@@ -45,12 +65,22 @@ const en: CallLogFilterCopy = {
   modelNamePlaceholder: "Model name",
   apiKeyName: "API key name",
   apiKeyNamePlaceholder: "Key name",
+  group: "Group",
+  groupPlaceholder: "Group name",
+  requestId: "Request ID",
+  requestIdPlaceholder: "request_id",
   search: "Search",
+  prevPage: "Prev",
+  nextPage: "Next",
+  pageOf: (page, totalPages) => `${page} / ${totalPages}`,
   colTime: "Time",
   colModel: "Model",
   colApiKey: "API key",
+  colGroup: "Group",
   colQuota: "Quota",
   colTokens: "Tokens",
+  colDuration: "Duration (s)",
+  colRequestId: "Request ID",
   empty: "No call records for this filter",
   totalRows: (n) => `${n} rows`,
   usageHint:
@@ -97,5 +127,11 @@ const CATALOG: Record<TargetLocale, CallLogFilterCopy> = {
 };
 
 export function getCallLogFilterCopy(locale: string): CallLogFilterCopy {
-  return pickTargetCatalog(locale, CATALOG);
+  const base = pickTargetCatalog(locale, CATALOG);
+  return {
+    ...en,
+    ...base,
+    totalRows: base.totalRows ?? en.totalRows,
+    pageOf: base.pageOf ?? en.pageOf,
+  };
 }

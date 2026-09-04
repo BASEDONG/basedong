@@ -1,21 +1,20 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useLocale } from "@/components/shared/LocaleProvider";
+import { ConsoleEmptyState } from "../shared/ConsoleEmptyState";
+import { formatConsoleQuota } from "../shared/format-quota";
 import type { ApiKeysUiCopy } from "./account-ak-ui-copy";
 import {
+  API_KEY_STATUS_DISABLED,
   API_KEY_STATUS_ENABLED,
+  API_KEY_STATUS_EXHAUSTED,
+  API_KEY_STATUS_EXPIRED,
   type ApiKeyRow,
 } from "./content";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import { EditKeyModal } from "./EditKeyModal";
-import {
-  CopyIcon,
-  EmptyBoxIcon,
-  EyeIcon,
-  EyeInvisibleIcon,
-  PaginationLeftIcon,
-  PaginationRightIcon,
-} from "./icons";
+import { CopyIcon, EyeIcon, EyeInvisibleIcon } from "./icons";
 
 const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
@@ -23,24 +22,50 @@ const antFont =
 interface ApiKeysTableProps {
   copy: ApiKeysUiCopy;
   keys: ApiKeyRow[];
+  selected: Set<string>;
+  onSelectedChange: (next: Set<string>) => void;
+  page: number;
+  totalPages: number;
+  total: number;
+  onPageChange: (page: number) => void;
   onDelete: (id: string) => void;
   onUpdateDescription: (id: string, description: string) => void;
   onCopied: () => void;
   onDeleteMismatch: () => void;
   onToggleStatus?: (id: string, enable: boolean) => void;
-  /** Resolve full API Key secret when list only has a masked value. */
   onReveal?: (id: string) => Promise<string | null | undefined>;
 }
 
-/** Live mask: keep first 4 + last 4, asterisks in the middle. */
 function maskKey(key: string) {
   if (key.length <= 8) return "*".repeat(Math.max(key.length, 8));
   return `${key.slice(0, 4)}${"*".repeat(key.length - 8)}${key.slice(-4)}`;
 }
 
+function statusLabel(copy: ApiKeysUiCopy, status: number): string {
+  if (status === API_KEY_STATUS_ENABLED) {
+    return copy.table.statusEnabled ?? "Enabled";
+  }
+  if (status === API_KEY_STATUS_EXPIRED) {
+    return copy.table.statusExpired ?? "Expired";
+  }
+  if (status === API_KEY_STATUS_EXHAUSTED) {
+    return copy.table.statusExhausted ?? "Exhausted";
+  }
+  if (status === API_KEY_STATUS_DISABLED) {
+    return copy.table.statusDisabled ?? "Disabled";
+  }
+  return String(status);
+}
+
 export function ApiKeysTable({
   copy,
   keys,
+  selected,
+  onSelectedChange,
+  page,
+  totalPages,
+  total,
+  onPageChange,
   onDelete,
   onUpdateDescription,
   onCopied,
@@ -48,10 +73,23 @@ export function ApiKeysTable({
   onToggleStatus,
   onReveal,
 }: ApiKeysTableProps) {
+  const { targetLocale } = useLocale();
   const [revealedAll, setRevealedAll] = useState(false);
   const [revealedIds, setRevealedIds] = useState<Set<string>>(() => new Set());
   const [pendingDelete, setPendingDelete] = useState<ApiKeyRow | null>(null);
   const [pendingEdit, setPendingEdit] = useState<ApiKeyRow | null>(null);
+
+  const toggleAll = useCallback(() => {
+    void (async () => {
+      const next = !revealedAll;
+      if (next && onReveal) {
+        await Promise.all(keys.map((k) => onReveal(k.id)));
+      }
+      setRevealedAll(next);
+    })();
+  }, [keys, onReveal, revealedAll]);
+
+  const deleteConfirmSuffix = (key: string) => key.slice(-4);
 
   const isRevealed = useCallback(
     (id: string) => revealedAll || revealedIds.has(id),
@@ -90,6 +128,24 @@ export function ApiKeysTable({
     [onCopied, onReveal],
   );
 
+  const allSelected =
+    keys.length > 0 && keys.every((k) => selected.has(k.id));
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      onSelectedChange(new Set());
+      return;
+    }
+    onSelectedChange(new Set(keys.map((k) => k.id)));
+  };
+
+  const toggleSelect = (id: string) => {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    onSelectedChange(next);
+  };
+
   return (
     <>
       <div
@@ -99,73 +155,59 @@ export function ApiKeysTable({
         <div className="w-full overflow-x-auto">
           <table
             className="w-full border-separate border-spacing-0 text-sm leading-[22px] text-[rgb(30,41,59)]"
-            style={{
-              tableLayout: keys.length === 0 ? "fixed" : "auto",
-              minWidth: 720,
-            }}
+            style={{ minWidth: 960 }}
           >
-            <colgroup>
-              <col style={{ width: 50 }} />
-              <col style={{ width: 400 }} />
-              {keys.length === 0 ? (
-                <>
-                  <col style={{ width: 216 }} />
-                  <col style={{ width: 317 }} />
-                  <col style={{ width: 216 }} />
-                </>
-              ) : (
-                <>
-                  <col />
-                  <col />
-                  <col />
-                </>
-              )}
-            </colgroup>
             <thead>
               <tr>
-                <th className="h-[55px] rounded-tl-[8px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
+                <th className="h-[55px] rounded-tl-[8px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={toggleSelectAll}
+                    aria-label="select-all"
+                  />
+                </th>
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
                   <button
                     type="button"
                     aria-label={revealedAll ? "eye" : "eye-invisible"}
-                    onClick={() => setRevealedAll((v) => !v)}
-                    className="inline-flex cursor-pointer select-none items-center border-0 bg-transparent p-0 text-[14px] leading-none text-[rgb(30,41,59)]"
+                    onClick={toggleAll}
+                    className="inline-flex cursor-pointer border-0 bg-transparent p-0"
                   >
                     {revealedAll ? <EyeIcon /> : <EyeInvisibleIcon />}
                   </button>
                 </th>
-                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
                   {copy.tableHeaders.key}
                 </th>
-                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
                   {copy.tableHeaders.description}
                 </th>
-                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
-                  {copy.tableHeaders.status ?? "Status"}
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
+                  {copy.tableHeaders.status}
                 </th>
-                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
-                  {copy.tableHeaders.usedQuota ?? "Used"}
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
+                  {copy.tableHeaders.remainQuota ?? "Remain"}
                 </th>
-                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
+                  {copy.tableHeaders.usedQuota}
+                </th>
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
+                  {copy.tableHeaders.group ?? "Group"}
+                </th>
+                <th className="h-[55px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
                   {copy.tableHeaders.createdAt}
                 </th>
-                <th className="h-[55px] rounded-tr-[8px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold leading-[22px] text-[rgb(30,41,59)]">
+                <th className="h-[55px] rounded-tr-[8px] border-b border-[rgb(226,232,240)] bg-[rgb(248,250,252)] p-4 text-left text-sm font-semibold">
                   {copy.tableHeaders.actions}
                 </th>
               </tr>
             </thead>
             <tbody>
               {keys.length === 0 ? (
-                <tr className="h-[167px]">
-                  <td
-                    colSpan={7}
-                    className="border-b border-[rgb(226,232,240)] bg-white p-4 text-center text-[rgb(148,163,184)]"
-                  >
-                    <div className="mx-2 my-8 text-center text-[rgb(100,116,139)]">
-                      <div className="mb-2 flex justify-center">
-                        <EmptyBoxIcon aria-label={copy.table.emptyAria} />
-                      </div>
-                      <div className="text-sm leading-[22px]">{copy.emptyText}</div>
-                    </div>
+                <tr>
+                  <td colSpan={10} className="p-0">
+                    <ConsoleEmptyState message={copy.emptyText} />
                   </td>
                 </tr>
               ) : (
@@ -174,11 +216,19 @@ export function ApiKeysTable({
                   return (
                     <tr key={row.id} className="hover:bg-black/[0.02]">
                       <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(row.id)}
+                          onChange={() => toggleSelect(row.id)}
+                          aria-label={`select-${row.id}`}
+                        />
+                      </td>
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
                         <button
                           type="button"
                           aria-label={shown ? "eye" : "eye-invisible"}
                           onClick={() => toggleRow(row.id)}
-                          className="inline-flex cursor-pointer select-none items-center border-0 bg-transparent p-0 text-[14px] leading-none text-[rgb(30,41,59)]"
+                          className="inline-flex cursor-pointer border-0 bg-transparent p-0"
                         >
                           {shown ? <EyeIcon /> : <EyeInvisibleIcon />}
                         </button>
@@ -191,32 +241,38 @@ export function ApiKeysTable({
                           <button
                             type="button"
                             aria-label={copy.table.copyAria}
-                            onClick={() => copyKey(row)}
-                            className="ml-1 inline-flex shrink-0 cursor-pointer border-0 bg-transparent p-0 text-sm text-[rgb(148,163,184)] transition-colors hover:text-[rgb(74,171,240)]"
+                            onClick={() => void copyKey(row)}
+                            className="ml-1 inline-flex shrink-0 cursor-pointer border-0 bg-transparent p-0 text-[rgb(148,163,184)] hover:text-[rgb(74,171,240)]"
                           >
                             <CopyIcon />
                           </button>
                         </div>
                       </td>
-                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4 text-sm leading-[22px]">
-                        <div className="overflow-hidden text-wrap">
-                          {row.description || "—"}
-                        </div>
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
+                        {row.description || "—"}
                       </td>
-                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4 text-sm leading-[22px]">
-                        {row.status === API_KEY_STATUS_ENABLED
-                          ? (copy.table.statusEnabled ?? "Enabled")
-                          : (copy.table.statusDisabled ?? "Disabled")}
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
+                        {statusLabel(copy, row.status)}
                       </td>
-                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4 text-sm leading-[22px]">
-                        {row.usedQuota}
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
+                        {row.unlimitedQuota
+                          ? (copy.unlimited ?? "Unlimited")
+                          : formatConsoleQuota(row.remainQuota, targetLocale)}
                       </td>
-                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4 text-sm leading-[22px] whitespace-nowrap">
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
+                        {formatConsoleQuota(row.usedQuota, targetLocale)}
+                      </td>
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
+                        {row.group || "—"}
+                      </td>
+                      <td className="border-b border-[rgb(226,232,240)] bg-white p-4 whitespace-nowrap">
                         {row.createdAt}
                       </td>
                       <td className="border-b border-[rgb(226,232,240)] bg-white p-4">
-                        <div className="flex select-none flex-nowrap items-center gap-3">
-                          {onToggleStatus ? (
+                        <div className="flex flex-nowrap items-center gap-3">
+                          {onToggleStatus &&
+                          (row.status === API_KEY_STATUS_ENABLED ||
+                            row.status === API_KEY_STATUS_DISABLED) ? (
                             <button
                               type="button"
                               onClick={() =>
@@ -225,24 +281,24 @@ export function ApiKeysTable({
                                   row.status !== API_KEY_STATUS_ENABLED,
                                 )
                               }
-                              className="cursor-pointer border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(74,171,240)] transition-opacity hover:opacity-80"
+                              className="cursor-pointer border-0 bg-transparent p-0 text-sm text-[rgb(74,171,240)]"
                             >
                               {row.status === API_KEY_STATUS_ENABLED
-                                ? (copy.table.disable ?? "Disable")
-                                : (copy.table.enable ?? "Enable")}
+                                ? copy.table.disable
+                                : copy.table.enable}
                             </button>
                           ) : null}
                           <button
                             type="button"
                             onClick={() => setPendingDelete(row)}
-                            className="cursor-pointer border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(220,38,38)] transition-opacity hover:opacity-80"
+                            className="cursor-pointer border-0 bg-transparent p-0 text-sm text-[rgb(220,38,38)]"
                           >
                             {copy.table.delete}
                           </button>
                           <button
                             type="button"
                             onClick={() => setPendingEdit(row)}
-                            className="cursor-pointer border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(74,171,240)] transition-opacity hover:opacity-80"
+                            className="cursor-pointer border-0 bg-transparent p-0 text-sm text-[rgb(74,171,240)]"
                           >
                             {copy.table.edit}
                           </button>
@@ -255,45 +311,43 @@ export function ApiKeysTable({
             </tbody>
           </table>
         </div>
-
-        {keys.length > 0 ? (
-          <ul className="m-0 flex list-none items-center justify-end p-0 py-4 text-sm leading-[22px] text-[rgb(30,41,59)]">
-            <li className="mr-2 inline-block">
-              <button
-                type="button"
-                disabled
-                aria-label="left"
-                className="inline-flex size-8 cursor-not-allowed items-center justify-center rounded-md border-0 bg-transparent p-0 text-[rgb(148,163,184)]"
-              >
-                <PaginationLeftIcon className="size-3" />
-              </button>
-            </li>
-            <li className="mr-2 inline-block">
-              <button
-                type="button"
-                className="inline-flex size-8 items-center justify-center rounded-[6px] border border-[rgb(74,171,240)] bg-white text-sm font-semibold leading-[22px] text-[rgb(74,171,240)]"
-              >
-                1
-              </button>
-            </li>
-            <li className="inline-block">
-              <button
-                type="button"
-                disabled
-                aria-label="right"
-                className="inline-flex size-8 cursor-not-allowed items-center justify-center rounded-md border-0 bg-transparent p-0 text-[rgb(148,163,184)]"
-              >
-                <PaginationRightIcon className="size-3" />
-              </button>
-            </li>
-          </ul>
-        ) : null}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-4 py-2 text-xs text-slate-500">
+          <span>
+            {(copy.recordsTotal ?? ((n) => `${n}`))(total)}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => onPageChange(Math.max(1, page - 1))}
+              className="rounded border border-slate-200 px-2 py-1 disabled:opacity-40"
+            >
+              {copy.recordsPrev ?? "Prev"}
+            </button>
+            <span>
+              {(copy.recordsPage ?? ((p, t) => `${p}/${t}`))(
+                page,
+                totalPages,
+              )}
+            </span>
+            <button
+              type="button"
+              disabled={page >= totalPages}
+              onClick={() => onPageChange(page + 1)}
+              className="rounded border border-slate-200 px-2 py-1 disabled:opacity-40"
+            >
+              {copy.recordsNext ?? "Next"}
+            </button>
+          </div>
+        </div>
       </div>
 
       <ConfirmDeleteModal
         open={pendingDelete !== null}
         copy={copy}
-        expectedSuffix={pendingDelete?.key.slice(-6) ?? ""}
+        expectedSuffix={
+          pendingDelete ? deleteConfirmSuffix(pendingDelete.key) : ""
+        }
         onClose={() => setPendingDelete(null)}
         onMismatch={onDeleteMismatch}
         onConfirm={() => {

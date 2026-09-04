@@ -42,9 +42,9 @@ export function ChatComposer({
             onClick={onSend}
             aria-label="send"
             className={cn(
-              "flex size-10 items-center justify-center rounded-[4px] bg-[rgb(108,40,246)] text-white transition-all duration-200 ease",
+              "bd-gradient-bg flex size-10 items-center justify-center rounded-[8px] text-white transition-all duration-200 ease",
               canSend
-                ? "cursor-pointer opacity-100"
+                ? "cursor-pointer opacity-100 hover:opacity-90"
                 : "cursor-not-allowed opacity-50",
             )}
           >

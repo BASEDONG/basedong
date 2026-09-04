@@ -1,6 +1,12 @@
 "use client";
 
+import { useLocale } from "@/components/shared/LocaleProvider";
 import type { UsageStat } from "@/lib/backend/client";
+import { CONSOLE_SURFACE } from "../shared/console-ui";
+import {
+  formatConsoleCount,
+  formatConsoleQuota,
+} from "../shared/format-quota";
 import type { CallLogsUiCopy } from "./call-logs-ui-copy";
 
 interface CallLogsAmountSummaryProps {
@@ -16,19 +22,17 @@ function Metric({
   accent,
 }: {
   label: string;
-  value: string | number;
+  value: string;
   accent?: boolean;
 }) {
   return (
     <div>
-      <div className="text-[12px] font-medium leading-5 text-[#64748B]">
-        {label}
-      </div>
+      <div className="text-xs font-medium leading-5 text-slate-500">{label}</div>
       <div
         className={
           accent
-            ? "font-Inter text-[24px] font-semibold leading-8 tracking-[-0.144px] text-[#4AABF0]"
-            : "font-Inter text-[24px] font-semibold leading-8 tracking-[-0.144px] text-[#1E293B]"
+            ? "text-2xl font-semibold leading-8 tracking-tight text-[rgb(74,171,240)]"
+            : "text-2xl font-semibold leading-8 tracking-tight text-slate-800"
         }
       >
         {value}
@@ -43,16 +47,27 @@ export function CallLogsAmountSummary({
   loading,
   onRefresh,
 }: CallLogsAmountSummaryProps) {
+  const { targetLocale } = useLocale();
   return (
-    <div className="mb-4 flex items-end justify-between gap-6 rounded-[8px] bg-white px-6 py-4">
+    <div
+      className={`${CONSOLE_SURFACE} mb-1 flex items-end justify-between gap-6 px-6 py-4`}
+    >
       <div className="flex flex-wrap gap-10">
         <Metric
           label={copy.quotaUsed}
-          value={loading ? "…" : stat.quota}
+          value={
+            loading ? "…" : formatConsoleQuota(stat.quota, targetLocale)
+          }
           accent
         />
-        <Metric label={copy.rpm} value={loading ? "…" : stat.rpm} />
-        <Metric label={copy.tpm} value={loading ? "…" : stat.tpm} />
+        <Metric
+          label={copy.rpm}
+          value={loading ? "…" : formatConsoleCount(stat.rpm, targetLocale)}
+        />
+        <Metric
+          label={copy.tpm}
+          value={loading ? "…" : formatConsoleCount(stat.tpm, targetLocale)}
+        />
       </div>
       {onRefresh ? (
         <button
