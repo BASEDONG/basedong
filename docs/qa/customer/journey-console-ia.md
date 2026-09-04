@@ -138,14 +138,14 @@ Optionally `npm run check` for full Web gate before release.
 |------|---------|--------|
 | Fixed IA + 下线页 | #40 keep | **PASS** — landing 模型广场; sidebar groups; `/me/bills`→logs, `/me/expensebill`→wallet; image/batches 下线页 |
 | 个人资料 | #60 #66 | **PASS** (structure) — header/settings/language/password/AT/bindings/2FA/passkey/sessions/delete present; 签到 absent → **BLOCKED** (`checkin_enabled` off); mutations / delete **SKIP** on shared QA |
-| 钱包 + subscription/aff | #61 #67 | **PASS** / **BLOCKED** — stats + history + aff link; no online pay (compliance message); subscription section hidden (no plans); redeem **SKIP** |
+| 钱包 + subscription/aff | #61 #67 | **PASS** / **BLOCKED** — stats + history + aff link; no online pay (compliance); subscription hidden; redeem UI absent (`enable_redemption` off) → **BLOCKED** |
 | 用量概览 | #62 | **PASS** — filters + honest empty |
-| API 密钥 | #63 | **PASS** — list/search/create chrome; empty honest; **API Key** labeling |
+| API 密钥 | #63 | **PASS** — list/search; create `gate-smoke-key` succeeded; **API Key** labeling |
 | 记录 ×3 | #64 | **PASS** — filters + empty honest |
-| Chat 在线体验 | #65 | **PASS** (open) — model/group/params; send completion **SKIP** (quota 0 / rate-limit caution) |
-| Chrome | — | **PASS** — topbar 额度; docs → `/docs/api`; logout → login and `/me` gated (see logout fix below) |
+| Chat 在线体验 | #65 | **PASS** (open) — model/group/params; send completion **SKIP** (quota 0) |
+| Chrome | — | **PASS** — topbar 额度; docs → `/docs/api`; logout → login and `/me` gated (cookie-only logout) |
 | Locale/typecheck | — | **PASS** (earlier on branch) |
-| Probes (as env allows) | — | **SKIP** this run |
+| Probes (as env allows) | — | **PASS** `probe-status` + `probe-auth`; redeem/epay/playground/retail **SKIP** (compliance / rate-limit / not needed for UI gate) |
 
 **Follow-up found in smoke:** Console `logout()` sent Bearer/`X-Auth-Session` that could disagree with the refresh cookie SID; Backend then returned mismatch **without** `ClearRefreshCookie`, so `/api/user/auth/refresh` restored the session. Fixed: cookie-only `POST /api/user/auth/logout` in Web client.
 
