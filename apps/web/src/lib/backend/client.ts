@@ -1388,6 +1388,32 @@ export async function getSelfQuotaData(params: {
   return Array.isArray(data) ? data : [];
 }
 
+export type FlowQuotaDataItem = {
+  token_id?: number;
+  token_name?: string;
+  use_group?: string;
+  model_name?: string;
+  token_used?: number;
+  count?: number;
+  quota?: number;
+};
+
+export async function getSelfFlowQuotaData(params: {
+  startTimestamp: number;
+  endTimestamp: number;
+  defaultTime?: string;
+}): Promise<FlowQuotaDataItem[]> {
+  const q = new URLSearchParams();
+  q.set("start_timestamp", String(params.startTimestamp));
+  q.set("end_timestamp", String(params.endTimestamp));
+  if (params.defaultTime) q.set("default_time", params.defaultTime);
+  const data = await backendFetch<FlowQuotaDataItem[]>(
+    `/api/data/flow/self?${q.toString()}`,
+    { method: "GET" },
+  );
+  return Array.isArray(data) ? data : [];
+}
+
 export type TaskLogRow = {
   id?: number | string;
   task_id?: string;
