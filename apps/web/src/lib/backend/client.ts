@@ -5,6 +5,7 @@ import {
   clearAccessToken,
   getAccessToken,
   getSessionSid,
+  setAccessToken,
 } from "./session";
 
 export type { ClientErrorKey };
@@ -402,6 +403,198 @@ export async function getTwoFactorStatus(): Promise<TwoFactorStatus> {
     method: "GET",
   });
   return data ?? {};
+}
+
+export type TwoFactorSetup = {
+  secret: string;
+  qr_code_data: string;
+  backup_codes: string[];
+};
+
+function applyAuthRotation(data: unknown): void {
+  if (
+    data &&
+    typeof data === "object" &&
+    "access_token" in data &&
+    typeof (data as { access_token?: unknown }).access_token === "string"
+  ) {
+    setAccessToken((data as { access_token: string }).access_token);
+  }
+}
+
+export async function setupTwoFactor(): Promise<TwoFactorSetup> {
+  const data = await backendFetch<TwoFactorSetup>("/api/user/2fa/setup", {
+    method: "POST",
+  });
+  if (!data?.secret) {
+    throw new BackendError("2FA setup response incomplete");
+  }
+  return data;
+}
+
+export async function enableTwoFactor(code: string): Promise<void> {
+  const data = await backendFetch<unknown>("/api/user/2fa/enable", {
+    method: "POST",
+    body: JSON.stringify({ code: code.trim() }),
+  });
+  applyAuthRotation(data);
+}
+
+export async function disableTwoFactor(code: string): Promise<void> {
+  const data = await backendFetch<unknown>("/api/user/2fa/disable", {
+    method: "POST",
+    body: JSON.stringify({ code: code.trim() }),
+  });
+  applyAuthRotation(data);
+}
+
+export type PasskeyStatus = {
+  enabled?: boolean;
+  last_used_at?: string | number | null;
+};
+
+export async function getPasskeyStatus(): Promise<PasskeyStatus> {
+  try {
+    const data = await backendFetch<PasskeyStatus>("/api/user/passkey", {
+      method: "GET",
+    });
+    return data ?? { enabled: false };
+  } catch {
+    return { enabled: false };
+  }
+}
+
+export type PasskeyRegisterBegin = {
+  flow_token?: string;
+  options?: unknown;
+  publicKey?: unknown;
+};
+
+export async function beginPasskeyRegister(
+  proofToken?: string,
+): Promise<PasskeyRegisterBegin> {
+  const headers = new Headers();
+  if (proofToken) headers.set("X-Security-Proof", proofToken);
+  const data = await backendFetch<PasskeyRegisterBegin>(
+    "/api/user/passkey/register/begin",
+    { method: "POST", headers },
+  );
+  return data ?? {};
+}
+
+export async function finishPasskeyRegister(input: {
+  flowToken: string;
+  credential: Record<string, unknown>;
+  proofToken?: string;
+}): Promise<void> {
+  const headers = new Headers();
+  if (input.proofToken) headers.set("X-Security-Proof", input.proofToken);
+  const data = await backendFetch<unknown>("/api/user/passkey/register/finish", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      flow_token: input.flowToken,
+      credential: input.credential,
+    }),
+  });
+  applyAuthRotation(data);
+}
+
+export async function deletePasskey(proofToken?: string): Promise<void> {
+  const headers = new Headers();
+  if (proofToken) headers.set("X-Security-Proof", proofToken);
+  const data = await backendFetch<unknown>("/api/user/passkey", {
+    method: "DELETE",
+    headers,
+  });
+  applyAuthRotation(data);
+}
+
+export async function createPasskeySecurityProof(
+  scope: string,
+): Promise<string> {
+  const begin = await backendFetch<{
+    flow_token?: string;
+    options?: unknown;
+  }>("/api/user/passkey/verify/begin", {
+    method: "POST",
+    body: JSON.stringify({ scope }),
+  });
+  const flowToken = begin?.flow_token;
+  if (!flowToken) {
+    throw new BackendError("Passkey verify flow missing");
+  }
+  const { prepareCredentialRequestOptions, buildAssertionResult } =
+    await import("./passkey-webauthn");
+  const publicKey = prepareCredentialRequestOptions(begin.options ?? begin);
+  const credential = (await navigator.credentials.get({
+    publicKey,
+  })) as PublicKeyCredential | null;
+  const assertion = buildAssertionResult(credential);
+  if (!assertion) {
+    throw new BackendError("Passkey verify cancelled");
+  }
+  const data = await backendFetch<{ proof_token?: string }>(
+    "/api/user/passkey/verify/finish",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        flow_token: flowToken,
+        credential: assertion,
+      }),
+    },
+  );
+  if (!data?.proof_token) {
+    throw new BackendError("Passkey proof missing");
+  }
+  return data.proof_token;
+}
+
+export async function createSecurityProof(input: {
+  method: "2fa";
+  code: string;
+  scope: string;
+}): Promise<string> {
+  const data = await backendFetch<{ proof_token?: string }>("/api/verify", {
+    method: "POST",
+    body: JSON.stringify({
+      method: input.method,
+      code: input.code.trim(),
+      scope: input.scope,
+    }),
+  });
+  if (!data?.proof_token) {
+    throw new BackendError("Verification proof missing");
+  }
+  return data.proof_token;
+}
+
+export type OAuthBinding = {
+  provider_id?: number;
+  provider_name?: string;
+  provider_slug?: string;
+  provider_icon?: string;
+  provider_user_id?: string;
+};
+
+export async function listOAuthBindings(): Promise<OAuthBinding[]> {
+  try {
+    const data = await backendFetch<OAuthBinding[] | { items?: OAuthBinding[] }>(
+      "/api/user/oauth/bindings",
+      { method: "GET" },
+    );
+    if (Array.isArray(data)) return data;
+    return data?.items ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function unbindOAuth(providerId: number): Promise<void> {
+  await backendFetch<unknown>(
+    `/api/user/oauth/bindings/${encodeURIComponent(String(providerId))}`,
+    { method: "DELETE" },
+  );
 }
 
 export type UserSessionRow = {
