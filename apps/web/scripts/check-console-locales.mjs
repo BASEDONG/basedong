@@ -102,19 +102,6 @@ if (accountAk) {
   ok("console/account-ak/account-ak-ui-copy.ts (14 locales)");
 }
 
-const accountAuth = requireFile(
-  "src/components/console/account-authentication/account-authentication-ui-copy.ts",
-);
-if (accountAuth) {
-  requireMarkers("account-authentication-ui-copy.ts", accountAuth);
-  for (const key of ["getAuthUiCopy", "pageTitle", "successAlert", "statusCard"]) {
-    if (!accountAuth.includes(key)) {
-      fail(`account-authentication-ui-copy.ts missing ${key}`);
-    }
-  }
-  ok("console/account-authentication/account-authentication-ui-copy.ts (14 locales)");
-}
-
 const callLogs = requireFile("src/components/console/call-logs/call-logs-ui-copy.ts");
 if (callLogs) {
   requireMarkers("call-logs-ui-copy.ts", callLogs);
@@ -137,13 +124,15 @@ if (wallet) {
   ok("console/wallet/wallet-ui-copy.ts (14 locales)");
 }
 
-const invoice = requireFile("src/components/console/invoice/invoice-ui-copy.ts");
-if (invoice) {
-  requireMarkers("invoice-ui-copy.ts", invoice);
-  for (const key of ["getInvoiceUiCopy", "pageTitle", "noticeLines", "drawer"]) {
-    if (!invoice.includes(key)) fail(`invoice-ui-copy.ts missing ${key}`);
+const offline = requireFile(
+  "src/components/console/offline/offline-ui-copy.ts",
+);
+if (offline) {
+  requireMarkers("offline-ui-copy.ts", offline);
+  for (const key of ["getConsoleOfflineUiCopy", "pageTitle", "heading", "ctaLabel"]) {
+    if (!offline.includes(key)) fail(`offline-ui-copy.ts missing ${key}`);
   }
-  ok("console/invoice/invoice-ui-copy.ts (14 locales)");
+  ok("console/offline/offline-ui-copy.ts (14 locales)");
 }
 
 const playground = requireFile(
@@ -164,76 +153,6 @@ if (playground) {
     }
   }
   ok("console/shared/playground-ui-copy.ts (14 locales)");
-}
-
-const batches = requireFile("src/components/console/batches/batches-ui-copy.ts");
-if (batches) {
-  requireMarkers("batches-ui-copy.ts", batches);
-  for (const key of ["getBatchesUiCopy", "pageTitle", "createTask", "priceFeatures"]) {
-    if (!batches.includes(key)) fail(`batches-ui-copy.ts missing ${key}`);
-  }
-  ok("console/batches/batches-ui-copy.ts (14 locales)");
-}
-
-const invitation = requireFile(
-  "src/components/console/invitation/invitation-ui-copy.ts",
-);
-if (invitation) {
-  requireMarkers("invitation-ui-copy.ts", invitation);
-  for (const key of ["getInvitationUiCopy", "pageTitle", "tableColumns", "empty"]) {
-    if (!invitation.includes(key)) fail(`invitation-ui-copy.ts missing ${key}`);
-  }
-  ok("console/invitation/invitation-ui-copy.ts (14 locales)");
-}
-
-const inviter = requireFile(
-  "src/components/console/campaigns-inviter/campaigns-inviter-ui-copy.ts",
-);
-if (inviter) {
-  requireMarkers("campaigns-inviter-ui-copy.ts", inviter);
-  for (const key of [
-    "getCampaignsInviterUiCopy",
-    "pageTitle",
-    "rulesHtml",
-    "recordsSummary",
-  ]) {
-    if (!inviter.includes(key)) fail(`campaigns-inviter-ui-copy.ts missing ${key}`);
-  }
-  ok("console/campaigns-inviter/campaigns-inviter-ui-copy.ts (14 locales)");
-}
-
-const realName = requireFile(
-  "src/components/console/campaigns-real-name/campaigns-real-name-ui-copy.ts",
-);
-if (realName) {
-  requireMarkers("campaigns-real-name-ui-copy.ts", realName);
-  for (const key of [
-    "getCampaignsRealNameUiCopy",
-    "pageTitle",
-    "rulesHtml",
-    "rulesHeading",
-  ]) {
-    if (!realName.includes(key)) fail(`campaigns-real-name-ui-copy.ts missing ${key}`);
-  }
-  ok("console/campaigns-real-name/campaigns-real-name-ui-copy.ts (14 locales)");
-}
-
-const dedicatedApply = requireFile(
-  "src/components/console/dedicated-apply/dedicated-apply-ui-copy.ts",
-);
-if (dedicatedApply) {
-  requireMarkers("dedicated-apply-ui-copy.ts", dedicatedApply);
-  for (const key of [
-    "getDedicatedApplyUiCopy",
-    "pageTitle",
-    "heroFeatures",
-    "capabilities",
-  ]) {
-    if (!dedicatedApply.includes(key)) {
-      fail(`dedicated-apply-ui-copy.ts missing ${key}`);
-    }
-  }
-  ok("console/dedicated-apply/dedicated-apply-ui-copy.ts (14 locales)");
 }
 
 const backendError = requireFile(
@@ -324,19 +243,13 @@ if (meta) {
   for (const key of [
     "getConsoleModelsPageMetadata",
     "getConsoleAccountAkPageMetadata",
-    "getConsoleAccountAuthPageMetadata",
+    "getConsoleOfflinePageMetadata",
     "getConsoleCallLogsPageMetadata",
     "getConsoleWalletPageMetadata",
-    "getConsoleInvoicePageMetadata",
     "getConsolePlaygroundChatPageMetadata",
     "getConsolePlaygroundImagePageMetadata",
     "getConsolePlaygroundVideoPageMetadata",
     "getConsolePlaygroundTtsPageMetadata",
-    "getConsoleBatchesPageMetadata",
-    "getConsoleInvitationPageMetadata",
-    "getConsoleCampaignInviterPageMetadata",
-    "getConsoleCampaignRealNamePageMetadata",
-    "getConsoleDedicatedApplyPageMetadata",
   ]) {
     if (!meta.includes(key)) {
       fail(`console-page-metadata.ts missing ${key}`);
