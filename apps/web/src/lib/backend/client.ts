@@ -300,6 +300,29 @@ export type BackendApiKey = {
   used_quota?: number;
   unlimited_quota?: boolean;
   accessed_time?: number;
+  model_limits_enabled?: boolean;
+  model_limits?: string;
+  allow_ips?: string;
+  group?: string;
+};
+
+export type ApiKeyWriteInput = {
+  name: string;
+  remain_quota?: number;
+  expired_time?: number;
+  unlimited_quota?: boolean;
+  model_limits_enabled?: boolean;
+  model_limits?: string;
+  allow_ips?: string;
+  group?: string;
+  status?: number;
+};
+
+export type ApiKeyListResult = {
+  items: BackendApiKey[];
+  total: number;
+  page: number;
+  pageSize: number;
 };
 
 type PageData<T> = {
@@ -309,30 +332,56 @@ type PageData<T> = {
   page_size?: number;
 };
 
-export async function listApiKeys(
-  page = 1,
-  size = 100,
-): Promise<BackendApiKey[]> {
-  const data = await backendFetch<PageData<BackendApiKey>>(
-    `/api/token/?p=${page}&size=${size}`,
-    { method: "GET" },
-  );
-  return data?.items ?? [];
+function apiKeyWriteBody(input: ApiKeyWriteInput) {
+  const modelLimits = (input.model_limits ?? "").trim();
+  return {
+    name: input.name.trim(),
+    remain_quota: input.remain_quota ?? 0,
+    expired_time: input.expired_time ?? -1,
+    unlimited_quota: input.unlimited_quota ?? true,
+    model_limits_enabled:
+      input.model_limits_enabled ?? Boolean(modelLimits),
+    model_limits: modelLimits,
+    allow_ips: (input.allow_ips ?? "").trim(),
+    group: (input.group ?? "").trim(),
+    ...(input.status != null ? { status: input.status } : {}),
+  };
 }
 
-export async function createApiKey(name: string): Promise<void> {
+export async function listApiKeys(options?: {
+  page?: number;
+  size?: number;
+  keyword?: string;
+}): Promise<ApiKeyListResult> {
+  const page = options?.page ?? 1;
+  const size = options?.size ?? 10;
+  const keyword = options?.keyword?.trim() ?? "";
+  const q = new URLSearchParams({
+    p: String(page),
+    size: String(size),
+  });
+  const path = keyword
+    ? `/api/token/search?${q.toString()}&keyword=${encodeURIComponent(keyword)}`
+    : `/api/token/?${q.toString()}`;
+  const data = await backendFetch<PageData<BackendApiKey>>(path, {
+    method: "GET",
+  });
+  return {
+    items: data?.items ?? [],
+    total: typeof data?.total === "number" ? data.total : 0,
+    page: typeof data?.page === "number" ? data.page : page,
+    pageSize: typeof data?.page_size === "number" ? data.page_size : size,
+  };
+}
+
+export async function createApiKey(input: string | ApiKeyWriteInput): Promise<void> {
+  const body =
+    typeof input === "string"
+      ? apiKeyWriteBody({ name: input })
+      : apiKeyWriteBody(input);
   await backendFetch<unknown>("/api/token/", {
     method: "POST",
-    body: JSON.stringify({
-      name,
-      remain_quota: 0,
-      expired_time: -1,
-      unlimited_quota: true,
-      model_limits_enabled: false,
-      model_limits: "",
-      allow_ips: "",
-      group: "",
-    }),
+    body: JSON.stringify(body),
   });
 }
 
@@ -346,6 +395,35 @@ export async function fetchApiKeySecret(id: number): Promise<string> {
   return data.key;
 }
 
+export async function fetchApiKeySecretsBatch(
+  ids: number[],
+): Promise<Record<number, string>> {
+  const data = await backendFetch<{ keys?: Record<string, string> }>(
+    "/api/token/batch/keys",
+    {
+      method: "POST",
+      body: JSON.stringify({ ids }),
+    },
+  );
+  const out: Record<number, string> = {};
+  for (const [k, v] of Object.entries(data?.keys ?? {})) {
+    const id = Number(k);
+    if (Number.isFinite(id) && typeof v === "string") out[id] = v;
+  }
+  return out;
+}
+
+export async function updateApiKey(
+  id: number,
+  input: ApiKeyWriteInput,
+): Promise<void> {
+  await backendFetch<unknown>("/api/token/", {
+    method: "PUT",
+    body: JSON.stringify({ id, ...apiKeyWriteBody(input) }),
+  });
+}
+
+/** Rename while preserving advanced fields from GET /api/token/:id. */
 export async function updateApiKeyName(
   id: number,
   name: string,
@@ -353,25 +431,28 @@ export async function updateApiKeyName(
   const current = await backendFetch<BackendApiKey>(`/api/token/${id}`, {
     method: "GET",
   });
-  await backendFetch<unknown>("/api/token/", {
-    method: "PUT",
-    body: JSON.stringify({
-      id,
-      name,
-      remain_quota: current.remain_quota ?? 0,
-      expired_time: current.expired_time ?? -1,
-      unlimited_quota: current.unlimited_quota ?? true,
-      model_limits_enabled: false,
-      model_limits: "",
-      allow_ips: "",
-      group: "",
-      status: current.status ?? 1,
-    }),
+  await updateApiKey(id, {
+    name,
+    remain_quota: current.remain_quota ?? 0,
+    expired_time: current.expired_time ?? -1,
+    unlimited_quota: current.unlimited_quota ?? true,
+    model_limits_enabled: current.model_limits_enabled ?? false,
+    model_limits: current.model_limits ?? "",
+    allow_ips: current.allow_ips ?? "",
+    group: current.group ?? "",
+    status: current.status ?? 1,
   });
 }
 
 export async function deleteApiKey(id: number): Promise<void> {
   await backendFetch<unknown>(`/api/token/${id}`, { method: "DELETE" });
+}
+
+export async function batchDeleteApiKeys(ids: number[]): Promise<void> {
+  await backendFetch<unknown>("/api/token/batch", {
+    method: "POST",
+    body: JSON.stringify({ ids }),
+  });
 }
 
 /** Enable (1) or disable (2) an API Key via status_only update. */
@@ -393,6 +474,20 @@ export async function setApiKeyStatus(
       unlimited_quota: current.unlimited_quota ?? true,
     }),
   });
+}
+
+export async function getUserGroups(): Promise<string[]> {
+  const data = await backendFetch<unknown>("/api/user/self/groups", {
+    method: "GET",
+  });
+  if (Array.isArray(data) && data.every((x) => typeof x === "string")) {
+    return data as string[];
+  }
+  if (data && typeof data === "object") {
+    const keys = Object.keys(data as Record<string, unknown>);
+    if (keys.length > 0) return keys;
+  }
+  return [];
 }
 
 export type TwoFactorStatus = {

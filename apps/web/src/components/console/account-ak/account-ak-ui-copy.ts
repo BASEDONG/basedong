@@ -7,6 +7,15 @@ export type ApiKeysUiCopy = {
   relayIntegrationHint: (relayBase: string) => string;
   createButtonLabel: string;
   loading: string;
+  searchPlaceholder?: string;
+  searchSubmit?: string;
+  batchCopy?: string;
+  batchDelete?: string;
+  selectedCount?: (n: number) => string;
+  recordsPrev?: string;
+  recordsNext?: string;
+  recordsPage?: (page: number, totalPages: number) => string;
+  recordsTotal?: (total: number) => string;
   tableHeaders: {
     key: string;
     description: string;
@@ -14,8 +23,12 @@ export type ApiKeysUiCopy = {
     actions: string;
     status?: string;
     usedQuota?: string;
+    remainQuota?: string;
+    group?: string;
   };
   emptyText: string;
+  unlimited?: string;
+  neverExpire?: string;
   table: {
     delete: string;
     edit: string;
@@ -25,6 +38,8 @@ export type ApiKeysUiCopy = {
     disable?: string;
     statusEnabled?: string;
     statusDisabled?: string;
+    statusExpired?: string;
+    statusExhausted?: string;
   };
   createModal: {
     title: string;
@@ -33,6 +48,15 @@ export type ApiKeysUiCopy = {
     help: string;
     cancel: string;
     submit: string;
+    remainQuota?: string;
+    unlimitedQuota?: string;
+    group?: string;
+    groupPlaceholder?: string;
+    modelLimits?: string;
+    modelLimitsHelp?: string;
+    allowIps?: string;
+    allowIpsHelp?: string;
+    expiredNever?: string;
   };
   editModal: {
     title: string;
@@ -56,6 +80,7 @@ export type ApiKeysUiCopy = {
     deleteSuccess: string;
     updateSuccess: string;
     copySuccess: string;
+    batchDeleteSuccess?: string;
   };
   errors: {
     loadFailed: string;
@@ -63,6 +88,7 @@ export type ApiKeysUiCopy = {
     updateFailed: string;
     deleteFailed: string;
     revealFailed: string;
+    batchFailed?: string;
   };
 };
 
@@ -86,6 +112,15 @@ const zhCN: ApiKeysUiCopy = {
     }),
   createButtonLabel: "新建 API Key",
   loading: "加载中…",
+  searchPlaceholder: "搜索名称或密钥",
+  searchSubmit: "搜索",
+  batchCopy: "批量复制",
+  batchDelete: "批量删除",
+  selectedCount: (n) => `已选 ${n} 项`,
+  recordsPrev: "上一页",
+  recordsNext: "下一页",
+  recordsPage: (page, totalPages) => `${page} / ${totalPages}`,
+  recordsTotal: (total) => `共 ${total} 条`,
   tableHeaders: {
     key: "密钥(点击复制)",
     description: "描述",
@@ -93,8 +128,12 @@ const zhCN: ApiKeysUiCopy = {
     actions: "操作",
     status: "状态",
     usedQuota: "已用额度",
+    remainQuota: "剩余额度",
+    group: "分组",
   },
   emptyText: "暂无数据",
+  unlimited: "不限",
+  neverExpire: "永不过期",
   table: {
     delete: "删除",
     edit: "编辑",
@@ -104,6 +143,8 @@ const zhCN: ApiKeysUiCopy = {
     disable: "停用",
     statusEnabled: "已启用",
     statusDisabled: "已停用",
+    statusExpired: "已过期",
+    statusExhausted: "已耗尽",
   },
   createModal: {
     title: "新建密钥",
@@ -112,6 +153,15 @@ const zhCN: ApiKeysUiCopy = {
     help: "关于密钥用途等的补充说明",
     cancel: "取 消",
     submit: "新建密钥",
+    remainQuota: "额度",
+    unlimitedQuota: "不限额度",
+    group: "分组",
+    groupPlaceholder: "留空为默认分组",
+    modelLimits: "模型限制",
+    modelLimitsHelp: "逗号分隔模型名；留空表示不限制",
+    allowIps: "IP 白名单",
+    allowIpsHelp: "每行一个 IP；留空表示不限制",
+    expiredNever: "永不过期",
   },
   editModal: {
     title: "编辑密钥",
@@ -128,13 +178,14 @@ const zhCN: ApiKeysUiCopy = {
     promptAfter: "确认删除当前 API Key",
     cancel: "取 消",
     confirm: "确认删除",
-    mismatchError: "输入的 API Key 后六位不正确，请重新输入！",
+    mismatchError: "输入的 API Key 后四位不正确，请重新输入！",
   },
   toasts: {
     createSuccess: "API Key 创建成功！",
     deleteSuccess: "API Key 删除成功！",
     updateSuccess: "API Key 更新成功！",
     copySuccess: "复制成功",
+    batchDeleteSuccess: "已批量删除",
   },
   errors: {
     loadFailed: "加载 API Key 失败",
@@ -142,6 +193,7 @@ const zhCN: ApiKeysUiCopy = {
     updateFailed: "更新描述失败",
     deleteFailed: "删除失败",
     revealFailed: "读取密钥失败",
+    batchFailed: "批量操作失败",
   },
 };
 
@@ -157,6 +209,15 @@ const en: ApiKeysUiCopy = {
     }),
   createButtonLabel: "Create API Key",
   loading: "Loading…",
+  searchPlaceholder: "Search name or key",
+  searchSubmit: "Search",
+  batchCopy: "Copy selected",
+  batchDelete: "Delete selected",
+  selectedCount: (n) => `${n} selected`,
+  recordsPrev: "Prev",
+  recordsNext: "Next",
+  recordsPage: (page, totalPages) => `${page} / ${totalPages}`,
+  recordsTotal: (total) => `${total} total`,
   tableHeaders: {
     key: "Key (click to copy)",
     description: "Description",
@@ -164,8 +225,12 @@ const en: ApiKeysUiCopy = {
     actions: "Actions",
     status: "Status",
     usedQuota: "Used quota",
+    remainQuota: "Remaining quota",
+    group: "Group",
   },
   emptyText: "No data",
+  unlimited: "Unlimited",
+  neverExpire: "Never expires",
   table: {
     delete: "Delete",
     edit: "Edit",
@@ -175,6 +240,8 @@ const en: ApiKeysUiCopy = {
     disable: "Disable",
     statusEnabled: "Enabled",
     statusDisabled: "Disabled",
+    statusExpired: "Expired",
+    statusExhausted: "Exhausted",
   },
   createModal: {
     title: "Create key",
@@ -183,6 +250,15 @@ const en: ApiKeysUiCopy = {
     help: "Optional notes about how you will use this key",
     cancel: "Cancel",
     submit: "Create key",
+    remainQuota: "Quota",
+    unlimitedQuota: "Unlimited quota",
+    group: "Group",
+    groupPlaceholder: "Leave empty for default group",
+    modelLimits: "Model allowlist",
+    modelLimitsHelp: "Comma-separated model names; empty means no limit",
+    allowIps: "IP allowlist",
+    allowIpsHelp: "One IP per line; empty means no limit",
+    expiredNever: "Never expires",
   },
   editModal: {
     title: "Edit key",
@@ -200,13 +276,14 @@ const en: ApiKeysUiCopy = {
     cancel: "Cancel",
     confirm: "Delete",
     mismatchError:
-      "The last six characters of the API Key do not match. Try again.",
+      "The last four characters of the API Key do not match. Try again.",
   },
   toasts: {
     createSuccess: "API Key created.",
     deleteSuccess: "API Key deleted.",
     updateSuccess: "API Key updated.",
     copySuccess: "Copied",
+    batchDeleteSuccess: "Selected API Keys deleted.",
   },
   errors: {
     loadFailed: "Failed to load API Keys",
@@ -214,6 +291,7 @@ const en: ApiKeysUiCopy = {
     updateFailed: "Failed to update description",
     deleteFailed: "Failed to delete",
     revealFailed: "Failed to read key",
+    batchFailed: "Batch operation failed",
   },
 };
 
@@ -266,7 +344,7 @@ const zhTW: ApiKeysUiCopy = {
     promptAfter: "確認刪除目前 API Key",
     cancel: "取 消",
     confirm: "確認刪除",
-    mismatchError: "輸入的 API Key 後六位不正確，請重新輸入！",
+    mismatchError: "輸入的 API Key 後四位不正確，請重新輸入！",
   },
   toasts: {
     createSuccess: "API Key 建立成功！",
@@ -344,7 +422,7 @@ const ja = fromEn({
     promptAfter: "（この API Key の削除を確認）",
     cancel: "キャンセル",
     confirm: "削除",
-    mismatchError: "API Key の末尾 6 文字が一致しません。",
+    mismatchError: "API Key の末尾 4 文字が一致しません。",
   },
   toasts: {
     createSuccess: "API Key を作成しました。",
@@ -410,7 +488,7 @@ const fr = fromEn({
     cancel: "Annuler",
     confirm: "Supprimer",
     mismatchError:
-      "Les six derniers caractères de la clé API ne correspondent pas.",
+      "Les quatre derniers caractères de la clé API ne correspondent pas.",
   },
   toasts: {
     createSuccess: "Clé API créée.",
@@ -475,7 +553,7 @@ const ru = fromEn({
     promptAfter: "для подтверждения удаления этого API Key",
     cancel: "Отмена",
     confirm: "Удалить",
-    mismatchError: "Последние 6 символов API Key не совпадают.",
+    mismatchError: "Последние 4 символа API Key не совпадают.",
   },
   toasts: {
     createSuccess: "API Key создан.",
@@ -540,7 +618,7 @@ const vi = fromEn({
     promptAfter: "để xác nhận xóa API Key này",
     cancel: "Hủy",
     confirm: "Xóa",
-    mismatchError: "6 ký tự cuối của API Key không khớp.",
+    mismatchError: "4 ký tự cuối của API Key không khớp.",
   },
   toasts: {
     createSuccess: "Đã tạo API Key.",
@@ -605,7 +683,7 @@ const ko = fromEn({
     promptAfter: "(이 API Key 삭제 확인)",
     cancel: "취소",
     confirm: "삭제",
-    mismatchError: "API Key 마지막 6자가 일치하지 않습니다.",
+    mismatchError: "API Key 마지막 4자가 일치하지 않습니다.",
   },
   toasts: {
     createSuccess: "API Key가 생성되었습니다.",
@@ -671,7 +749,7 @@ const de = fromEn({
     promptAfter: "ein, um das Löschen dieses API Keys zu bestätigen",
     cancel: "Abbrechen",
     confirm: "Löschen",
-    mismatchError: "Die letzten 6 Zeichen des API Keys stimmen nicht überein.",
+    mismatchError: "Die letzten 4 Zeichen des API Keys stimmen nicht überein.",
   },
   toasts: {
     createSuccess: "API Key erstellt.",
@@ -737,7 +815,7 @@ const es = fromEn({
     cancel: "Cancelar",
     confirm: "Eliminar",
     mismatchError:
-      "Los últimos 6 caracteres de la API Key no coinciden.",
+      "Los últimos 4 caracteres de la API Key no coinciden.",
   },
   toasts: {
     createSuccess: "API Key creada.",
@@ -802,7 +880,7 @@ const ptBR = fromEn({
     promptAfter: "para confirmar a exclusão desta API Key",
     cancel: "Cancelar",
     confirm: "Excluir",
-    mismatchError: "Os últimos 6 caracteres da API Key não coincidem.",
+    mismatchError: "Os últimos 4 caracteres da API Key não coincidem.",
   },
   toasts: {
     createSuccess: "API Key criada.",
@@ -867,7 +945,7 @@ const ar = fromEn({
     promptAfter: "لتأكيد حذف مفتاح API هذا",
     cancel: "إلغاء",
     confirm: "حذف",
-    mismatchError: "آخر 6 أحرف من مفتاح API غير متطابقة.",
+    mismatchError: "آخر 4 أحرف من مفتاح API غير متطابقة.",
   },
   toasts: {
     createSuccess: "تم إنشاء API Key.",
@@ -932,7 +1010,7 @@ const hi = fromEn({
     promptAfter: "इस API Key को हटाने की पुष्टि के लिए",
     cancel: "रद्द करें",
     confirm: "हटाएँ",
-    mismatchError: "API Key के अंतिम 6 अक्षर मेल नहीं खाते।",
+    mismatchError: "API Key के अंतिम 4 अक्षर मेल नहीं खाते।",
   },
   toasts: {
     createSuccess: "API Key बनाई गई।",
@@ -997,7 +1075,7 @@ const id = fromEn({
     promptAfter: "untuk mengonfirmasi penghapusan API Key ini",
     cancel: "Batal",
     confirm: "Hapus",
-    mismatchError: "6 karakter terakhir API Key tidak cocok.",
+    mismatchError: "4 karakter terakhir API Key tidak cocok.",
   },
   toasts: {
     createSuccess: "API Key dibuat.",
@@ -1032,5 +1110,20 @@ const API_KEYS_UI_COPY: Record<TargetLocale, ApiKeysUiCopy> = {
 };
 
 export function getApiKeysUiCopy(locale: string): ApiKeysUiCopy {
-  return pickTargetCatalog(locale, API_KEYS_UI_COPY);
+  const base = pickTargetCatalog(locale, API_KEYS_UI_COPY);
+  return {
+    ...en,
+    ...base,
+    tableHeaders: { ...en.tableHeaders, ...base.tableHeaders },
+    table: { ...en.table, ...base.table },
+    createModal: { ...en.createModal, ...base.createModal },
+    editModal: { ...en.editModal, ...base.editModal },
+    deleteModal: { ...en.deleteModal, ...base.deleteModal },
+    toasts: { ...en.toasts, ...base.toasts },
+    errors: { ...en.errors, ...base.errors },
+    selectedCount: base.selectedCount ?? en.selectedCount,
+    recordsPage: base.recordsPage ?? en.recordsPage,
+    recordsTotal: base.recordsTotal ?? en.recordsTotal,
+    relayIntegrationHint: base.relayIntegrationHint,
+  };
 }

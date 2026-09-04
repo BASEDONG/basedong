@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import type { ApiKeyWriteInput } from "@/lib/backend/client";
+import { CONSOLE_PRIMARY_BTN_COMPACT } from "../shared/console-ui";
 import type { ApiKeysUiCopy } from "./account-ak-ui-copy";
-import { CloseCircleIcon, CloseIcon } from "./icons";
+import { CloseIcon } from "./icons";
 
 const antFont =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
@@ -11,7 +13,7 @@ interface CreateKeyModalProps {
   open: boolean;
   copy: ApiKeysUiCopy;
   onClose: () => void;
-  onCreate: (description: string) => void;
+  onCreate: (input: ApiKeyWriteInput) => void;
 }
 
 export function CreateKeyModal({
@@ -21,16 +23,22 @@ export function CreateKeyModal({
   onCreate,
 }: CreateKeyModalProps) {
   const titleId = useId();
-  const inputId = useId();
-  const helpId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState("");
-  const [focused, setFocused] = useState(false);
+  const [name, setName] = useState("");
+  const [unlimited, setUnlimited] = useState(true);
+  const [remainQuota, setRemainQuota] = useState(0);
+  const [group, setGroup] = useState("");
+  const [modelLimits, setModelLimits] = useState("");
+  const [allowIps, setAllowIps] = useState("");
 
   useEffect(() => {
     if (!open) {
-      setValue("");
-      setFocused(false);
+      setName("");
+      setUnlimited(true);
+      setRemainQuota(0);
+      setGroup("");
+      setModelLimits("");
+      setAllowIps("");
       return;
     }
     const t = window.setTimeout(() => inputRef.current?.focus(), 40);
@@ -49,6 +57,20 @@ export function CreateKeyModal({
 
   if (!open) return null;
 
+  const submit = () => {
+    const trimmed = name.trim() || `key-${Date.now()}`;
+    onCreate({
+      name: trimmed,
+      unlimited_quota: unlimited,
+      remain_quota: unlimited ? 0 : Math.max(0, Math.floor(remainQuota)),
+      expired_time: -1,
+      group: group.trim(),
+      model_limits: modelLimits.trim(),
+      model_limits_enabled: Boolean(modelLimits.trim()),
+      allow_ips: allowIps.trim(),
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-[1000]" style={{ fontFamily: antFont }}>
       <div
@@ -57,99 +79,115 @@ export function CreateKeyModal({
         aria-hidden
       />
       <div className="pointer-events-none absolute inset-0 overflow-auto">
-        <div className="flex min-h-full items-start justify-center px-4 pb-8 pt-[100px]">
+        <div className="flex min-h-full items-start justify-center px-4 pb-8 pt-[80px]">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="pointer-events-auto relative w-full max-w-[520px] rounded-[8px] bg-white px-6 py-5 text-[rgb(30,41,59)] shadow-[0_6px_16px_rgba(0,0,0,0.08),0_3px_6px_-4px_rgba(0,0,0,0.12),0_9px_28px_8px_rgba(0,0,0,0.05)]"
+            className="pointer-events-auto relative w-full max-w-[560px] rounded-[8px] bg-white px-6 py-5 text-[rgb(30,41,59)] shadow-[0_6px_16px_rgba(0,0,0,0.08)]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               aria-label="Close"
               onClick={onClose}
-              className="absolute right-3 top-3 flex size-8 cursor-pointer items-center justify-center rounded text-[rgb(100,116,139)] transition-colors hover:bg-black/[0.06] hover:text-[rgb(30,41,59)]"
+              className="absolute right-3 top-3 flex size-8 items-center justify-center rounded text-[rgb(100,116,139)] hover:bg-black/[0.06]"
             >
               <CloseIcon className="size-[14px]" />
             </button>
 
-            <div className="mb-2 pr-8">
-              <h2
-                id={titleId}
-                className="m-0 text-base font-semibold leading-6 text-[rgb(30,41,59)]"
-              >
-                {copy.createModal.title}
-              </h2>
-            </div>
+            <h2
+              id={titleId}
+              className="m-0 mb-3 pr-8 text-base font-semibold"
+            >
+              {copy.createModal.title}
+            </h2>
 
-            <div className="mb-2">
-              <label
-                htmlFor={inputId}
-                className="mb-2 inline-flex text-sm leading-[22px] text-[rgb(30,41,59)] after:ml-0.5 after:mr-2 after:content-[':']"
-              >
-                {copy.createModal.label}
-              </label>
-              <div
-                className={`inline-flex h-8 w-full items-center rounded-md border bg-white px-[11px] py-1 transition-[border-color,box-shadow] ${
-                  focused
-                    ? "border-[rgb(74,171,240)] shadow-[0_0_0_2px_rgba(74,171,240,0.1)]"
-                    : "border-[rgb(203,213,225)]"
-                }`}
-              >
+            <label className="mb-1 block text-sm">{copy.createModal.label}</label>
+            <input
+              ref={inputRef}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={copy.createModal.placeholder}
+              className="mb-1 h-8 w-full rounded-md border border-slate-300 px-3 text-sm outline-none focus:border-[rgb(74,171,240)]"
+            />
+            <p className="mb-3 text-xs text-slate-500">{copy.createModal.help}</p>
+
+            <label className="mb-2 flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={unlimited}
+                onChange={(e) => setUnlimited(e.target.checked)}
+              />
+              {copy.createModal.unlimitedQuota ?? "Unlimited quota"}
+            </label>
+            {!unlimited ? (
+              <div className="mb-3">
+                <label className="mb-1 block text-sm">
+                  {copy.createModal.remainQuota ?? "Quota"}
+                </label>
                 <input
-                  ref={inputRef}
-                  id={inputId}
-                  type="text"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      onCreate(value.trim());
-                    }
-                  }}
-                  placeholder={copy.createModal.placeholder}
-                  aria-describedby={helpId}
-                  className="h-[22px] w-full border-0 bg-transparent p-0 text-sm leading-[22px] text-[rgb(30,41,59)] outline-none placeholder:text-[rgb(148,163,184)]"
+                  type="number"
+                  min={0}
+                  value={remainQuota}
+                  onChange={(e) =>
+                    setRemainQuota(Number.parseInt(e.target.value, 10) || 0)
+                  }
+                  className="h-8 w-full rounded-md border border-slate-300 px-3 text-sm"
                 />
-                {value ? (
-                  <button
-                    type="button"
-                    tabIndex={-1}
-                    aria-label="close-circle"
-                    onClick={() => {
-                      setValue("");
-                      inputRef.current?.focus();
-                    }}
-                    className="ml-1 inline-flex shrink-0 cursor-pointer border-0 bg-transparent p-0 text-[rgb(148,163,184)] transition-colors hover:text-[rgb(100,116,139)]"
-                  >
-                    <CloseCircleIcon className="size-3.5" />
-                  </button>
-                ) : null}
               </div>
-              <div
-                id={helpId}
-                className="min-h-2 text-sm leading-[22px] text-[rgb(100,116,139)]"
-              >
-                {copy.createModal.help}
-              </div>
-            </div>
+            ) : null}
 
-            <div className="mt-3 flex justify-end">
+            <label className="mb-1 block text-sm">
+              {copy.createModal.group ?? "Group"}
+            </label>
+            <input
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+              placeholder={copy.createModal.groupPlaceholder}
+              className="mb-3 h-8 w-full rounded-md border border-slate-300 px-3 text-sm"
+            />
+
+            <label className="mb-1 block text-sm">
+              {copy.createModal.modelLimits ?? "Model allowlist"}
+            </label>
+            <input
+              value={modelLimits}
+              onChange={(e) => setModelLimits(e.target.value)}
+              className="mb-1 h-8 w-full rounded-md border border-slate-300 px-3 text-sm"
+            />
+            <p className="mb-3 text-xs text-slate-500">
+              {copy.createModal.modelLimitsHelp}
+            </p>
+
+            <label className="mb-1 block text-sm">
+              {copy.createModal.allowIps ?? "IP allowlist"}
+            </label>
+            <textarea
+              value={allowIps}
+              onChange={(e) => setAllowIps(e.target.value)}
+              rows={3}
+              className="mb-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            />
+            <p className="mb-4 text-xs text-slate-500">
+              {copy.createModal.allowIpsHelp}
+            </p>
+            <p className="mb-4 text-xs text-slate-400">
+              {copy.createModal.expiredNever ?? copy.neverExpire ?? "Never expires"}
+            </p>
+
+            <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-8 cursor-pointer items-center justify-center rounded-md border border-[rgb(203,213,225)] bg-white px-[15px] text-sm leading-[22px] text-[rgb(30,41,59)] shadow-[0_2px_0_rgba(0,0,0,0.02)] transition-colors hover:border-[rgb(74,171,240)] hover:text-[rgb(74,171,240)]"
+                className="inline-flex h-8 items-center rounded-md border border-slate-300 px-[15px] text-sm"
               >
                 {copy.createModal.cancel}
               </button>
               <button
                 type="button"
-                onClick={() => onCreate(value.trim())}
-                className="ml-2 inline-flex h-8 cursor-pointer items-center justify-center rounded-md border border-transparent bg-[rgb(74,171,240)] px-[15px] text-sm leading-[22px] text-white shadow-[0_2px_0_0_rgba(74,171,240,0.06)] transition-[background] duration-200 ease-[cubic-bezier(0.645,0.045,0.355,1)] hover:bg-[#5b21e6]"
+                onClick={submit}
+                className={CONSOLE_PRIMARY_BTN_COMPACT}
               >
                 {copy.createModal.submit}
               </button>

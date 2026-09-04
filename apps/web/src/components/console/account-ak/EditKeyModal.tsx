@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { CONSOLE_PRIMARY_BTN_COMPACT } from "../shared/console-ui";
 import type { ApiKeysUiCopy } from "./account-ak-ui-copy";
 import { CloseCircleIcon, CloseIcon } from "./icons";
 
@@ -151,7 +152,7 @@ export function EditKeyModal({
               <button
                 type="button"
                 onClick={() => onSave(value.trim())}
-                className="ml-2 inline-flex h-8 cursor-pointer items-center justify-center rounded-md border border-transparent bg-[rgb(74,171,240)] px-[15px] text-sm leading-[22px] text-white shadow-[0_2px_0_0_rgba(74,171,240,0.06)] transition-[background] duration-200 ease-[cubic-bezier(0.645,0.045,0.355,1)] hover:bg-[#5b21e6]"
+                className={`ml-2 ${CONSOLE_PRIMARY_BTN_COMPACT}`}
               >
                 {copy.editModal.save}
               </button>
