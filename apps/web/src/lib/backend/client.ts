@@ -14,6 +14,13 @@ export type BackendUser = {
   id?: number;
   username?: string;
   display_name?: string;
+  email?: string;
+  github_id?: string;
+  discord_id?: string;
+  oidc_id?: string;
+  wechat_id?: string;
+  telegram_id?: string;
+  linux_do_id?: string;
   quota?: number;
   used_quota?: number;
   request_count?: number;
@@ -194,10 +201,38 @@ type LoginData = {
 };
 
 /** Public Backend flags used by Auth (from GET /api/status). */
+export type CustomOAuthProviderInfo = {
+  id?: number;
+  name?: string;
+  slug?: string;
+  icon?: string;
+  client_id?: string;
+  authorization_endpoint?: string;
+  scopes?: string;
+};
+
 export type PublicAuthStatus = {
   email_verification?: boolean;
   turnstile_check?: boolean;
   turnstile_site_key?: string;
+  checkin_enabled?: boolean;
+  github_oauth?: boolean;
+  github_client_id?: string;
+  discord_oauth?: boolean;
+  discord_client_id?: string;
+  linuxdo_oauth?: boolean;
+  linuxdo_client_id?: string;
+  telegram_oauth?: boolean;
+  telegram_bot_name?: string;
+  wechat_login?: boolean;
+  wechat_qrcode?: string;
+  oidc_enabled?: boolean;
+  oidc_client_id?: string;
+  oidc_authorization_endpoint?: string;
+  oidc_display_name?: string;
+  passkey_login?: boolean;
+  server_address?: string;
+  custom_oauth_providers?: CustomOAuthProviderInfo[];
 };
 
 function withTurnstileQuery(path: string, turnstile?: string): string {
@@ -692,6 +727,147 @@ export async function unbindOAuth(providerId: number): Promise<void> {
   await backendFetch<unknown>(
     `/api/user/oauth/bindings/${encodeURIComponent(String(providerId))}`,
     { method: "DELETE" },
+  );
+}
+
+/** Create OAuth CSRF state; intent=bind requires logged-in session. */
+export async function createOAuthFlow(
+  provider: string,
+  intent: "login" | "bind",
+): Promise<string> {
+  const data = await backendFetch<string | { flow_token?: string }>(
+    "/api/oauth/state",
+    {
+      method: "POST",
+      body: JSON.stringify({ provider, intent }),
+    },
+  );
+  if (typeof data === "string" && data) return data;
+  if (data && typeof data === "object" && typeof data.flow_token === "string") {
+    return data.flow_token;
+  }
+  throw new BackendError("Failed to initialize OAuth");
+}
+
+/** Complete OAuth (login or bind) after provider redirect. */
+export async function completeOAuth(
+  provider: string,
+  params: {
+    state: string;
+    code?: string;
+    error?: string;
+    error_description?: string;
+  },
+): Promise<{ success: boolean; message?: string }> {
+  const q = new URLSearchParams({ state: params.state });
+  if (params.code) q.set("code", params.code);
+  if (params.error) q.set("error", params.error);
+  if (params.error_description) {
+    q.set("error_description", params.error_description);
+  }
+  const base = assertApiBase();
+  const headers = new Headers();
+  const token = getAccessToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  const sid = getSessionSid();
+  if (sid) headers.set("X-Auth-Session", sid);
+  const res = await fetch(
+    `${base}/api/oauth/${encodeURIComponent(provider)}?${q.toString()}`,
+    { method: "GET", headers, credentials: "include" },
+  );
+  const json = (await res.json()) as {
+    success?: boolean;
+    message?: string;
+  };
+  return {
+    success: Boolean(json.success),
+    message: json.message,
+  };
+}
+
+export async function bindEmail(email: string, code: string): Promise<void> {
+  await backendFetch<unknown>("/api/oauth/email/bind", {
+    method: "POST",
+    body: JSON.stringify({ email: email.trim(), code: code.trim() }),
+  });
+}
+
+export async function bindWeChat(code: string): Promise<void> {
+  await backendFetch<unknown>("/api/oauth/wechat/bind", {
+    method: "POST",
+    body: JSON.stringify({ code: code.trim() }),
+  });
+}
+
+export type TelegramBindFlow = {
+  flow_token: string;
+  callback_url: string;
+  expires_at?: number;
+};
+
+export async function startTelegramBind(): Promise<TelegramBindFlow> {
+  const data = await backendFetch<TelegramBindFlow>(
+    "/api/oauth/telegram/bind/start",
+    { method: "POST" },
+  );
+  if (!data?.flow_token || !data?.callback_url) {
+    throw new BackendError("Telegram bind flow missing");
+  }
+  return data;
+}
+
+/** Regenerate system Access Token (previous token invalidated). */
+export async function generateAccessToken(): Promise<string> {
+  const data = await backendFetch<string>("/api/user/token", {
+    method: "GET",
+  });
+  if (typeof data !== "string" || !data) {
+    throw new BackendError("Access Token missing in response");
+  }
+  return data;
+}
+
+/** Delete the current user account. */
+export async function deleteSelfAccount(): Promise<void> {
+  await backendFetch<unknown>("/api/user/self", { method: "DELETE" });
+  clearAccessToken();
+}
+
+export type CheckinRecord = {
+  checkin_date?: string;
+  quota_awarded?: number;
+};
+
+export type CheckinStatus = {
+  enabled?: boolean;
+  min_quota?: number;
+  max_quota?: number;
+  stats?: {
+    checked_in_today?: boolean;
+    total_checkins?: number;
+    total_quota?: number;
+    checkin_count?: number;
+    records?: CheckinRecord[];
+  };
+};
+
+export async function getCheckinStatus(
+  month?: string,
+): Promise<CheckinStatus> {
+  const q = month ? `?month=${encodeURIComponent(month)}` : "";
+  return backendFetch<CheckinStatus>(`/api/user/checkin${q}`, {
+    method: "GET",
+  });
+}
+
+export async function postCheckin(turnstile?: string): Promise<{
+  quota_awarded?: number;
+  checkin_date?: string;
+}> {
+  const path = withTurnstileQuery("/api/user/checkin", turnstile);
+  return backendFetch<{ quota_awarded?: number; checkin_date?: string }>(
+    path,
+    { method: "POST" },
   );
 }
 

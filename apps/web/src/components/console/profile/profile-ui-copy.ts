@@ -87,6 +87,43 @@ export type ProfileUiCopy = {
   revokeOthers: string;
   revokeSession: string;
   sessionCurrent: string;
+  sectionAccessToken?: string;
+  accessTokenHint?: string;
+  accessTokenGenerate?: string;
+  accessTokenCopy?: string;
+  accessTokenCopied?: string;
+  accessTokenGenerated?: string;
+  sectionCheckin?: string;
+  checkinDisabled?: string;
+  checkinToday?: string;
+  checkinNotToday?: string;
+  checkinAction?: string;
+  checkinSuccess?: (quota: string) => string;
+  checkinRange?: (min: string, max: string) => string;
+  checkinTotal?: (count: number, quota: string) => string;
+  sectionDelete?: string;
+  deleteHint?: string;
+  deleteConfirmLabel?: string;
+  deleteConfirmPlaceholder?: string;
+  deleteSubmit?: string;
+  deleteMismatch?: string;
+  deleteDone?: string;
+  sectionBindings?: string;
+  bindEmail?: string;
+  bindEmailCode?: string;
+  bindSendCode?: string;
+  bindSubmit?: string;
+  bindWechat?: string;
+  bindWechatCode?: string;
+  bindTelegram?: string;
+  bindTelegramStart?: string;
+  bindGithub?: string;
+  bindDiscord?: string;
+  bindLinuxdo?: string;
+  bindOidc?: string;
+  bindCustom?: string;
+  bindSuccess?: string;
+  bindFailed?: string;
 };
 
 const zhCN: ProfileUiCopy = {
@@ -169,13 +206,51 @@ const zhCN: ProfileUiCopy = {
   oauthUnbind: "解绑",
   oauthUnbound: "已解绑",
   oauthBindNote:
-    "新增绑定需走 Backend 已配置的 OAuth 提供方流程；此处可查看并解绑现有绑定。",
+    "自定义第三方绑定可在此解绑。邮箱 / 微信 / Telegram / OAuth 绑定见上方「账户绑定」。",
   sessionsUnavailable: "无法加载会话列表（可能需要浏览器会话 Cookie）",
   sessionsEmpty: "暂无其他会话",
   sessionsRevoked: "已吊销其他会话",
   revokeOthers: "吊销其他会话",
   revokeSession: "吊销",
   sessionCurrent: "当前",
+  sectionAccessToken: "Access Token",
+  accessTokenHint:
+    "系统 Access Token 用于部分管理式调用。重新生成会使旧 Token 立即失效。",
+  accessTokenGenerate: "生成 / 重新生成",
+  accessTokenCopy: "复制",
+  accessTokenCopied: "已复制",
+  accessTokenGenerated: "已生成 Access Token（请立即复制保存）",
+  sectionCheckin: "签到",
+  checkinDisabled: "签到未启用",
+  checkinToday: "今日已签到",
+  checkinNotToday: "今日尚未签到",
+  checkinAction: "立即签到",
+  checkinSuccess: (quota) => `签到成功，获得额度 ${quota}`,
+  checkinRange: (min, max) => `每次签到额度范围：${min} – ${max}`,
+  checkinTotal: (count, quota) => `本月已签到 ${count} 次，累计 ${quota}`,
+  sectionDelete: "删除账户",
+  deleteHint: "删除后不可恢复。请输入用户名确认。",
+  deleteConfirmLabel: "确认用户名",
+  deleteConfirmPlaceholder: "输入当前用户名",
+  deleteSubmit: "永久删除账户",
+  deleteMismatch: "用户名不匹配",
+  deleteDone: "账户已删除",
+  sectionBindings: "账户绑定",
+  bindEmail: "绑定邮箱",
+  bindEmailCode: "验证码",
+  bindSendCode: "发送验证码",
+  bindSubmit: "绑定",
+  bindWechat: "绑定微信",
+  bindWechatCode: "微信验证码",
+  bindTelegram: "绑定 Telegram",
+  bindTelegramStart: "打开 Telegram 绑定",
+  bindGithub: "绑定 GitHub",
+  bindDiscord: "绑定 Discord",
+  bindLinuxdo: "绑定 LinuxDo",
+  bindOidc: "绑定 OIDC",
+  bindCustom: "绑定",
+  bindSuccess: "绑定成功",
+  bindFailed: "绑定失败",
 };
 
 const en: ProfileUiCopy = {
@@ -261,7 +336,7 @@ const en: ProfileUiCopy = {
   oauthUnbind: "Unbind",
   oauthUnbound: "Unbound",
   oauthBindNote:
-    "New links use Backend-configured OAuth providers; here you can review and unbind existing ones.",
+    "Unbind custom providers here. Bind email / WeChat / Telegram / OAuth in Account bindings above.",
   sessionsUnavailable:
     "Could not load sessions (browser session cookie may be required)",
   sessionsEmpty: "No sessions listed",
@@ -269,6 +344,45 @@ const en: ProfileUiCopy = {
   revokeOthers: "Revoke others",
   revokeSession: "Revoke",
   sessionCurrent: "Current",
+  sectionAccessToken: "Access Token",
+  accessTokenHint:
+    "The system Access Token is used for some management calls. Regenerating invalidates the previous token immediately.",
+  accessTokenGenerate: "Generate / regenerate",
+  accessTokenCopy: "Copy",
+  accessTokenCopied: "Copied",
+  accessTokenGenerated: "Access Token generated — copy it now",
+  sectionCheckin: "Check-in",
+  checkinDisabled: "Check-in is disabled",
+  checkinToday: "Checked in today",
+  checkinNotToday: "Not checked in today",
+  checkinAction: "Check in",
+  checkinSuccess: (quota) => `Checked in. Quota +${quota}`,
+  checkinRange: (min, max) => `Quota range per check-in: ${min} – ${max}`,
+  checkinTotal: (count, quota) =>
+    `${count} check-ins this month · ${quota} total`,
+  sectionDelete: "Delete account",
+  deleteHint: "This cannot be undone. Type your username to confirm.",
+  deleteConfirmLabel: "Confirm username",
+  deleteConfirmPlaceholder: "Enter your username",
+  deleteSubmit: "Permanently delete account",
+  deleteMismatch: "Username does not match",
+  deleteDone: "Account deleted",
+  sectionBindings: "Account bindings",
+  bindEmail: "Bind email",
+  bindEmailCode: "Verification code",
+  bindSendCode: "Send code",
+  bindSubmit: "Bind",
+  bindWechat: "Bind WeChat",
+  bindWechatCode: "WeChat code",
+  bindTelegram: "Bind Telegram",
+  bindTelegramStart: "Open Telegram bind",
+  bindGithub: "Bind GitHub",
+  bindDiscord: "Bind Discord",
+  bindLinuxdo: "Bind LinuxDo",
+  bindOidc: "Bind OIDC",
+  bindCustom: "Bind",
+  bindSuccess: "Bound successfully",
+  bindFailed: "Binding failed",
 };
 
 const zhTW: ProfileUiCopy = {
@@ -339,5 +453,12 @@ const CATALOG: Record<TargetLocale, ProfileUiCopy> = {
 };
 
 export function getProfileUiCopy(locale: string): ProfileUiCopy {
-  return pickTargetCatalog(locale, CATALOG);
+  const base = pickTargetCatalog(locale, CATALOG);
+  return {
+    ...en,
+    ...base,
+    checkinSuccess: base.checkinSuccess ?? en.checkinSuccess,
+    checkinRange: base.checkinRange ?? en.checkinRange,
+    checkinTotal: base.checkinTotal ?? en.checkinTotal,
+  };
 }

@@ -4,12 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import {
   changeSelfPassword,
+  getPublicAuthStatus,
   getSelf,
   getTwoFactorStatus,
   listUserSessions,
   revokeOtherSessions,
   revokeUserSession,
   updateSelfProfile,
+  type BackendUser,
+  type PublicAuthStatus,
   type TwoFactorStatus,
   type UserSessionRow,
 } from "@/lib/backend/client";
@@ -24,9 +27,14 @@ import {
   formatConsoleQuota,
 } from "../shared/format-quota";
 import { notifySelfUpdated } from "../shared/self-events";
+import { ProfileAccessTokenPanel } from "./ProfileAccessTokenPanel";
+import { ProfileBindingsPanel } from "./ProfileBindingsPanel";
+import { ProfileCheckinPanel } from "./ProfileCheckinPanel";
+import { ProfileDeleteAccountPanel } from "./ProfileDeleteAccountPanel";
 import { ProfileLanguagePanel } from "./ProfileLanguagePanel";
 import { ProfileSecurityPanels } from "./ProfileSecurityPanels";
 import { ProfileSettingsPanel } from "./ProfileSettingsPanel";
+import { isCheckinVisible } from "./profile-gates";
 import { getProfileUiCopy } from "./profile-ui-copy";
 import {
   settingsFormFromSelfSetting,
@@ -50,6 +58,8 @@ export function ProfilePageClient() {
   const [collapsed, setCollapsed] = useState(false);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [self, setSelf] = useState<BackendUser | null>(null);
+  const [authStatus, setAuthStatus] = useState<PublicAuthStatus | null>(null);
   const [originalPassword, setOriginalPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [stats, setStats] = useState<ProfileHeaderStats | null>(null);
@@ -76,14 +86,21 @@ export function ProfilePageClient() {
   const refresh = useCallback(async () => {
     setError(null);
     try {
-      const self = await getSelf();
-      setUsername(self.username ?? "");
-      setDisplayName(self.display_name ?? "");
-      setStats(profileHeaderStats(self));
-      setSettings(settingsFormFromSelfSetting(self.setting));
+      const me = await getSelf();
+      setSelf(me);
+      setUsername(me.username ?? "");
+      setDisplayName(me.display_name ?? "");
+      setStats(profileHeaderStats(me));
+      setSettings(settingsFormFromSelfSetting(me.setting));
     } catch (e) {
+      setSelf(null);
       setStats(null);
       setError(localizeBackendError(targetLocale, e, copy.loadFailed));
+    }
+    try {
+      setAuthStatus(await getPublicAuthStatus());
+    } catch {
+      setAuthStatus(null);
     }
     try {
       setTwoFa(await getTwoFactorStatus());
@@ -293,6 +310,38 @@ export function ProfilePageClient() {
           </button>
         </section>
 
+        <ProfileAccessTokenPanel
+          copy={copy}
+          targetLocale={targetLocale}
+          onNotice={(msg) => showToast(msg)}
+          onError={(msg) => showToast(msg, "error")}
+        />
+
+        {isCheckinVisible(authStatus) ? (
+          <ProfileCheckinPanel
+            copy={copy}
+            targetLocale={targetLocale}
+            onNotice={(msg) => showToast(msg)}
+            onError={(msg) => showToast(msg, "error")}
+            onQuotaMaybeChanged={() => {
+              notifySelfUpdated();
+              void refresh();
+            }}
+          />
+        ) : null}
+
+        <ProfileBindingsPanel
+          copy={copy}
+          targetLocale={targetLocale}
+          self={self}
+          onNotice={(msg) => showToast(msg)}
+          onError={(msg) => showToast(msg, "error")}
+          onBound={() => {
+            notifySelfUpdated();
+            void refresh();
+          }}
+        />
+
         <ProfileSecurityPanels
           copy={copy}
           targetLocale={targetLocale}
@@ -386,6 +435,16 @@ export function ProfilePageClient() {
             </ul>
           )}
         </section>
+
+        {username ? (
+          <ProfileDeleteAccountPanel
+            copy={copy}
+            targetLocale={targetLocale}
+            username={username}
+            onNotice={(msg) => showToast(msg)}
+            onError={(msg) => showToast(msg, "error")}
+          />
+        ) : null}
       </div>
     </ConsoleShell>
   );
