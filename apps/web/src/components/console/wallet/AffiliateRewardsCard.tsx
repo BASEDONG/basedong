@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getAffiliateCode,
   transferAffiliateQuota,
@@ -42,6 +42,10 @@ export function AffiliateRewardsCard({
   const [loading, setLoading] = useState(true);
   const [transferAmount, setTransferAmount] = useState("");
   const [busy, setBusy] = useState(false);
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+  const onNoticeRef = useRef(onNotice);
+  onNoticeRef.current = onNotice;
 
   const refreshCode = useCallback(async () => {
     setLoading(true);
@@ -52,7 +56,7 @@ export function AffiliateRewardsCard({
     } catch (e) {
       setCode("");
       setLink("");
-      onError(
+      onErrorRef.current(
         localizeBackendError(
           targetLocale,
           e,
@@ -62,7 +66,7 @@ export function AffiliateRewardsCard({
     } finally {
       setLoading(false);
     }
-  }, [copy.affLoadFailed, onError, targetLocale]);
+  }, [copy.affLoadFailed, targetLocale]);
 
   useEffect(() => {
     void refreshCode();
@@ -76,30 +80,30 @@ export function AffiliateRewardsCard({
     if (!link) return;
     try {
       await navigator.clipboard.writeText(link);
-      onNotice(copy.affCopied ?? "Copied");
+      onNoticeRef.current(copy.affCopied ?? "Copied");
     } catch {
-      onError(copy.affLoadFailed ?? "Copy failed");
+      onErrorRef.current(copy.affLoadFailed ?? "Copy failed");
     }
   };
 
   const onTransfer = async () => {
     const amount = clampTransferQuota(Number(transferAmount), pending);
     if (amount <= 0) {
-      onError(copy.affTransferInvalid ?? "Invalid amount");
+      onErrorRef.current(copy.affTransferInvalid ?? "Invalid amount");
       return;
     }
     if (!complianceConfirmed) {
-      onError(copy.affTransferBlocked ?? "Transfer unavailable");
+      onErrorRef.current(copy.affTransferBlocked ?? "Transfer unavailable");
       return;
     }
     setBusy(true);
     try {
       await transferAffiliateQuota(amount);
       setTransferAmount("");
-      onNotice(copy.affTransferSuccess ?? "Transferred");
+      onNoticeRef.current(copy.affTransferSuccess ?? "Transferred");
       onTransferred();
     } catch (e) {
-      onError(
+      onErrorRef.current(
         localizeBackendError(
           targetLocale,
           e,

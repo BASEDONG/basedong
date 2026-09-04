@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getPublicAuthStatus,
   getSubscriptionPlans,
@@ -75,6 +75,10 @@ export function SubscriptionPlansCard({
   const [loading, setLoading] = useState(true);
   const [buyingId, setBuyingId] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+  const onNoticeRef = useRef(onNotice);
+  onNoticeRef.current = onNotice;
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -92,7 +96,7 @@ export function SubscriptionPlansCard({
     } catch (e) {
       setPlans([]);
       setSelf(null);
-      onError(
+      onErrorRef.current(
         localizeBackendError(
           targetLocale,
           e,
@@ -102,7 +106,7 @@ export function SubscriptionPlansCard({
     } finally {
       setLoading(false);
     }
-  }, [copy.subLoadFailed, onError, targetLocale]);
+  }, [copy.subLoadFailed, targetLocale]);
 
   useEffect(() => {
     void refresh();
@@ -113,9 +117,9 @@ export function SubscriptionPlansCard({
     try {
       const next = await updateSubscriptionPreference(value);
       setSelf((prev) => ({ ...(prev ?? {}), billing_preference: next }));
-      onNotice(copy.prefSaved ?? "Saved");
+      onNoticeRef.current(copy.prefSaved ?? "Saved");
     } catch (e) {
-      onError(
+      onErrorRef.current(
         localizeBackendError(targetLocale, e, copy.prefFailed ?? "Failed"),
       );
     } finally {
