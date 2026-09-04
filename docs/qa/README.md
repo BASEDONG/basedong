@@ -55,6 +55,8 @@ Run in order when doing a full narrative pass:
 7. [`admin/journey-admin-redemption-issue.md`](./admin/journey-admin-redemption-issue.md) *(optional if `QA_REDEEM_CODE` already set)*
 8. [`customer/journey-redeem.md`](./customer/journey-redeem.md)
 
+**Console 交互对齐 (#59) product gate** (not every daily run): [`customer/journey-console-ia.md`](./customer/journey-console-ia.md) — full Profile / Wallet / Overview / Keys / Logs×3 / Chat + fixed IA + 下线页 against local Backend. Required before closing #59.
+
 Single-file debug: honor each file’s **Depends on** edge; re-login if the session expired.
 
 ## Journey index
@@ -69,6 +71,7 @@ Single-file debug: honor each file’s **Depends on** edge; re-login if the sess
 | [customer/journey-topup-epay.md](./customer/journey-topup-epay.md) | 充值 to pay redirect | Required | Login; EPay configured or expect disabled UI |
 | [admin/journey-admin-redemption-issue.md](./admin/journey-admin-redemption-issue.md) | 管理员 create 兑换码 | Required* | `QA_ADMIN_*` |
 | [customer/journey-redeem.md](./customer/journey-redeem.md) | Redeem + invalid code | Required | Login; code from Admin journey or `QA_REDEEM_CODE` |
+| [customer/journey-console-ia.md](./customer/journey-console-ia.md) | **#59 交互对齐** full gate (local Backend) | Gate / release | Login; #60–#67 surfaces; probes optional |
 | [appendix/register-manual-otp.md](./appendix/register-manual-otp.md) | Register (OTP) | Appendix only | `manual-otp` — not in daily suite |
 
 \* Skip Admin journey when redeem success uses a pre-injected `QA_REDEEM_CODE`.
