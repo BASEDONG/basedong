@@ -1395,6 +1395,8 @@ export async function listUsageLogs(params: {
   endTimestamp?: number;
   modelName?: string;
   tokenName?: string;
+  group?: string;
+  requestId?: string;
 } = {}): Promise<UsageLogPage> {
   const q = new URLSearchParams();
   q.set("p", String(params.page ?? 1));
@@ -1408,6 +1410,8 @@ export async function listUsageLogs(params: {
   }
   if (params.modelName) q.set("model_name", params.modelName);
   if (params.tokenName) q.set("token_name", params.tokenName);
+  if (params.group) q.set("group", params.group);
+  if (params.requestId) q.set("request_id", params.requestId);
 
   const data = await backendFetch<{
     items?: UsageLog[];
@@ -1436,6 +1440,7 @@ export async function getUsageSelfStat(params: {
   endTimestamp?: number;
   modelName?: string;
   tokenName?: string;
+  group?: string;
 } = {}): Promise<UsageStat> {
   const q = new URLSearchParams();
   if (params.type != null) q.set("type", String(params.type));
@@ -1447,6 +1452,7 @@ export async function getUsageSelfStat(params: {
   }
   if (params.modelName) q.set("model_name", params.modelName);
   if (params.tokenName) q.set("token_name", params.tokenName);
+  if (params.group) q.set("group", params.group);
   const qs = q.toString();
   const data = await backendFetch<UsageStat>(
     `/api/log/self/stat${qs ? `?${qs}` : ""}`,
@@ -1512,7 +1518,9 @@ export async function getSelfFlowQuotaData(params: {
 export type TaskLogRow = {
   id?: number | string;
   task_id?: string;
+  mj_id?: string;
   platform?: string;
+  action?: string;
   status?: string;
   progress?: string;
   submit_time?: number;
@@ -1523,11 +1531,30 @@ export type TaskLogRow = {
 
 async function listSelfPagedTasks(
   path: string,
-  params: { page?: number; pageSize?: number } = {},
+  params: {
+    page?: number;
+    pageSize?: number;
+    startTimestamp?: number;
+    endTimestamp?: number;
+    taskId?: string;
+    mjId?: string;
+    platform?: string;
+    status?: string;
+  } = {},
 ): Promise<{ items: TaskLogRow[]; total: number }> {
   const q = new URLSearchParams();
   q.set("p", String(params.page ?? 1));
   q.set("page_size", String(params.pageSize ?? 50));
+  if (params.startTimestamp != null) {
+    q.set("start_timestamp", String(params.startTimestamp));
+  }
+  if (params.endTimestamp != null) {
+    q.set("end_timestamp", String(params.endTimestamp));
+  }
+  if (params.taskId) q.set("task_id", params.taskId);
+  if (params.mjId) q.set("mj_id", params.mjId);
+  if (params.platform) q.set("platform", params.platform);
+  if (params.status) q.set("status", params.status);
   const data = await backendFetch<{
     items?: TaskLogRow[];
     data?: TaskLogRow[];
@@ -1543,6 +1570,9 @@ async function listSelfPagedTasks(
 export async function listSelfMjLogs(params: {
   page?: number;
   pageSize?: number;
+  startTimestamp?: number;
+  endTimestamp?: number;
+  mjId?: string;
 } = {}): Promise<{ items: TaskLogRow[]; total: number }> {
   return listSelfPagedTasks("/api/mj/self", params);
 }
@@ -1550,6 +1580,11 @@ export async function listSelfMjLogs(params: {
 export async function listSelfTasks(params: {
   page?: number;
   pageSize?: number;
+  startTimestamp?: number;
+  endTimestamp?: number;
+  taskId?: string;
+  platform?: string;
+  status?: string;
 } = {}): Promise<{ items: TaskLogRow[]; total: number }> {
   return listSelfPagedTasks("/api/task/self", params);
 }
