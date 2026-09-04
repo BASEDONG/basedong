@@ -5,6 +5,9 @@ export type ProfileUiCopy = {
   pageTitle: string;
   sectionProfile: string;
   sectionPassword: string;
+  sectionStats: string;
+  sectionSettings: string;
+  sectionLanguage: string;
   sectionSecurity: string;
   sectionPasskey: string;
   sectionOauth: string;
@@ -17,9 +20,35 @@ export type ProfileUiCopy = {
   changePassword: string;
   saved: string;
   passwordChanged: string;
+  settingsSaved: string;
+  languageSaved: string;
   loadFailed: string;
   saveFailed: string;
   passwordFailed: string;
+  settingsFailed: string;
+  statQuota: string;
+  statUsedQuota: string;
+  statRequests: string;
+  notifyMethod: string;
+  notifyEmail: string;
+  notifyWebhook: string;
+  notifyBark: string;
+  notifyGotify: string;
+  quotaThreshold: string;
+  quotaThresholdHint: string;
+  notificationEmail: string;
+  notificationEmailHint: string;
+  webhookUrl: string;
+  webhookSecret: string;
+  barkUrl: string;
+  gotifyUrl: string;
+  gotifyToken: string;
+  gotifyPriority: string;
+  acceptUnsetRatio: string;
+  recordIpLog: string;
+  saveSettings: string;
+  languageHint: string;
+  languageLabel: string;
   twoFaLabel: string;
   twoFaOn: string;
   twoFaOff: string;
@@ -64,6 +93,9 @@ const zhCN: ProfileUiCopy = {
   pageTitle: "个人资料",
   sectionProfile: "基本资料",
   sectionPassword: "修改密码",
+  sectionStats: "账户概览",
+  sectionSettings: "设置与偏好",
+  sectionLanguage: "语言偏好",
   sectionSecurity: "双因素认证",
   sectionPasskey: "Passkey",
   sectionOauth: "第三方绑定",
@@ -76,9 +108,36 @@ const zhCN: ProfileUiCopy = {
   changePassword: "更新密码",
   saved: "已保存",
   passwordChanged: "密码已更新",
+  settingsSaved: "设置已保存",
+  languageSaved: "语言已更新",
   loadFailed: "加载个人资料失败",
   saveFailed: "保存失败",
   passwordFailed: "修改密码失败",
+  settingsFailed: "保存设置失败",
+  statQuota: "余额",
+  statUsedQuota: "累计用量",
+  statRequests: "请求数",
+  notifyMethod: "通知方式",
+  notifyEmail: "邮件",
+  notifyWebhook: "Webhook",
+  notifyBark: "Bark",
+  notifyGotify: "Gotify",
+  quotaThreshold: "额度预警阈值",
+  quotaThresholdHint: "余额低于该值时发送通知",
+  notificationEmail: "通知邮箱",
+  notificationEmailHint: "留空则使用账户邮箱",
+  webhookUrl: "Webhook URL",
+  webhookSecret: "Webhook 密钥",
+  barkUrl: "Bark URL",
+  gotifyUrl: "Gotify URL",
+  gotifyToken: "Gotify Token",
+  gotifyPriority: "Gotify 优先级",
+  acceptUnsetRatio: "接受未配置倍率的模型",
+  recordIpLog: "在调用记录中记录 IP",
+  saveSettings: "保存设置",
+  languageHint:
+    "控制台文案跟随 Preferred Locale（Target Locale Set），与站点语言切换器一致。",
+  languageLabel: "界面语言",
   twoFaLabel: "状态",
   twoFaOn: "已启用",
   twoFaOff: "未启用",
@@ -124,6 +183,9 @@ const en: ProfileUiCopy = {
   pageTitle: "Profile",
   sectionProfile: "Basics",
   sectionPassword: "Password",
+  sectionStats: "Account overview",
+  sectionSettings: "Settings & preferences",
+  sectionLanguage: "Language preference",
   sectionSecurity: "Two-factor authentication",
   sectionPasskey: "Passkey",
   sectionOauth: "Linked accounts",
@@ -136,9 +198,36 @@ const en: ProfileUiCopy = {
   changePassword: "Update password",
   saved: "Saved",
   passwordChanged: "Password updated",
+  settingsSaved: "Settings saved",
+  languageSaved: "Language updated",
   loadFailed: "Failed to load profile",
   saveFailed: "Failed to save",
   passwordFailed: "Failed to change password",
+  settingsFailed: "Failed to save settings",
+  statQuota: "Balance",
+  statUsedQuota: "Total usage",
+  statRequests: "Requests",
+  notifyMethod: "Notification method",
+  notifyEmail: "Email",
+  notifyWebhook: "Webhook",
+  notifyBark: "Bark",
+  notifyGotify: "Gotify",
+  quotaThreshold: "Quota warning threshold",
+  quotaThresholdHint: "Notify when balance falls below this value",
+  notificationEmail: "Notification email",
+  notificationEmailHint: "Leave empty to use account email",
+  webhookUrl: "Webhook URL",
+  webhookSecret: "Webhook secret",
+  barkUrl: "Bark URL",
+  gotifyUrl: "Gotify URL",
+  gotifyToken: "Gotify token",
+  gotifyPriority: "Gotify priority",
+  acceptUnsetRatio: "Accept models without configured ratios",
+  recordIpLog: "Record IP in call logs",
+  saveSettings: "Save settings",
+  languageHint:
+    "Console copy follows Preferred Locale (Target Locale Set), same as the site language switcher.",
+  languageLabel: "Interface language",
   twoFaLabel: "Status",
   twoFaOn: "Enabled",
   twoFaOff: "Disabled",
@@ -147,7 +236,8 @@ const en: ProfileUiCopy = {
   twoFaEnable: "Enable 2FA",
   twoFaDisable: "Disable 2FA",
   twoFaSetupTitle: "Set up two-factor authentication",
-  twoFaScanHint: "Scan the QR code with an authenticator app, or enter the secret.",
+  twoFaScanHint:
+    "Scan the QR code with an authenticator app, or enter the secret.",
   twoFaSecretLabel: "Secret",
   twoFaBackupTitle: "Save these backup codes (shown once)",
   twoFaCodeLabel: "Verification code",
@@ -182,45 +272,71 @@ const en: ProfileUiCopy = {
   sessionCurrent: "Current",
 };
 
+const zhTW: ProfileUiCopy = {
+  ...zhCN,
+  pageTitle: "個人資料",
+  sectionProfile: "基本資料",
+  sectionPassword: "修改密碼",
+  sectionStats: "帳戶概覽",
+  sectionSettings: "設定與偏好",
+  sectionLanguage: "語言偏好",
+  sectionSecurity: "雙因素認證",
+  sectionSessions: "登入工作階段",
+  sectionOauth: "第三方綁定",
+  username: "使用者名稱",
+  displayName: "顯示名稱",
+  save: "儲存",
+  saved: "已儲存",
+  settingsSaved: "設定已儲存",
+  languageSaved: "語言已更新",
+  saveSettings: "儲存設定",
+};
+
+const ja: ProfileUiCopy = {
+  ...en,
+  pageTitle: "プロフィール",
+  sectionProfile: "基本情報",
+  sectionPassword: "パスワード",
+  sectionStats: "アカウント概要",
+  sectionSettings: "設定と設定項目",
+  sectionLanguage: "言語設定",
+  sectionSecurity: "二要素認証",
+  sectionSessions: "セッション",
+  sectionOauth: "外部連携",
+  username: "ユーザー名",
+  displayName: "表示名",
+  save: "保存",
+  saved: "保存しました",
+  settingsSaved: "設定を保存しました",
+  languageSaved: "言語を更新しました",
+  saveSettings: "設定を保存",
+};
+
+const fr = en;
+const ru = en;
+const vi = en;
+const ko = en;
+const de = en;
+const es = en;
+const ar = en;
+const hi = en;
+const id = en;
+
 const CATALOG: Record<TargetLocale, ProfileUiCopy> = {
   "zh-CN": zhCN,
   en,
-  "zh-TW": {
-    ...zhCN,
-    pageTitle: "個人資料",
-    sectionProfile: "基本資料",
-    sectionPassword: "修改密碼",
-    sectionSecurity: "雙因素認證",
-    sectionSessions: "登入工作階段",
-    sectionOauth: "第三方綁定",
-    username: "使用者名稱",
-    displayName: "顯示名稱",
-    save: "儲存",
-    saved: "已儲存",
-  },
-  ja: {
-    ...en,
-    pageTitle: "プロフィール",
-    sectionProfile: "基本情報",
-    sectionPassword: "パスワード",
-    sectionSecurity: "二要素認証",
-    sectionSessions: "セッション",
-    sectionOauth: "外部連携",
-    username: "ユーザー名",
-    displayName: "表示名",
-    save: "保存",
-    saved: "保存しました",
-  },
-  fr: en,
-  ru: en,
-  vi: en,
-  ko: en,
-  de: en,
-  es: en,
+  "zh-TW": zhTW,
+  ja,
+  fr,
+  ru,
+  vi,
+  ko,
+  de,
+  es,
   "pt-BR": en,
-  ar: en,
-  hi: en,
-  id: en,
+  ar,
+  hi,
+  id,
 };
 
 export function getProfileUiCopy(locale: string): ProfileUiCopy {

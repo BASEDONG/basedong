@@ -16,6 +16,9 @@ export type BackendUser = {
   display_name?: string;
   quota?: number;
   used_quota?: number;
+  request_count?: number;
+  /** JSON string of user settings (notify prefs, etc.). */
+  setting?: string;
 };
 
 type ApiEnvelope<T> = {
@@ -936,6 +939,9 @@ export async function playgroundChat(args: {
   group?: string;
   temperature?: number;
   max_tokens?: number;
+  top_p?: number;
+  top_k?: number;
+  frequency_penalty?: number;
 }): Promise<PlaygroundChatResult> {
   const base = assertApiBase();
 
@@ -978,6 +984,9 @@ export async function playgroundChat(args: {
         group: args.group ?? "default",
         temperature: args.temperature,
         max_tokens: args.max_tokens ?? 1024,
+        top_p: args.top_p,
+        top_k: args.top_k,
+        frequency_penalty: args.frequency_penalty,
       }),
     });
     const json = (await res.json()) as {
@@ -1094,6 +1103,7 @@ export async function getUsageSelfStat(params: {
   startTimestamp?: number;
   endTimestamp?: number;
   modelName?: string;
+  tokenName?: string;
 } = {}): Promise<UsageStat> {
   const q = new URLSearchParams();
   if (params.type != null) q.set("type", String(params.type));
@@ -1104,6 +1114,7 @@ export async function getUsageSelfStat(params: {
     q.set("end_timestamp", String(params.endTimestamp));
   }
   if (params.modelName) q.set("model_name", params.modelName);
+  if (params.tokenName) q.set("token_name", params.tokenName);
   const qs = q.toString();
   const data = await backendFetch<UsageStat>(
     `/api/log/self/stat${qs ? `?${qs}` : ""}`,
@@ -1199,4 +1210,28 @@ export async function updateSelfProfile(input: {
   });
 }
 
+export type UpdateUserSettingsInput = {
+  notify_type: string;
+  quota_warning_threshold: number;
+  notification_email?: string;
+  webhook_url?: string;
+  webhook_secret?: string;
+  bark_url?: string;
+  gotify_url?: string;
+  gotify_token?: string;
+  gotify_priority?: number;
+  accept_unset_model_ratio_model: boolean;
+  record_ip_log: boolean;
+};
+
+/** PUT /api/user/setting — notification prefs and related flags. */
+export async function updateUserSettings(
+  input: UpdateUserSettingsInput,
+): Promise<void> {
+  await backendFetch<unknown>("/api/user/setting", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
 
