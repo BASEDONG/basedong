@@ -18,6 +18,7 @@ type Props = {
   onSettingsChange: (next: UserSettingsForm) => void;
   onNotice: (msg: string) => void;
   onError: (msg: string) => void;
+  onSaved?: () => void;
 };
 
 const NOTIFY_OPTIONS: { value: NotifyType; labelKey: keyof ProfileUiCopy }[] = [
@@ -34,6 +35,7 @@ export function ProfileSettingsPanel({
   onSettingsChange,
   onNotice,
   onError,
+  onSaved,
 }: Props) {
   const [saving, setSaving] = useState(false);
 
@@ -49,6 +51,7 @@ export function ProfileSettingsPanel({
     try {
       await updateUserSettings(toUpdateUserSettingsPayload(settings));
       onNotice(copy.settingsSaved);
+      onSaved?.();
     } catch (e) {
       onError(localizeBackendError(targetLocale, e, copy.settingsFailed));
     } finally {

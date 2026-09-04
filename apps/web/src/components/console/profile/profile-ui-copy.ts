@@ -135,8 +135,7 @@ const zhCN: ProfileUiCopy = {
   acceptUnsetRatio: "接受未配置倍率的模型",
   recordIpLog: "在调用记录中记录 IP",
   saveSettings: "保存设置",
-  languageHint:
-    "控制台文案跟随 Preferred Locale（Target Locale Set），与站点语言切换器一致。",
+  languageHint: "与站点语言切换器相同：更改后控制台文案会立即切换。",
   languageLabel: "界面语言",
   twoFaLabel: "状态",
   twoFaOn: "已启用",
@@ -226,7 +225,7 @@ const en: ProfileUiCopy = {
   recordIpLog: "Record IP in call logs",
   saveSettings: "Save settings",
   languageHint:
-    "Console copy follows Preferred Locale (Target Locale Set), same as the site language switcher.",
+    "Same as the site language switcher: Console copy updates as soon as you change it.",
   languageLabel: "Interface language",
   twoFaLabel: "Status",
   twoFaOn: "Enabled",

@@ -32,7 +32,10 @@ import {
   settingsFormFromSelfSetting,
   type UserSettingsForm,
 } from "./profile-settings";
-import { profileHeaderStats } from "./profile-stats";
+import {
+  profileHeaderStats,
+  type ProfileHeaderStats,
+} from "./profile-stats";
 
 function formatTs(sec?: number) {
   if (!sec) return "—";
@@ -49,7 +52,7 @@ export function ProfilePageClient() {
   const [displayName, setDisplayName] = useState("");
   const [originalPassword, setOriginalPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [stats, setStats] = useState(profileHeaderStats({}));
+  const [stats, setStats] = useState<ProfileHeaderStats | null>(null);
   const [settings, setSettings] = useState<UserSettingsForm>(() =>
     settingsFormFromSelfSetting(),
   );
@@ -57,12 +60,18 @@ export function ProfilePageClient() {
   const [sessions, setSessions] = useState<UserSessionRow[]>([]);
   const [sessionsError, setSessionsError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const showToast = useCallback((message: string) => {
-    setToast(message);
-  }, []);
+  const showToast = useCallback(
+    (message: string, type: "success" | "error" = "success") => {
+      setToast({ message, type });
+    },
+    [],
+  );
 
   const refresh = useCallback(async () => {
     setError(null);
@@ -73,6 +82,7 @@ export function ProfilePageClient() {
       setStats(profileHeaderStats(self));
       setSettings(settingsFormFromSelfSetting(self.setting));
     } catch (e) {
+      setStats(null);
       setError(localizeBackendError(targetLocale, e, copy.loadFailed));
     }
     try {
@@ -107,7 +117,10 @@ export function ProfilePageClient() {
       notifySelfUpdated();
       await refresh();
     } catch (e) {
-      setError(localizeBackendError(targetLocale, e, copy.saveFailed));
+      showToast(
+        localizeBackendError(targetLocale, e, copy.saveFailed),
+        "error",
+      );
     } finally {
       setSaving(false);
     }
@@ -127,7 +140,10 @@ export function ProfilePageClient() {
       setNewPassword("");
       showToast(copy.passwordChanged);
     } catch (e) {
-      setError(localizeBackendError(targetLocale, e, copy.passwordFailed));
+      showToast(
+        localizeBackendError(targetLocale, e, copy.passwordFailed),
+        "error",
+      );
     } finally {
       setSaving(false);
     }
@@ -147,8 +163,8 @@ export function ProfilePageClient() {
       overlay={
         <MessageToast
           open={toast !== null}
-          type="success"
-          message={toast ?? ""}
+          type={toast?.type ?? "success"}
+          message={toast?.message ?? ""}
           onClose={() => setToast(null)}
         />
       }
@@ -160,33 +176,39 @@ export function ProfilePageClient() {
           </p>
         ) : null}
 
-        <section className={`${CONSOLE_SURFACE} overflow-hidden`}>
-          <div className="border-b border-slate-100 px-4 py-3">
-            <h2 className="text-sm font-semibold text-slate-800">
-              {copy.sectionStats}
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div className="px-4 py-3">
-              <div className="text-xs text-slate-500">{copy.statQuota}</div>
-              <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
-                {formatConsoleQuota(stats.quota, targetLocale)}
+        {stats ? (
+          <section className={`${CONSOLE_SURFACE} overflow-hidden`}>
+            <div className="border-b border-slate-100 px-4 py-3">
+              <h2 className="text-sm font-semibold text-slate-800">
+                {copy.sectionStats}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              <div className="px-4 py-3">
+                <div className="text-xs text-slate-500">{copy.statQuota}</div>
+                <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
+                  {formatConsoleQuota(stats.quota, targetLocale)}
+                </div>
+              </div>
+              <div className="px-4 py-3">
+                <div className="text-xs text-slate-500">
+                  {copy.statUsedQuota}
+                </div>
+                <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
+                  {formatConsoleQuota(stats.usedQuota, targetLocale)}
+                </div>
+              </div>
+              <div className="px-4 py-3">
+                <div className="text-xs text-slate-500">
+                  {copy.statRequests}
+                </div>
+                <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
+                  {formatConsoleCount(stats.requestCount, targetLocale)}
+                </div>
               </div>
             </div>
-            <div className="px-4 py-3">
-              <div className="text-xs text-slate-500">{copy.statUsedQuota}</div>
-              <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
-                {formatConsoleQuota(stats.usedQuota, targetLocale)}
-              </div>
-            </div>
-            <div className="px-4 py-3">
-              <div className="text-xs text-slate-500">{copy.statRequests}</div>
-              <div className="mt-1 font-mono text-lg font-semibold text-slate-800">
-                {formatConsoleCount(stats.requestCount, targetLocale)}
-              </div>
-            </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         <section className={`${CONSOLE_SURFACE} p-4`}>
           <h2 className="text-sm font-semibold text-slate-800">
@@ -225,14 +247,17 @@ export function ProfilePageClient() {
           onLocaleChange={onLocaleChange}
         />
 
-        <ProfileSettingsPanel
-          copy={copy}
-          targetLocale={targetLocale}
-          settings={settings}
-          onSettingsChange={setSettings}
-          onNotice={showToast}
-          onError={setError}
-        />
+        {stats ? (
+          <ProfileSettingsPanel
+            copy={copy}
+            targetLocale={targetLocale}
+            settings={settings}
+            onSettingsChange={setSettings}
+            onNotice={(msg) => showToast(msg)}
+            onError={(msg) => showToast(msg, "error")}
+            onSaved={() => void refresh()}
+          />
+        ) : null}
 
         <section className={`${CONSOLE_SURFACE} p-4`}>
           <h2 className="text-sm font-semibold text-slate-800">
@@ -272,8 +297,8 @@ export function ProfilePageClient() {
           copy={copy}
           targetLocale={targetLocale}
           twoFa={twoFa}
-          onNotice={showToast}
-          onError={setError}
+          onNotice={(msg) => showToast(msg)}
+          onError={(msg) => showToast(msg, "error")}
           onTwoFaChange={() => void refresh()}
         />
 
