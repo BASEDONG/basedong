@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useEffect,
   useLayoutEffect,
@@ -102,11 +102,15 @@ function validateRegisterPassword(
 
 export function LoginFormPanel() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { targetLocale } = useLocale();
   const COPY = getAuthCopy(targetLocale);
+  const affFromQuery = (searchParams.get("aff") ?? "").trim();
   const [agree, setAgree] = useState(false);
   const [keepLogin, setKeepLogin] = useState(true);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [authMode, setAuthMode] = useState<"login" | "register">(
+    affFromQuery ? "register" : "login",
+  );
   /** Login: username or email */
   const [account, setAccount] = useState("");
   /** Register-only */
@@ -280,6 +284,7 @@ export function LoginFormPanel() {
           email: trimmedEmail,
           verificationCode: verificationCode.trim(),
           turnstile: turnstileToken || undefined,
+          affCode: affFromQuery || undefined,
         });
         switchAuthMode("login");
         setAccount(trimmedUsername);

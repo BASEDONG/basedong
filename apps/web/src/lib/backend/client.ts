@@ -24,6 +24,10 @@ export type BackendUser = {
   quota?: number;
   used_quota?: number;
   request_count?: number;
+  aff_code?: string;
+  aff_count?: number;
+  aff_quota?: number;
+  aff_history_quota?: number;
   /** JSON string of user settings (notify prefs, etc.). */
   setting?: string;
 };
@@ -232,6 +236,7 @@ export type PublicAuthStatus = {
   oidc_display_name?: string;
   passkey_login?: boolean;
   server_address?: string;
+  quota_per_unit?: number;
   custom_oauth_providers?: CustomOAuthProviderInfo[];
 };
 
@@ -284,6 +289,8 @@ export type RegisterInput = {
   email?: string;
   verificationCode?: string;
   turnstile?: string;
+  /** Inviter affiliate code (Backend field `aff_code`). */
+  affCode?: string;
 };
 
 export async function register(input: RegisterInput): Promise<void> {
@@ -295,6 +302,7 @@ export async function register(input: RegisterInput): Promise<void> {
   if (input.verificationCode) {
     body.verification_code = input.verificationCode;
   }
+  if (input.affCode) body.aff_code = input.affCode.trim();
   await backendFetch<unknown>(
     withTurnstileQuery("/api/user/register", input.turnstile),
     {
@@ -1301,6 +1309,223 @@ export async function listTopUps(
     pageSize:
       typeof data?.page_size === "number" ? data.page_size : pageSize,
   };
+}
+
+/** Ensure / return the current user's affiliate invite code. */
+export async function getAffiliateCode(): Promise<string> {
+  const data = await backendFetch<string>("/api/user/aff", { method: "GET" });
+  if (typeof data !== "string" || !data.trim()) {
+    throw new BackendError("Affiliate code missing");
+  }
+  return data.trim();
+}
+
+/** Transfer pending affiliate quota into wallet balance. */
+export async function transferAffiliateQuota(quota: number): Promise<void> {
+  const amount = Math.floor(quota);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new BackendError("Invalid transfer amount");
+  }
+  await backendFetch<unknown>("/api/user/aff_transfer", {
+    method: "POST",
+    body: JSON.stringify({ quota: amount }),
+  });
+}
+
+export type SubscriptionPlan = {
+  id: number;
+  title?: string;
+  subtitle?: string;
+  price_amount?: number;
+  currency?: string;
+  duration_unit?: string;
+  duration_value?: number;
+  custom_seconds?: number;
+  enabled?: boolean;
+  sort_order?: number;
+  allow_balance_pay?: boolean;
+  max_purchase_per_user?: number;
+  total_amount?: number;
+  stripe_price_id?: string;
+  creem_product_id?: string;
+  waffo_pancake_product_id?: string;
+  upgrade_group?: string;
+  downgrade_group?: string;
+};
+
+export type SubscriptionPlanRecord = {
+  plan: SubscriptionPlan;
+};
+
+export type UserSubscription = {
+  id?: number;
+  plan_id?: number;
+  status?: string;
+  source?: string;
+  start_time?: number;
+  end_time?: number;
+  amount_total?: number;
+  amount_used?: number;
+  next_reset_time?: number;
+};
+
+export type UserSubscriptionRecord = {
+  subscription: UserSubscription;
+};
+
+export type BillingPreference =
+  | "subscription_first"
+  | "wallet_first"
+  | "subscription_only"
+  | "wallet_only"
+  | string;
+
+export type SelfSubscriptionData = {
+  billing_preference?: BillingPreference;
+  subscriptions?: UserSubscriptionRecord[];
+  all_subscriptions?: UserSubscriptionRecord[];
+};
+
+export async function getSubscriptionPlans(): Promise<SubscriptionPlanRecord[]> {
+  try {
+    const data = await backendFetch<SubscriptionPlanRecord[] | null>(
+      "/api/subscription/plans",
+      { method: "GET" },
+    );
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getSubscriptionSelf(): Promise<SelfSubscriptionData> {
+  return backendFetch<SelfSubscriptionData>("/api/subscription/self", {
+    method: "GET",
+  });
+}
+
+export async function updateSubscriptionPreference(
+  preference: BillingPreference,
+): Promise<BillingPreference> {
+  const data = await backendFetch<{ billing_preference?: string }>(
+    "/api/subscription/self/preference",
+    {
+      method: "PUT",
+      body: JSON.stringify({ billing_preference: preference }),
+    },
+  );
+  return data?.billing_preference ?? preference;
+}
+
+export async function paySubscriptionBalance(planId: number): Promise<void> {
+  await messageSuccessFetch<unknown>(
+    "/api/subscription/balance/pay",
+    { plan_id: planId },
+    () => null,
+  );
+}
+
+export async function paySubscriptionStripe(
+  planId: number,
+): Promise<{ pay_link: string }> {
+  return messageSuccessFetch<{ pay_link: string }>(
+    "/api/subscription/stripe/pay",
+    { plan_id: planId },
+    (json, status) => {
+      const data = json.data;
+      if (
+        !data ||
+        typeof data === "string" ||
+        typeof (data as { pay_link?: string }).pay_link !== "string"
+      ) {
+        throw new BackendError(
+          typeof data === "string" ? data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return { pay_link: (data as { pay_link: string }).pay_link };
+    },
+  );
+}
+
+export async function paySubscriptionCreem(
+  planId: number,
+): Promise<{ checkout_url: string }> {
+  return messageSuccessFetch<{ checkout_url: string }>(
+    "/api/subscription/creem/pay",
+    { plan_id: planId },
+    (json, status) => {
+      const data = json.data;
+      if (
+        !data ||
+        typeof data === "string" ||
+        typeof (data as { checkout_url?: string }).checkout_url !== "string"
+      ) {
+        throw new BackendError(
+          typeof data === "string" ? data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return {
+        checkout_url: (data as { checkout_url: string }).checkout_url,
+      };
+    },
+  );
+}
+
+export async function paySubscriptionWaffoPancake(
+  planId: number,
+): Promise<{ checkout_url: string }> {
+  return messageSuccessFetch<{ checkout_url: string }>(
+    "/api/subscription/waffo-pancake/pay",
+    { plan_id: planId },
+    (json, status) => {
+      const data = json.data;
+      if (
+        !data ||
+        typeof data === "string" ||
+        typeof (data as { checkout_url?: string }).checkout_url !== "string"
+      ) {
+        throw new BackendError(
+          typeof data === "string" ? data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return {
+        checkout_url: (data as { checkout_url: string }).checkout_url,
+      };
+    },
+  );
+}
+
+export async function paySubscriptionEpay(
+  planId: number,
+  paymentMethod: string,
+): Promise<EpayPayResult> {
+  return messageSuccessFetch<EpayPayResult>(
+    "/api/subscription/epay/pay",
+    { plan_id: planId, payment_method: paymentMethod },
+    (json, status) => {
+      if (!json.url || !json.data || typeof json.data === "string") {
+        throw new BackendError(
+          typeof json.data === "string" ? json.data : "拉起支付失败",
+          "paymentStartFailed",
+          status,
+          json.code,
+        );
+      }
+      return {
+        url: json.url,
+        params: json.data as unknown as Record<string, string>,
+      };
+    },
+  );
 }
 
 /** Models enabled for the current 用户's groups (Backend catalog). */

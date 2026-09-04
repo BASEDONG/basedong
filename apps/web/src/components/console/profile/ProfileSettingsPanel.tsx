@@ -21,7 +21,10 @@ type Props = {
   onSaved?: () => void;
 };
 
-const NOTIFY_OPTIONS: { value: NotifyType; labelKey: keyof ProfileUiCopy }[] = [
+const NOTIFY_OPTIONS: {
+  value: NotifyType;
+  labelKey: "notifyEmail" | "notifyWebhook" | "notifyBark" | "notifyGotify";
+}[] = [
   { value: "email", labelKey: "notifyEmail" },
   { value: "webhook", labelKey: "notifyWebhook" },
   { value: "bark", labelKey: "notifyBark" },

@@ -45,6 +45,38 @@ export type WalletUiCopy = {
   redeemSubmitting: string;
   redeemSuccess: (formattedDelta: string) => string;
   redeemFailed: string;
+  sectionSubscription?: string;
+  subHint?: string;
+  subLoadFailed?: string;
+  subNoPlans?: string;
+  subActiveLabel?: string;
+  subLimitReached?: string;
+  subPayBalance?: string;
+  subPurchaseSuccess?: string;
+  subPurchaseFailed?: string;
+  subPayOpened?: string;
+  subPayRedirect?: string;
+  billingPreference?: string;
+  prefSubscriptionFirst?: string;
+  prefWalletFirst?: string;
+  prefSubscriptionOnly?: string;
+  prefWalletOnly?: string;
+  prefSaved?: string;
+  prefFailed?: string;
+  sectionAffiliate?: string;
+  affHint?: string;
+  affPending?: string;
+  affHistory?: string;
+  affInvites?: string;
+  affCopyLink?: string;
+  affCopied?: string;
+  affLoadFailed?: string;
+  affTransferLabel?: string;
+  affTransferSubmit?: string;
+  affTransferSuccess?: string;
+  affTransferFailed?: string;
+  affTransferInvalid?: string;
+  affTransferBlocked?: string;
 };
 
 const zhCN: WalletUiCopy = {
@@ -89,6 +121,38 @@ const zhCN: WalletUiCopy = {
   agreeHref: APP_ROUTES.userAgreement,
   recordsLoadFailed: "加载充值记录失败",
   redeemSuccess: (formattedDelta) => `兑换成功，额度 +${formattedDelta}`,
+  sectionSubscription: "订阅计划",
+  subHint: "可购买管理员发布的订阅计划，并设置计费偏好。无可用计划时本区隐藏。",
+  subLoadFailed: "加载订阅失败",
+  subNoPlans: "暂无公开计划（可能未确认支付合规，或尚未配置计划）",
+  subActiveLabel: "当前订阅",
+  subLimitReached: "已达该计划购买上限",
+  subPayBalance: "余额支付",
+  subPurchaseSuccess: "订阅购买成功",
+  subPurchaseFailed: "订阅购买失败",
+  subPayOpened: "已打开支付页",
+  subPayRedirect: "正在跳转支付…",
+  billingPreference: "计费偏好",
+  prefSubscriptionFirst: "订阅优先",
+  prefWalletFirst: "钱包优先",
+  prefSubscriptionOnly: "仅订阅",
+  prefWalletOnly: "仅钱包",
+  prefSaved: "计费偏好已保存",
+  prefFailed: "保存计费偏好失败",
+  sectionAffiliate: "邀请奖励",
+  affHint: "通过邀请链接注册的用户可为你带来奖励；待转额度可转入余额。",
+  affPending: "待转入",
+  affHistory: "累计奖励",
+  affInvites: "邀请人数",
+  affCopyLink: "复制链接",
+  affCopied: "已复制邀请链接",
+  affLoadFailed: "加载邀请信息失败",
+  affTransferLabel: "转入额度",
+  affTransferSubmit: "转入余额",
+  affTransferSuccess: "已转入余额",
+  affTransferFailed: "转入失败",
+  affTransferInvalid: "请输入有效转入额度",
+  affTransferBlocked: "支付合规未确认，暂不可转入",
 };
 
 const en: WalletUiCopy = {
@@ -133,6 +197,41 @@ const en: WalletUiCopy = {
   agreeHref: APP_ROUTES.userAgreement,
   recordsLoadFailed: "Failed to load recharge records",
   redeemSuccess: (formattedDelta) => `Redeemed successfully. Quota +${formattedDelta}`,
+  sectionSubscription: "Subscriptions",
+  subHint:
+    "Purchase published plans and set billing preference. This section hides when nothing is available.",
+  subLoadFailed: "Failed to load subscriptions",
+  subNoPlans:
+    "No public plans (payment compliance may be unconfirmed, or no plans configured)",
+  subActiveLabel: "Active",
+  subLimitReached: "Purchase limit reached for this plan",
+  subPayBalance: "Pay with balance",
+  subPurchaseSuccess: "Subscription purchased",
+  subPurchaseFailed: "Subscription purchase failed",
+  subPayOpened: "Payment page opened",
+  subPayRedirect: "Redirecting to payment…",
+  billingPreference: "Billing preference",
+  prefSubscriptionFirst: "Subscription first",
+  prefWalletFirst: "Wallet first",
+  prefSubscriptionOnly: "Subscription only",
+  prefWalletOnly: "Wallet only",
+  prefSaved: "Billing preference saved",
+  prefFailed: "Failed to save billing preference",
+  sectionAffiliate: "Referral rewards",
+  affHint:
+    "Earn rewards when users register via your invite link. Transfer pending rewards to balance.",
+  affPending: "Pending",
+  affHistory: "Total earned",
+  affInvites: "Invites",
+  affCopyLink: "Copy link",
+  affCopied: "Invite link copied",
+  affLoadFailed: "Failed to load referral info",
+  affTransferLabel: "Transfer amount",
+  affTransferSubmit: "Transfer to balance",
+  affTransferSuccess: "Transferred to balance",
+  affTransferFailed: "Transfer failed",
+  affTransferInvalid: "Enter a valid transfer amount",
+  affTransferBlocked: "Payment compliance not confirmed — transfer unavailable",
 };
 
 const zhTW: WalletUiCopy = {
@@ -561,5 +660,13 @@ const WALLET_UI_COPY: Record<TargetLocale, WalletUiCopy> = {
 };
 
 export function getWalletUiCopy(locale: string): WalletUiCopy {
-  return pickTargetCatalog(locale, WALLET_UI_COPY);
+  const base = pickTargetCatalog(locale, WALLET_UI_COPY);
+  return {
+    ...en,
+    ...base,
+    redeemSuccess: base.redeemSuccess ?? en.redeemSuccess,
+    payableAmount: base.payableAmount ?? en.payableAmount,
+    recordsPage: base.recordsPage ?? en.recordsPage,
+    recordsTotal: base.recordsTotal ?? en.recordsTotal,
+  };
 }

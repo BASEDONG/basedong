@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale } from "@/components/shared/LocaleProvider";
-import { getSelf } from "@/lib/backend/client";
+import {
+  getSelf,
+  getTopupInfo,
+  type BackendUser,
+  type TopupInfo,
+} from "@/lib/backend/client";
 import { ConsoleShell } from "../shared/ConsoleShell";
 import { MessageToast } from "../shared/MessageToast";
 import { CONSOLE_SURFACE } from "../shared/console-ui";
@@ -15,13 +20,15 @@ import {
   profileHeaderStats,
   type ProfileHeaderStats,
 } from "../profile/profile-stats";
+import { AffiliateRewardsCard } from "./AffiliateRewardsCard";
 import { getWalletUiCopy } from "./wallet-ui-copy";
 import { OnlineRechargeForm } from "./OnlineRechargeForm";
 import { RechargeRecordsTable } from "./RechargeRecordsTable";
+import { SubscriptionPlansCard } from "./SubscriptionPlansCard";
 import { defaultAmount } from "./content";
 
 /**
- * 钱包 — Backend-backed 充值 (all gateways from topup/info) + 兑换码 + 订单历史.
+ * 钱包 — recharge + subscription/aff (when Backend offers) + redeem + history.
  */
 export function WalletPageClient() {
   const { targetLocale } = useLocale();
@@ -30,7 +37,9 @@ export function WalletPageClient() {
   const [collapsed, setCollapsed] = useState(false);
   const [amount, setAmount] = useState<number | "other">(defaultAmount);
   const [customAmount, setCustomAmount] = useState(50);
+  const [self, setSelf] = useState<BackendUser | null>(null);
   const [stats, setStats] = useState<ProfileHeaderStats | null>(null);
+  const [topupInfo, setTopupInfo] = useState<TopupInfo | null>(null);
   const [recordsTick, setRecordsTick] = useState(0);
   const [toast, setToast] = useState<{
     message: string;
@@ -39,22 +48,34 @@ export function WalletPageClient() {
 
   const refreshSelf = useCallback(async () => {
     try {
-      const self = await getSelf();
-      setStats(profileHeaderStats(self));
+      const me = await getSelf();
+      setSelf(me);
+      setStats(profileHeaderStats(me));
       notifySelfUpdated();
     } catch {
+      setSelf(null);
       setStats(null);
+    }
+  }, []);
+
+  const refreshTopup = useCallback(async () => {
+    try {
+      setTopupInfo(await getTopupInfo());
+    } catch {
+      setTopupInfo(null);
     }
   }, []);
 
   const refreshAfterReturn = useCallback(() => {
     void refreshSelf();
+    void refreshTopup();
     setRecordsTick((n) => n + 1);
-  }, [refreshSelf]);
+  }, [refreshSelf, refreshTopup]);
 
   useEffect(() => {
     void refreshSelf();
-  }, [refreshSelf]);
+    void refreshTopup();
+  }, [refreshSelf, refreshTopup]);
 
   // Payment gateways return the user to /me/wallet; refresh when the tab is focused again.
   useEffect(() => {
@@ -136,6 +157,32 @@ export function WalletPageClient() {
             }
           />
         </div>
+
+        <SubscriptionPlansCard
+          copy={copy}
+          targetLocale={targetLocale}
+          topupInfo={topupInfo}
+          userQuota={self?.quota ?? 0}
+          onNotice={(message) => setToast({ message, type: "success" })}
+          onError={(message) => setToast({ message, type: "error" })}
+          onPurchaseSuccess={() => {
+            void refreshSelf();
+            setRecordsTick((n) => n + 1);
+          }}
+        />
+
+        <AffiliateRewardsCard
+          copy={copy}
+          targetLocale={targetLocale}
+          self={self}
+          complianceConfirmed={Boolean(
+            topupInfo?.payment_compliance_confirmed,
+          )}
+          onNotice={(message) => setToast({ message, type: "success" })}
+          onError={(message) => setToast({ message, type: "error" })}
+          onTransferred={() => void refreshSelf()}
+        />
+
         <RechargeRecordsTable
           copy={copy}
           locale={targetLocale}
