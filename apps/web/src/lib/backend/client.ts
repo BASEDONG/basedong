@@ -314,13 +314,13 @@ export async function register(input: RegisterInput): Promise<void> {
 
 export async function logout(): Promise<void> {
   try {
-    const headers = new Headers();
-    const sid = getSessionSid();
-    if (sid) headers.set("X-Auth-Session", sid);
-    await backendFetch<unknown>("/api/user/auth/logout", {
+    // Cookie-only logout: do not send Bearer / X-Auth-Session. Backend AuthLogout
+    // skips ClearRefreshCookie when those disagree with the refresh cookie SID, which
+    // left local sessions restorable after "logout" via POST /api/user/auth/refresh.
+    const base = assertApiBase();
+    await fetch(`${base}/api/user/auth/logout`, {
       method: "POST",
-      headers,
-      skipAuthRefresh: true,
+      credentials: "include",
     });
   } catch {
     // Still clear local session if Backend is unreachable or cookie refresh fails cross-origin.

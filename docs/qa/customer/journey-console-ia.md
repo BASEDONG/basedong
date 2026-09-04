@@ -132,16 +132,21 @@ Optionally `npm run check` for full Web gate before release.
 
 ## Gate summary
 
+**Run:** `feat/web-console-polish` · local Web `:3001` + API `:3000` · user `qaui` · 2026-09-04 (agent browser smoke).
+
 | Area | Tickets | Result |
 |------|---------|--------|
-| Fixed IA + 下线页 | #40 keep | ☐ |
-| 个人资料 | #60 #66 | ☐ |
-| 钱包 + subscription/aff | #61 #67 | ☐ |
-| 用量概览 | #62 | ☐ |
-| API 密钥 | #63 | ☐ |
-| 记录 ×3 | #64 | ☐ |
-| Chat 在线体验 | #65 | ☐ |
-| Locale/typecheck | — | ☐ |
-| Probes (as env allows) | — | ☐ / SKIP |
+| Fixed IA + 下线页 | #40 keep | **PASS** — landing 模型广场; sidebar groups; `/me/bills`→logs, `/me/expensebill`→wallet; image/batches 下线页 |
+| 个人资料 | #60 #66 | **PASS** (structure) — header/settings/language/password/AT/bindings/2FA/passkey/sessions/delete present; 签到 absent → **BLOCKED** (`checkin_enabled` off); mutations / delete **SKIP** on shared QA |
+| 钱包 + subscription/aff | #61 #67 | **PASS** / **BLOCKED** — stats + history + aff link; no online pay (compliance message); subscription section hidden (no plans); redeem **SKIP** |
+| 用量概览 | #62 | **PASS** — filters + honest empty |
+| API 密钥 | #63 | **PASS** — list/search/create chrome; empty honest; **API Key** labeling |
+| 记录 ×3 | #64 | **PASS** — filters + empty honest |
+| Chat 在线体验 | #65 | **PASS** (open) — model/group/params; send completion **SKIP** (quota 0 / rate-limit caution) |
+| Chrome | — | **PASS** — topbar 额度; docs → `/docs/api`; logout → login and `/me` gated (see logout fix below) |
+| Locale/typecheck | — | **PASS** (earlier on branch) |
+| Probes (as env allows) | — | **SKIP** this run |
+
+**Follow-up found in smoke:** Console `logout()` sent Bearer/`X-Auth-Session` that could disagree with the refresh cookie SID; Backend then returned mismatch **without** `ClearRefreshCookie`, so `/api/user/auth/refresh` restored the session. Fixed: cookie-only `POST /api/user/auth/logout` in Web client.
 
 Close **#68** when this document is the agreed gate and a human/agent run against local Backend fills the table without product FAIL. Close **#59** only after #68 PASSes.
