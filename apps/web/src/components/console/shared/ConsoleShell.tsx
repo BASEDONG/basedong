@@ -12,7 +12,6 @@ export interface ConsoleShellProps {
   /** Nav item key for CloudSidebar highlight */
   activeKey?: string;
   title: string;
-  notificationCount?: number;
   /** Root text color utility — defaults to slate-700 */
   textTone?: "slate" | "black";
   mainClassName?: string;
@@ -28,9 +27,8 @@ export function ConsoleShell({
   onToggleCollapse,
   activeKey,
   title,
-  notificationCount,
   textTone = "slate",
-  mainClassName = "z-50 min-h-0 flex-1 overflow-y-auto px-5 pb-2.5 pt-2",
+  mainClassName = "min-h-0 flex-1 overflow-y-auto px-5 pb-2.5 pt-2",
   mainRef,
   onMainScroll,
   children,
@@ -62,10 +60,9 @@ export function ConsoleShell({
 
       <CloudSidebar collapsed={collapsed} activeKey={activeKey} />
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <CloudTopBar
           title={title}
-          notificationCount={notificationCount}
           collapsed={collapsed}
           onToggleCollapse={onToggleCollapse}
         />

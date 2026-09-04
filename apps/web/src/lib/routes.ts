@@ -87,6 +87,12 @@ export function isInternalHref(href: string): boolean {
   return href.startsWith("/") && !href.startsWith("//");
 }
 
+/** Console path with trailing slash (next.config trailingSlash: true). */
+export function consoleHref(path: string): string {
+  if (path === "/") return "/";
+  return path.endsWith("/") ? path : `${path}/`;
+}
+
 const LOCAL_FORM_PATHS: Record<string, string> = {
   shrcn2G8XKaFfNasfwD1lgDUbcb: APP_ROUTES.formBusiness,
   shrcnDiK9EIkGN3sK0PepqN1Ppb: APP_ROUTES.formSupport,
