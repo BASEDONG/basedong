@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { getLoginPageMetadata } from "@/lib/auth-page-metadata";
+import { BRAND } from "@/lib/assets";
 import { staticPageMetadata } from "@/lib/static-page-metadata";
 
 export const metadata: Metadata = {
   ...staticPageMetadata(getLoginPageMetadata),
   icons: {
-    icon: "/assets/auth/shared/favicon.ico",
+    icon: BRAND.logoMark,
   },
 };
 
