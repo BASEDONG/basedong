@@ -59,6 +59,8 @@ Cloudflare Pages settings:
 
 Optional: `wrangler.toml` and `public/_redirects` are included for trailing-slash redirects.
 
+Invite-only staging with Backend on an `api` subdomain: [`docs/ops/staging.md`](../../docs/ops/staging.md).
+
 ## Docker
 
 ```bash

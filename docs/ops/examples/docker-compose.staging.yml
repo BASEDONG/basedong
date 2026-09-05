@@ -1,0 +1,41 @@
+# Staging overlay (Topology B) — use with root docker-compose.yml
+#
+# From monorepo root:
+#   docker compose --env-file .env.staging \
+#     -f docker-compose.yml \
+#     -f docs/ops/examples/docker-compose.staging.yml \
+#     up -d --build api redis postgres
+#
+# Optional Zen Sidecar (still no host ports) — also merge docker-compose.zen-sidecar.yml
+# and replace its default SIDECAR_KEY before shared staging:
+#   docker compose --env-file .env.staging \
+#     -f docker-compose.yml \
+#     -f docs/ops/examples/docker-compose.staging.yml \
+#     -f docker-compose.zen-sidecar.yml \
+#     up -d --build api redis postgres zen-sidecar
+#
+# Copy docs/ops/examples/env.staging.example → .env.staging (gitignored).
+# Customer Web is Cloudflare Pages — do not rely on compose `web` for staging Topology B.
+# Put Caddy (Caddyfile.staging) in front of host port 3000.
+
+services:
+  api:
+    ports:
+      - "127.0.0.1:${API_PORT:-3000}:3000"
+    environment:
+      - SQL_DSN=${SQL_DSN}
+      - REDIS_CONN_STRING=${REDIS_CONN_STRING:-redis://redis:6379}
+      - TZ=${TZ:-Asia/Shanghai}
+      - BATCH_UPDATE_ENABLED=${BATCH_UPDATE_ENABLED:-true}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - CRYPTO_SECRET=${CRYPTO_SECRET}
+      - SESSION_COOKIE_SECURE=true
+      - SESSION_COOKIE_TRUSTED_URL=${SESSION_COOKIE_TRUSTED_URL}
+      - TRUSTED_PROXIES=${TRUSTED_PROXIES:-127.0.0.1/32}
+      # Leave FRONTEND_BASE_URL unset so Admin SPA stays on this host.
+
+  postgres:
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-new-api}

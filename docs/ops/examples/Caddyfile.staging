@@ -1,0 +1,15 @@
+# Staging edge for Topology B — TLS terminate + reverse proxy to basedong-api.
+# Replace api.example.com with your staging API hostname.
+# Upstream: docker compose publishes API on 127.0.0.1:3000 (see docker-compose.staging.yml).
+
+api.example.com {
+	encode gzip
+
+	reverse_proxy 127.0.0.1:3000 {
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		# Streaming / long-lived Relay and Playground responses
+		flush_interval -1
+	}
+}

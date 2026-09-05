@@ -161,3 +161,5 @@ Customer disclosure: [`docs/zen-sidecar/customer-auto-disclosure.md`](../../docs
 ### SPA session
 
 Web calls control-plane with `NEXT_PUBLIC_API_BASE`. The short-lived **access** JWT lives in **memory only** (upstream new-api Admin UI pattern — not `sessionStorage`), sent as `Authorization: Bearer`. After reload, Web attempts `POST /api/user/auth/refresh` using the HttpOnly Refresh Cookie (`SameSite=Strict` on `/api/user/auth`). Silent restore needs Web and Backend on the **same site** (reverse proxy). Cross-origin SPAs should expect re-login when the access JWT expires (~15 minutes) unless a same-site proxy is used. Public optional-auth routes such as `GET /api/pricing` fall back to anonymous (no Bearer) when refresh cannot restore a session. `/api` applies CORS that reflects the request Origin so browser calls work.
+
+Invite-only staging (Cloudflare Pages Web + `api` subdomain Backend): [`docs/ops/staging.md`](../../docs/ops/staging.md).
