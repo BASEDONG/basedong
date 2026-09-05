@@ -1,23 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Play } from "lucide-react";
+import Image from "next/image";
 import { useLocale } from "@/components/shared/LocaleProvider";
 import { getBrandContent } from "./content";
 
+/** Brand “logo birth” visual — still image only (large mp4 exceeds Pages 25 MiB/file limit). */
 export function LogoBirth() {
   const { locale } = useLocale();
-  const { assets, logoBirthTitle, logoBirthBody, playVideoLabel } =
-    getBrandContent(locale);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [started, setStarted] = useState(false);
-
-  function handlePlay() {
-    const video = videoRef.current;
-    if (!video) return;
-    void video.play();
-    setStarted(true);
-  }
+  const { assets, logoBirthTitle, logoBirthBody } = getBrandContent(locale);
 
   return (
     <div
@@ -33,28 +23,14 @@ export function LogoBirth() {
         </p>
         <div className="relative w-full">
           <div className="relative aspect-video w-full overflow-hidden bg-black max-[1024px]:h-[210px] max-[1024px]:max-h-[210px] max-[1024px]:aspect-auto">
-            <video
-              ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
-              src={assets.logoVideo}
-              poster={assets.videoCover}
-              controls={started}
-              playsInline
-              preload="metadata"
-              onPlay={() => setStarted(true)}
+            <Image
+              src={assets.videoCover}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 1200px"
+              unoptimized
             />
-            {!started ? (
-              <button
-                type="button"
-                aria-label={playVideoLabel}
-                onClick={handlePlay}
-                className="absolute top-1/2 left-1/2 z-[5] h-[70px] w-[70px] -translate-x-1/2 -translate-y-1/2 cursor-pointer max-[1024px]:h-[50px] max-[1024px]:w-[50px]"
-              >
-                <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[rgba(0,0,0,0.38)] p-[15%] hover:opacity-[0.85]">
-                  <Play className="h-full w-full fill-white text-white" aria-hidden />
-                </span>
-              </button>
-            ) : null}
           </div>
         </div>
       </section>

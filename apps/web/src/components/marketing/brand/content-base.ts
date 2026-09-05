@@ -16,7 +16,6 @@ export const BRAND_ASSETS = {
   heroVisual: `${ASSET}/images/hero-visual.svg`,
   s2bg: `${ASSET}/images/s2bg.png`,
   videoCover: `${ASSET}/images/video_cover.png`,
-  logoVideo: `${ASSET}/videos/logo.mp4`,
   s3bg: `${ASSET}/images/s3bg.png`,
   s4: `${ASSET}/images/s4.png`,
   relationshipBg: `${ASSET}/images/relationship_bg.png`,
