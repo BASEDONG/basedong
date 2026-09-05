@@ -3,17 +3,24 @@
 import { HeroSlideBackground } from "@/components/marketing/home/HeroSlideBackground";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { useLocale } from "@/components/shared/LocaleProvider";
+import { APP_ROUTES } from "@/lib/routes";
 import { getAuthCopy, heroBackground } from "./content";
 
 export function LoginBanner() {
-  const { targetLocale } = useLocale();
+  const { targetLocale, href } = useLocale();
   const copy = getAuthCopy(targetLocale);
 
   return (
     <div className="relative hidden min-h-0 flex-1 lg:block">
       <HeroSlideBackground {...heroBackground} logoAlt={copy.subtitle} />
       <div className="relative z-10 flex h-full flex-col px-14 py-14 text-slate-800">
-        <BrandLogo size="hero" priority alt={copy.brandName} />
+        <BrandLogo
+          size="hero"
+          priority
+          alt={copy.brandName}
+          href={href(APP_ROUTES.home)}
+          linkClassName="inline-flex w-fit"
+        />
         <section className="mt-16 max-w-[28rem]">
           <h1 className="text-[48px] font-semibold leading-[1.25] tracking-tight">
             {copy.brandName}

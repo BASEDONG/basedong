@@ -31,7 +31,7 @@ function LinkColumn({
 }
 
 export function SiteFooter() {
-  const { locale } = useLocale();
+  const { locale, href } = useLocale();
   const c = getChromeCopy(locale);
 
   const pageLinks = filterEnabledLinks([
@@ -58,7 +58,14 @@ export function SiteFooter() {
     <footer className="w-full bg-[#F2F5FA] pb-[70px] pt-[120px]">
       <div className="sf-content mb-16 flex items-start justify-between max-md:flex-col max-md:items-center max-md:gap-[66px]">
         <div className="max-md:text-center">
-          <BrandLogo size="nav" className="mb-[33px]" alt={c.brandAlt} />
+          <BrandLogo
+            size="nav"
+            className="mb-[33px]"
+            alt={c.brandAlt}
+            href={href(APP_ROUTES.home)}
+            linkClassName="inline-flex max-md:justify-center"
+            aria-label={c.homeAria}
+          />
           <p
             className="mb-10 text-xl font-light text-[#57627F]"
             style={{ letterSpacing: "6.6px" }}

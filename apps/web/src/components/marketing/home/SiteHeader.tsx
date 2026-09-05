@@ -1,6 +1,5 @@
 ﻿"use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -237,13 +236,14 @@ export function SiteHeader() {
       <header className="fixed left-0 top-0 z-50 w-full bg-white/72 px-4 py-2.5 shadow-[0_8px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl transition-all duration-300 max-[960px]:bg-white/95 max-[960px]:px-4 max-[960px]:py-2.5 lg:px-8 lg:py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Link
+            <BrandLogo
+              size="nav"
+              priority
+              alt={c.brandAlt}
               href={href(APP_ROUTES.home)}
-              className="relative flex h-[46px] items-center"
+              linkClassName="relative flex h-[46px] items-center"
               aria-label={c.homeAria}
-            >
-              <BrandLogo size="nav" priority alt={c.brandAlt} />
-            </Link>
+            />
 
             <nav className="hidden items-center gap-9 pl-20 lg:flex">
               <div

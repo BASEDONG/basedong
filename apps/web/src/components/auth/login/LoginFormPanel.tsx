@@ -103,7 +103,7 @@ function validateRegisterPassword(
 export function LoginFormPanel() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { targetLocale } = useLocale();
+  const { targetLocale, href } = useLocale();
   const COPY = getAuthCopy(targetLocale);
   const affFromQuery = (searchParams.get("aff") ?? "").trim();
   const [agree, setAgree] = useState(false);
@@ -312,9 +312,11 @@ export function LoginFormPanel() {
     <section className="w-full max-w-[28rem] text-[var(--sf-ink)]">
       <BrandLogo
         size="hero"
-        className="mx-auto mb-8 block xl:hidden"
+        className="block"
         priority
         alt={COPY.brandName}
+        href={href(APP_ROUTES.home)}
+        linkClassName="mx-auto mb-8 block w-fit xl:hidden"
       />
       <h2 className="mb-8 text-center text-3xl font-normal leading-10 text-[var(--sf-ink)]">
         {COPY.title}

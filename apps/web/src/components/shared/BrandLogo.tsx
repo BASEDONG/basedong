@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { BRAND } from "@/lib/assets";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,10 @@ type BrandLogoProps = {
   className?: string;
   priority?: boolean;
   alt?: string;
+  /** When set, wrap the mark in a link (e.g. home). Omit when a parent already links. */
+  href?: string;
+  linkClassName?: string;
+  "aria-label"?: string;
 };
 
 export function BrandLogo({
@@ -30,11 +35,14 @@ export function BrandLogo({
   className,
   priority,
   alt = "basedong",
+  href,
+  linkClassName,
+  "aria-label": ariaLabel,
 }: BrandLogoProps) {
   const dims = SIZES[size];
   const src = variant === "white" ? BRAND.logoWhite : BRAND.logo;
 
-  return (
+  const image = (
     <Image
       src={src}
       alt={alt}
@@ -43,5 +51,13 @@ export function BrandLogo({
       className={cn(dims.className, className)}
       priority={priority}
     />
+  );
+
+  if (!href) return image;
+
+  return (
+    <Link href={href} className={linkClassName} aria-label={ariaLabel ?? alt}>
+      {image}
+    </Link>
   );
 }
